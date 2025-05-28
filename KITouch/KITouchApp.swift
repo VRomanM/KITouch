@@ -11,7 +11,7 @@ import SwiftUI
 struct KITouchApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            RootView()
         }
     }
 }
