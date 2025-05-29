@@ -12,6 +12,7 @@ struct KITouchApp: App {
     var body: some Scene {
         WindowGroup {
             RootView()
+                .environment(\.locale, Locale(identifier: "cs_CZ")) //Locale(identifier: "ru_RU"))
         }
     }
 }
