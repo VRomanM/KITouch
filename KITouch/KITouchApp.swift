@@ -11,8 +11,8 @@ import SwiftUI
 struct KITouchApp: App {
     var body: some Scene {
         WindowGroup {
-            RootView()
-                .environment(\.locale, Locale(identifier: "cs_CZ")) //Locale(identifier: "ru_RU"))
+            ContactListView()
+                .environment(\.locale, Locale(identifier: "ru_RU"))
         }
     }
 }
