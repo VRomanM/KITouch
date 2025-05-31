@@ -16,4 +16,6 @@ final class ContactListViewModel: ObservableObject {
     }
     
     @Published var isShowingDetailView = false
+    // Состояние для поискового запроса
+    @Published var searchQuery = ""
 }

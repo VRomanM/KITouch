@@ -7,13 +7,8 @@
 
 import SwiftUI
 
-import SwiftUI
-
 struct ContactListView: View {
     @StateObject var viewModel = ContactListViewModel()
-
-    // Состояние для поискового запроса
-    @State private var searchQuery = ""
 
     let date: Date = {
         var components = DateComponents()
@@ -28,7 +23,7 @@ struct ContactListView: View {
             VStack(spacing: 0) {
                 // Поисковое поле
                 HStack {
-                    TextField("Поиск", text: $searchQuery)
+                    TextField("Поиск", text: $viewModel.searchQuery)
                         .padding(8)
                         .background(Color(.systemGray6))
                         .cornerRadius(8)
@@ -78,18 +73,19 @@ struct ContactListView: View {
 
             // Поддержка детального экрана
             .sheet(isPresented: $viewModel.isShowingDetailView) {
-                ContactDetailView(contact: viewModel.selectedContact ?? MocData.sampleContact, isShowingDetailView: $viewModel.isShowingDetailView)
+                ContactDetailView(contact: viewModel.selectedContact ?? MocData.sampleContact,
+                                  isShowingDetailView: $viewModel.isShowingDetailView)
             }
         }
     }
 
     // Фильтрация контактов по поисковому запросу
     private var filteredContacts: [ContactResponse] {
-        if searchQuery.isEmpty {
+        if viewModel.searchQuery.isEmpty {
             return MocData.contacts
         } else {
             return MocData.contacts.filter { contact in
-                contact.name.localizedCaseInsensitiveContains(searchQuery)
+                contact.name.localizedCaseInsensitiveContains(viewModel.searchQuery)
             }
         }
     }
