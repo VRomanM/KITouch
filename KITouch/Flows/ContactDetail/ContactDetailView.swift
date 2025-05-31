@@ -11,7 +11,7 @@ struct ContactDetailView: View {
     let contact: ContactResponse
     @Binding var isShowingDetailView: Bool
     let columns: [GridItem] = [GridItem(.flexible(),alignment: .leading),
-                               GridItem(.flexible(), alignment: .leading )]
+                               GridItem(.flexible(), alignment: .leading)]
     
     var body: some View {
         ScrollView {

@@ -20,7 +20,7 @@ struct ContactListView: View {
     var body: some View {
         NavigationView {
             List {
-                ForEach(MocData.contacts, id: \.self) { contact in
+                ForEach(MocData.contacts) { contact in
                     Section {
                         ContactView(contact: contact)
                             .onTapGesture {
