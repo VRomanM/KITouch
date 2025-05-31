@@ -18,7 +18,7 @@ struct MocData {
     
     static let sampleContact = ContactResponse(name: "Элина Петрова", contactType: "коллега", imageName: "globe", lastMessage: testDate, countMessages: 3, phone: "+7 (999) 999-99-99", email: "e.petrova@example.com", birthday: testDate, networks: networks)
     
-    static let networks = ["vk", "instagram", "facebook", "twitter"]
+    static let networks = ["vk", "instagram", "facebook", "twitter", "test"]
     
     static let contacts = [
         ContactResponse(name: "Элина Петрова", contactType: "коллега", imageName: "globe", lastMessage: testDate, countMessages: 3, phone: "+7 (999) 999-99-99", email: "e.petrova@example.com", birthday: testDate, networks: networks),

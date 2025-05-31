@@ -7,7 +7,9 @@
 
 import Foundation
 
-struct ContactResponse: Hashable {
+struct ContactResponse: Hashable, Identifiable {
+    var id = UUID()
+    
     let name: String
     let contactType: String
     let imageName: String
