@@ -9,7 +9,7 @@ import SwiftUI
 
 struct ContactListView: View {
     @StateObject var viewModel = ContactListViewModel()
-    
+
     let date: Date = {
         var components = DateComponents()
         components.day = 7
@@ -17,23 +17,67 @@ struct ContactListView: View {
         components.year = 2024
         return Calendar.current.date(from: components) ?? Date()
     }()
+
     var body: some View {
         NavigationView {
-            List {
-                ForEach(MocData.contacts) { contact in
-                    Section {
-                        ContactView(contact: contact)
-                            .onTapGesture {
-                                viewModel.selectedContact = contact
-                            }
+            VStack(spacing: 0) {
+                // Поисковое поле
+                HStack {
+                    TextField("Поиск", text: $viewModel.searchQuery)
+                        .padding(8)
+                        .background(Color(.systemGray6))
+                        .cornerRadius(8)
+
+                    // Кнопка отмены, появляется только если есть текст
+                    if !viewModel.searchQuery.isEmpty {
+                        Button(action: {
+                            viewModel.searchQuery = ""
+                            UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+                        }) {
+                            Text("Отмена")
+                                .foregroundColor(.white)
+                                .padding(.trailing, 10)
+                        }
+                    }
+                }
+                .padding(10)
+                .background(.blue)
+
+                List {
+                    ForEach(viewModel.filteredContacts) { contact in
+                        Section {
+                            ContactView(contact: contact)
+                                .onTapGesture {
+                                    viewModel.selectedContact = contact
+                                }
+                        }
                     }
                 }
                 .listStyle(.grouped)
                 .listSectionSpacing(.compact)
+
+                .navigationTitle("Контакты")
+                .navigationBarTitleDisplayMode(.inline)
+                .toolbar {
+                    ToolbarItem(placement: .navigationBarLeading) {
+                        Button(action: {}) {
+                            Image(systemName: "line.horizontal.3")
+                                .foregroundColor(.white)
+                        }
+                    }
+
+                    ToolbarItem(placement: .navigationBarTrailing) {
+                        Button(action: {}) {
+                            Image(systemName: "plus")
+                                .foregroundColor(.white)
+                        }
+                    }
+                }
             }
-            .navigationTitle("Контакты")
+            // Поддержка детального экрана
             .sheet(isPresented: $viewModel.isShowingDetailView) {
-                ContactDetailView(contact: viewModel.selectedContact ?? MocData.sampleContact, isShowingDetailView: $viewModel.isShowingDetailView)
+                ContactDetailView(contact: viewModel.selectedContact ?? MocData.sampleContact,
+                                  isShowingDetailView: $viewModel.isShowingDetailView)
             }
         }
     }

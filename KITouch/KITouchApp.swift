@@ -15,4 +15,8 @@ struct KITouchApp: App {
                 .environment(\.locale, Locale(identifier: "ru_RU"))
         }
     }
+
+    init() {
+        CustomNavigationBarAppearance.setup()
+    }
 }
