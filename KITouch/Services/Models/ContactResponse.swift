@@ -16,7 +16,6 @@ struct ContactResponse: Hashable, Identifiable {
     let lastMessage: Date
     let countMessages: Int
     let phone: String
-    let email: String
     let birthday: Date
-    let networks: [String]
+    let networks: [NetworkResponse]
 }

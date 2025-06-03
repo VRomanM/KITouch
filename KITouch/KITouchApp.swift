@@ -12,7 +12,6 @@ struct KITouchApp: App {
     var body: some Scene {
         WindowGroup {
             ContactListView()
-                .environment(\.locale, Locale(identifier: "ru_RU"))
         }
     }
 }

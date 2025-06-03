@@ -12,6 +12,7 @@ struct ContactDetailView: View {
     @Binding var isShowingDetailView: Bool
     let columns: [GridItem] = [GridItem(.flexible(),alignment: .leading),
                                GridItem(.flexible(), alignment: .leading)]
+    @StateObject var viewModel = ContactDetailViewModel()
     
     var body: some View {
         ScrollView {
@@ -46,29 +47,44 @@ struct ContactDetailView: View {
                     .foregroundColor(.gray)
                 
                 VStack(alignment: .leading) {
-                    Text("Телефон")
+                    Text("Phone")
                         .font(.callout)
                         .foregroundColor(.gray)
                     Text(contact.phone)
                         .font(.body)
                     Divider()
-                    Text("Дата рождения")
+                    Text("Birthdate")
                         .font(.callout)
                         .foregroundColor(.gray)
                     Text(contact.birthday, format: .dateTime.day().month().year())
                         .font(.body)
                     Divider()
-                    Text("Соц. сети")
-                        .font(.callout)
-                        .foregroundColor(.gray)
+                    HStack {
+                        Text("Networks")
+                            .font(.callout)
+                            .foregroundColor(.gray)
+                        Spacer()
+                        Button {
+                            viewModel.networks = MocData.networks
+                        } label: {
+                            Image(systemName: "pencil")
+                                .resizable()
+                                .frame(width: 20, height: 20)
+                        }
+                    }
                     
                     LazyVGrid(columns: columns) {
-                        ForEach(contact.networks, id: \.self) { network in
+                        ForEach(contact.networks) { network in
                             NetworkView(network: network)
                         }
                     }
                 }
                 .padding(25)
+                .fullScreenCover(isPresented: $viewModel.isShowingNetworkListView) {
+                    
+                } content: {
+                    NetworkListView(viewModel: viewModel)
+                }
                 Spacer()
             }
         }
@@ -76,12 +92,17 @@ struct ContactDetailView: View {
 }
 
 struct NetworkView: View {
-    let network: String
+    let network: NetworkResponse
     
     var body: some View {
         HStack {
-            Image(systemName: "globe")
-            Text(network)
+            Image(network.network.icon)
+                .resizable()
+                .aspectRatio(contentMode: .fill)
+                .frame(width: 30, height: 30)
+            Text(network.login)
+                .font(.footnote)
+                .fontWeight(.light)
         }
     }
 }

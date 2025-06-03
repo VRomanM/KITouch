@@ -1,0 +1,21 @@
+/* 
+  Localizable.strings
+  KITouch
+
+  Created by Роман Вертячих on 31.05.2025.
+  
+*/
+
+"Birthdate" = "Дата рождения";
+
+"Contacts" = "Контакты";
+
+"Networks" = "Соц. сети";
+
+"Phone" = "Телефон";
+
+"Talked %@" = "Общались %@";
+
+
+
+

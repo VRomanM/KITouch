@@ -5,7 +5,7 @@
 //  Created by Роман Вертячих on 30.05.2025.
 //
 
-import SwiftUI
+import Combine
 
 final class ContactListViewModel: ObservableObject {
     

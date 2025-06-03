@@ -10,13 +10,6 @@ import SwiftUI
 struct ContactListView: View {
     @StateObject var viewModel = ContactListViewModel()
     
-    let date: Date = {
-        var components = DateComponents()
-        components.day = 7
-        components.month = 10
-        components.year = 2024
-        return Calendar.current.date(from: components) ?? Date()
-    }()
     var body: some View {
         NavigationView {
             List {
@@ -31,8 +24,8 @@ struct ContactListView: View {
                 .listStyle(.grouped)
                 .listSectionSpacing(.compact)
             }
-            .navigationTitle("Контакты")
-            .sheet(isPresented: $viewModel.isShowingDetailView) {
+            .navigationTitle("Contacts")
+            .fullScreenCover(isPresented: $viewModel.isShowingDetailView) {
                 ContactDetailView(contact: viewModel.selectedContact ?? MocData.sampleContact, isShowingDetailView: $viewModel.isShowingDetailView)
             }
         }
@@ -63,7 +56,7 @@ struct ContactView: View {
                     .foregroundStyle(.gray)
                 Spacer()
                 HStack {
-                    Text("Общались \(contact.lastMessage, format: .dateTime.day().month().year())")
+                    Text("Talked \(contact.lastMessage, format: .dateTime.day().month().year())")
                         .font(.subheadline)
                         .foregroundStyle(.gray)
                     Spacer()
