@@ -27,15 +27,24 @@ struct ContactListView: View {
                         .padding(8)
                         .background(Color(.systemGray6))
                         .cornerRadius(8)
-                        .padding(.horizontal)
 
-                    Spacer()
+                    // Кнопка отмены, появляется только если есть текст
+                    if !viewModel.searchQuery.isEmpty {
+                        Button(action: {
+                            viewModel.searchQuery = ""
+                            UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+                        }) {
+                            Text("Отмена")
+                                .foregroundColor(.white)
+                                .padding(.trailing, 10)
+                        }
+                    }
                 }
                 .padding(10)
+                .background(.blue)
 
-                // Список контактов с фильтрацией
                 List {
-                    ForEach(filteredContacts) { contact in
+                    ForEach(viewModel.filteredContacts) { contact in
                         Section {
                             ContactView(contact: contact)
                                 .onTapGesture {
@@ -43,9 +52,10 @@ struct ContactListView: View {
                                 }
                         }
                     }
-                    .listStyle(.grouped)
-                    .listSectionSpacing(.compact)
                 }
+                .listStyle(.grouped)
+                .listSectionSpacing(.compact)
+
                 .navigationTitle("Контакты")
                 .navigationBarTitleDisplayMode(.inline)
                 .toolbar {
@@ -63,29 +73,11 @@ struct ContactListView: View {
                         }
                     }
                 }
-            }.background(Color(.blue))
-                .gesture(
-                    TapGesture()
-                        .onEnded { _ in
-                            UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
-                        }
-                )
-
+            }
             // Поддержка детального экрана
             .sheet(isPresented: $viewModel.isShowingDetailView) {
                 ContactDetailView(contact: viewModel.selectedContact ?? MocData.sampleContact,
                                   isShowingDetailView: $viewModel.isShowingDetailView)
-            }
-        }
-    }
-
-    // Фильтрация контактов по поисковому запросу
-    private var filteredContacts: [ContactResponse] {
-        if viewModel.searchQuery.isEmpty {
-            return MocData.contacts
-        } else {
-            return MocData.contacts.filter { contact in
-                contact.name.localizedCaseInsensitiveContains(viewModel.searchQuery)
             }
         }
     }
