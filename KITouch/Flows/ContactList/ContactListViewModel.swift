@@ -14,8 +14,15 @@ final class ContactListViewModel: ObservableObject {
             isShowingDetailView = true
         }
     }
+    
+    var networks = [NetworkResponse]() {
+        didSet {
+            isShowingNetworkListView = true
+        }
+    }
 
     @Published var isShowingDetailView = false
+    @Published var isShowingNetworkListView = false
     // Состояние для поискового запроса
     @Published var searchQuery = ""
 
@@ -28,5 +35,12 @@ final class ContactListViewModel: ObservableObject {
                 contact.name.localizedCaseInsensitiveContains(searchQuery)
             }
         }
+    }
+    
+    //MARK: - Function
+    
+    func addNetwork() {
+        let newNetwork = NetworkResponse(network: .email, login: "")
+        networks.append(newNetwork)
     }
 }

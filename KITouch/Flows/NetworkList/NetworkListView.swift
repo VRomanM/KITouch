@@ -37,26 +37,40 @@ struct NetworkListView: View {
                             .pickerStyle(.menu)
                         }
                     }
-                    Button {
-                        
-                    } label: {
-                        Text("Save")
-                            .font(.headline)
-                            .frame(width: 280, height: 50)
-                            .background(.blue)
-                            .foregroundColor(.white)
-                            .cornerRadius(10)
+                    .onDelete { network in
+                        viewModel.networks.remove(atOffsets: network)
                     }
-                    .padding()
                 }
-                .navigationTitle("Networks")
-                .toolbar {
-                    ToolbarItem(placement: .navigationBarTrailing) {
-                        Button(action: {
-                            //showingAddSheet = true
-                        }) {
-                            Image(systemName: "plus")
-                        }
+                
+                Button {
+                    
+                } label: {
+                    Text("Save")
+                        .font(.headline)
+                        .frame(width: 280, height: 50)
+                        .background(.blue)
+                        .foregroundColor(.white)
+                        .cornerRadius(10)
+                }
+                .padding()
+            }
+            .navigationTitle("Networks")
+            .toolbar {
+                ToolbarItem(placement: .navigationBarLeading) {
+                    Button(action: {
+                        viewModel.isShowingNetworkListView = false
+                    }) {
+                        Text("Cancel")
+                            .foregroundColor(.white)
+                            .padding(.trailing, 10)
+                    }
+                }
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button(action: {
+//                        viewModel.addNetwork()
+                    }) {
+                        Image(systemName: "plus")
+                            .foregroundColor(.white)
                     }
                 }
             }

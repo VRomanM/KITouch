@@ -15,7 +15,7 @@ struct ContactListView: View {
             VStack(spacing: 0) {
                 // Поисковое поле
                 HStack {
-                    TextField("Поиск", text: $viewModel.searchQuery)
+                    TextField("Search", text: $viewModel.searchQuery)
                         .padding(8)
                         .background(Color(.systemGray6))
                         .cornerRadius(8)
@@ -26,7 +26,7 @@ struct ContactListView: View {
                             viewModel.searchQuery = ""
                             UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
                         }) {
-                            Text("Отмена")
+                            Text("Cancel")
                                 .foregroundColor(.white)
                                 .padding(.trailing, 10)
                         }
@@ -47,8 +47,6 @@ struct ContactListView: View {
                 }
                 .listStyle(.grouped)
                 .listSectionSpacing(.compact)
-
-                .navigationTitle("Контакты")
                 .navigationBarTitleDisplayMode(.inline)
                 .toolbar {
                     ToolbarItem(placement: .navigationBarLeading) {
