@@ -14,6 +14,19 @@ final class ContactListViewModel: ObservableObject {
             isShowingDetailView = true
         }
     }
-    
+
     @Published var isShowingDetailView = false
+    // Состояние для поискового запроса
+    @Published var searchQuery = ""
+
+    // Фильтрация контактов по поисковому запросу
+    var filteredContacts: [ContactResponse] {
+        if searchQuery.isEmpty {
+            return MocData.contacts
+        } else {
+            return MocData.contacts.filter { contact in
+                contact.name.localizedCaseInsensitiveContains(searchQuery)
+            }
+        }
+    }
 }

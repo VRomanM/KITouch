@@ -14,4 +14,8 @@ struct KITouchApp: App {
             ContactListView()
         }
     }
+
+    init() {
+        CustomNavigationBarAppearance.setup()
+    }
 }
