@@ -65,7 +65,7 @@ struct ContactListView: View {
                     }
                 }
                 .fullScreenCover(isPresented: $viewModel.isShowingDetailView) {
-                    ContactDetailView(contact: viewModel.selectedContact ?? MocData.sampleContact,
+                    ContactDetailView(contactListViewModel: viewModel,
                                       isShowingDetailView: $viewModel.isShowingDetailView)
                 }
             }

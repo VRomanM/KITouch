@@ -11,6 +11,7 @@ final class ContactListViewModel: ObservableObject {
     
     var selectedContact: Contact? {
         didSet {
+            updateSelectedContacts()
             isShowingDetailView = true
         }
     }
@@ -23,15 +24,48 @@ final class ContactListViewModel: ObservableObject {
 
     @Published var isShowingDetailView = false
     @Published var isShowingNetworkListView = false
-    @Published var searchQuery = ""
+    @Published var searchQuery = "" {
+        didSet {
+            filteredContacts = filterData()
+        }
+    }
 
-    var filteredContacts: [Contact] {
+    var filteredContacts = [Contact]()
+    var contacts = [Contact]()
+    
+    //MARK: - Constructions
+    
+    init() {
+        let contacts = loadData()
+        self.contacts = contacts
+        self.filteredContacts = contacts
+    }
+    
+    //MARK: - Function
+    
+    private func loadData() -> [Contact] {
+        MocData.contacts
+    }
+    
+    private func filterData() -> [Contact] {
         if searchQuery.isEmpty {
-            return MocData.contacts
+            return contacts
         } else {
-            return MocData.contacts.filter { contact in
+            return contacts.filter { contact in
                 contact.name.localizedCaseInsensitiveContains(searchQuery)
             }
+        }
+    }
+    
+    private func updateSelectedContacts() {
+        guard let updatedContact = selectedContact else { return }
+        
+        if let index = filteredContacts.firstIndex(where: { $0.id == updatedContact.id }) {
+            filteredContacts[index] = updatedContact
+        }
+        
+        if let index = contacts.firstIndex(where: { $0.id == updatedContact.id }) {
+            contacts[index] = updatedContact
         }
     }
 }

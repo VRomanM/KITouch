@@ -93,9 +93,9 @@ struct ContactDetailView: View {
         }
     }
     
-    init(contact: Contact, isShowingDetailView: Binding<Bool>) {
+    init(contactListViewModel: ContactListViewModel, isShowingDetailView: Binding<Bool>) {
         _isShowingDetailView = isShowingDetailView
-        _viewModel = StateObject(wrappedValue: ContactDetailViewModel(contact: contact))
+        _viewModel = StateObject(wrappedValue: ContactDetailViewModel(contactListViewModel: contactListViewModel, contact: contactListViewModel.selectedContact ?? MocData.sampleContact))
     }
 }
 
@@ -116,5 +116,5 @@ struct NetworkView: View {
 }
 
 #Preview {
-    ContactDetailView(contact: MocData.sampleContact, isShowingDetailView: .constant(true))
+    ContactDetailView(contactListViewModel: ContactListViewModel(), isShowingDetailView: .constant(true))
 }

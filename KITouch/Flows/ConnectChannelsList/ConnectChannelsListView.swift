@@ -73,5 +73,5 @@ struct ConnectChannelsListView: View {
 }
 
 #Preview {
-    ConnectChannelsListView(viewModel: ConnectChannelsListViewModel(contactDetalViewModel: ContactDetailViewModel(contact: MocData.sampleContact)))
+    ConnectChannelsListView(viewModel: ConnectChannelsListViewModel(contactDetalViewModel: ContactDetailViewModel(contactListViewModel: ContactListViewModel(), contact: MocData.sampleContact)))
 }

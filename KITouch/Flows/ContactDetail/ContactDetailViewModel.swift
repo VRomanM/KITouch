@@ -10,20 +10,21 @@ import Combine
 final class ContactDetailViewModel: ObservableObject {
     
     //MARK: - Properties
-    
+
     var contact: Contact
-    
+    var contactListViewModel: ContactListViewModel?
     @Published var isShowingConnectChannelsListView = false
     
     //MARK: - Constructions
     
-    init(contact: Contact) {
+    init(contactListViewModel: ContactListViewModel?, contact: Contact) {
         self.contact = contact
+        self.contactListViewModel = contactListViewModel
     }
     
     //MARK: - Function
       
     func saveContactDetail() {
-        contact.connectChannels.removeAll()
+        contactListViewModel?.selectedContact = contact
     }
 }
