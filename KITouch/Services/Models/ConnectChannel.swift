@@ -1,5 +1,5 @@
 //
-//  NetworkResponse.swift
+//  ConnectChannel.swift
 //  KITouch
 //
 //  Created by Роман Вертячих on 03.06.2025.
@@ -7,14 +7,14 @@
 
 import Foundation
 
-struct NetworkResponse: Hashable, Identifiable {
+struct ConnectChannel: Hashable, Identifiable {
     var id = UUID()
     
-    var network: Network
+    var socialMediaType: SocialMediaType
     var login: String
 }
 
-enum Network: String, CaseIterable, Identifiable {
+enum SocialMediaType: String, CaseIterable, Identifiable {
     var id: String { rawValue }
     
     case vk = "VK"

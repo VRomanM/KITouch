@@ -16,23 +16,23 @@ struct MocData {
         return Calendar.current.date(from: components) ?? Date()
     }()
     
-    static let sampleContact = ContactResponse(name: "Элина Петрова", contactType: "коллега", imageName: "globe", lastMessage: testDate, countMessages: 3, phone: "+7 (999) 999-99-99", birthday: testDate, networks: networks)
+    static let sampleContact = Contact(name: "Элина Петрова", contactType: "коллега", imageName: "globe", lastMessage: testDate, countMessages: 3, phone: "+7 (999) 999-99-99", birthday: testDate, connectChannels: connectChannels)
     
-    static let networks = [
-        NetworkResponse(network: .email, login: "test@example.com"),
-        NetworkResponse(network: .facebook, login: "fbSamka"),
-        NetworkResponse(network: .instagram, login: "InstaSamka"),
-        NetworkResponse(network: .linkedin, login: "LinkedInSamka"),
-        NetworkResponse(network: .teams, login: "TeamSamka"),
-        NetworkResponse(network: .vk, login: "VKSamka"),
-        NetworkResponse(network: .xTwitter, login: "twitterSamka")
+    static let connectChannels = [
+        ConnectChannel(socialMediaType: .email, login: "test@example.com"),
+        ConnectChannel(socialMediaType: .facebook, login: "fbSamka"),
+        ConnectChannel(socialMediaType: .instagram, login: "InstaSamka"),
+        ConnectChannel(socialMediaType: .linkedin, login: "LinkedInSamka"),
+        ConnectChannel(socialMediaType: .teams, login: "TeamSamka"),
+        ConnectChannel(socialMediaType: .vk, login: "VKSamka"),
+        ConnectChannel(socialMediaType: .xTwitter, login: "twitterSamka")
     ]
     
     static let contacts = [
-        ContactResponse(name: "Элина Петрова", contactType: "коллега", imageName: "globe", lastMessage: testDate, countMessages: 3, phone: "+7 (999) 999-99-99", birthday: testDate, networks: networks),
-        ContactResponse(name: "Иван Кузнецов", contactType: "коллега", imageName: "globe", lastMessage: testDate, countMessages: 2, phone: "+7 (999) 999-99-98", birthday: testDate, networks: networks),
-        ContactResponse(name: "Павел Пирогов", contactType: "друг", imageName: "globe", lastMessage: testDate, countMessages: 0, phone: "+7 (999) 999-99-97", birthday: testDate, networks: networks),
-        ContactResponse(name: "Эльвира Набиулина", contactType: "мама", imageName: "globe", lastMessage: testDate, countMessages: 1, phone: "+7 (999) 999-99-96", birthday: testDate, networks: networks),
-        ContactResponse(name: "Алексей Набиулин", contactType: "брат", imageName: "globe", lastMessage: testDate, countMessages: 5, phone: "+7 (999) 999-99-95", birthday: testDate, networks: networks)
+        Contact(name: "Элина Петрова", contactType: "коллега", imageName: "globe", lastMessage: testDate, countMessages: 3, phone: "+7 (999) 999-99-99", birthday: testDate, connectChannels: connectChannels),
+        Contact(name: "Иван Кузнецов", contactType: "коллега", imageName: "globe", lastMessage: testDate, countMessages: 2, phone: "+7 (999) 999-99-98", birthday: testDate, connectChannels: connectChannels),
+        Contact(name: "Павел Пирогов", contactType: "друг", imageName: "globe", lastMessage: testDate, countMessages: 0, phone: "+7 (999) 999-99-97", birthday: testDate, connectChannels: connectChannels),
+        Contact(name: "Эльвира Набиулина", contactType: "мама", imageName: "globe", lastMessage: testDate, countMessages: 1, phone: "+7 (999) 999-99-96", birthday: testDate, connectChannels: connectChannels),
+        Contact(name: "Алексей Набиулин", contactType: "брат", imageName: "globe", lastMessage: testDate, countMessages: 5, phone: "+7 (999) 999-99-95", birthday: testDate, connectChannels: connectChannels)
     ]
 }

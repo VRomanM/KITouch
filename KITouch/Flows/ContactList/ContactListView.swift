@@ -12,62 +12,62 @@ struct ContactListView: View {
     
     var body: some View {
         NavigationView {
-            VStack(spacing: 0) {
-                // Поисковое поле
-                HStack {
-                    TextField("Search", text: $viewModel.searchQuery)
-                        .padding(8)
-                        .background(Color(.systemGray6))
-                        .cornerRadius(8)
-
-                    // Кнопка отмены, появляется только если есть текст
-                    if !viewModel.searchQuery.isEmpty {
-                        Button(action: {
-                            viewModel.searchQuery = ""
-                            UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
-                        }) {
-                            Text("Cancel")
-                                .foregroundColor(.white)
-                                .padding(.trailing, 10)
+            ZStack {
+                BackgroundView()
+                VStack(spacing: 0) {
+                    HStack {
+                        TextField("Search", text: $viewModel.searchQuery)
+                            .padding(8)
+                            .background(.mainBackground)
+                            .cornerRadius(8)
+                        
+                        if !viewModel.searchQuery.isEmpty {
+                            Button(action: {
+                                viewModel.searchQuery = ""
+                                UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+                            }) {
+                                Text("Cancel")
+                                    .foregroundColor(.white)
+                                    .padding(.trailing, 10)
+                            }
+                        }
+                    }
+                    .padding(10)
+                    .background(.blue)
+                    
+                    List {
+                        ForEach(viewModel.filteredContacts) { contact in
+                            Section {
+                                ContactView(contact: contact)
+                                    .onTapGesture {
+                                        viewModel.selectedContact = contact
+                                    }
+                            }
+                        }
+                    }
+                    .listSectionSpacing(.compact)
+                    .scrollContentBackground(.hidden)
+                    .navigationBarTitleDisplayMode(.inline)
+                    .toolbar {
+                        ToolbarItem(placement: .navigationBarLeading) {
+                            Button(action: {}) {
+                                Image(systemName: "line.horizontal.3")
+                                    .foregroundColor(.white)
+                            }
+                        }
+                        
+                        ToolbarItem(placement: .navigationBarTrailing) {
+                            Button(action: {}) {
+                                Image(systemName: "plus")
+                                    .foregroundColor(.white)
+                            }
                         }
                     }
                 }
-                .padding(10)
-                .background(.blue)
-
-                List {
-                    ForEach(viewModel.filteredContacts) { contact in
-                        Section {
-                            ContactView(contact: contact)
-                                .onTapGesture {
-                                    viewModel.selectedContact = contact
-                                }
-                        }
-                    }
+                .fullScreenCover(isPresented: $viewModel.isShowingDetailView) {
+                    ContactDetailView(contact: viewModel.selectedContact ?? MocData.sampleContact,
+                                      isShowingDetailView: $viewModel.isShowingDetailView)
                 }
-                .listStyle(.grouped)
-                .listSectionSpacing(.compact)
-                .navigationBarTitleDisplayMode(.inline)
-                .toolbar {
-                    ToolbarItem(placement: .navigationBarLeading) {
-                        Button(action: {}) {
-                            Image(systemName: "line.horizontal.3")
-                                .foregroundColor(.white)
-                        }
-                    }
-
-                    ToolbarItem(placement: .navigationBarTrailing) {
-                        Button(action: {}) {
-                            Image(systemName: "plus")
-                                .foregroundColor(.white)
-                        }
-                    }
-                }
-            }
-            // Поддержка детального экрана
-            .fullScreenCover(isPresented: $viewModel.isShowingDetailView) {
-                ContactDetailView(contact: viewModel.selectedContact ?? MocData.sampleContact,
-                                  isShowingDetailView: $viewModel.isShowingDetailView)
             }
         }
     }
@@ -77,8 +77,16 @@ struct ContactListView: View {
     ContactListView()
 }
 
+struct BackgroundView: View {
+    
+    var body: some View {
+        Color.mainBackground
+        .ignoresSafeArea()
+    }
+}
+
 struct ContactView: View {
-    let contact: ContactResponse
+    let contact: Contact
     
     var body: some View {
         HStack {

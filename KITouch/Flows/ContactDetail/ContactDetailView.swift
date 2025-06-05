@@ -8,11 +8,10 @@
 import SwiftUI
 
 struct ContactDetailView: View {
-    let contact: ContactResponse
     @Binding var isShowingDetailView: Bool
     let columns: [GridItem] = [GridItem(.flexible(),alignment: .leading),
                                GridItem(.flexible(), alignment: .leading)]
-    @StateObject var viewModel = ContactDetailViewModel()
+    @StateObject var viewModel: ContactDetailViewModel
     
     var body: some View {
         ScrollView {
@@ -28,7 +27,7 @@ struct ContactDetailView: View {
                             .frame(width: 44, height: 44)
                     }
                 }
-                Image(systemName: contact.imageName)
+                Image(systemName: viewModel.contact.imageName)
                     .resizable()
                     .frame(width: 250, height: 250)
                     .foregroundStyle(.tint)
@@ -36,13 +35,13 @@ struct ContactDetailView: View {
                     .cornerRadius(5)
                     .padding()
                 
-                Text(contact.name)
+                Text(viewModel.contact.name)
                     .font(.largeTitle)
                     .fontWeight(.semibold)
-                Text(contact.contactType)
+                Text(viewModel.contact.contactType)
                     .font(.title2)
                     .foregroundColor(.gray)
-                Text("Общались \(contact.lastMessage, format: .dateTime.day().month().year())")
+                Text("Talked \(viewModel.contact.lastMessage, format: .dateTime.day().month().year())")
                     .font(.title2)
                     .foregroundColor(.gray)
                 
@@ -50,57 +49,66 @@ struct ContactDetailView: View {
                     Text("Phone")
                         .font(.callout)
                         .foregroundColor(.gray)
-                    Text(contact.phone)
+                    Text(viewModel.contact.phone)
                         .font(.body)
                     Divider()
                     Text("Birthdate")
                         .font(.callout)
                         .foregroundColor(.gray)
-                    Text(contact.birthday, format: .dateTime.day().month().year())
+                    Text(viewModel.contact.birthday, format: .dateTime.day().month().year())
                         .font(.body)
                     Divider()
                     HStack {
-                        Text("Networks")
+                        Text("Soc. media")
                             .font(.callout)
                             .foregroundColor(.gray)
                         Spacer()
                         Button {
-                            viewModel.networks = MocData.networks
+                            viewModel.isShowingConnectChannelsListView = true
                         } label: {
                             Image(systemName: "pencil")
                                 .resizable()
                                 .frame(width: 20, height: 20)
                         }
                     }
-                    
                     LazyVGrid(columns: columns) {
-                        ForEach(contact.networks) { network in
-                            NetworkView(network: network)
+                        ForEach(viewModel.contact.connectChannels) { connectChannel in
+                            NetworkView(connectChannel: connectChannel)
                         }
                     }
                 }
                 .padding(25)
-                .fullScreenCover(isPresented: $viewModel.isShowingNetworkListView) {
-                    
-                } content: {
-                    NetworkListView(viewModel: viewModel)
+                .fullScreenCover(isPresented: $viewModel.isShowingConnectChannelsListView) {}
+                content: {
+                    ConnectChannelsListView(viewModel: ConnectChannelsListViewModel(contactDetalViewModel: viewModel))
+                }
+                Button(action: {
+                    viewModel.saveContactDetail()
+                    isShowingDetailView = false
+                }) {
+                    KITButton(text: "Save")
                 }
                 Spacer()
             }
         }
     }
+    
+    init(contact: Contact, isShowingDetailView: Binding<Bool>) {
+        _isShowingDetailView = isShowingDetailView
+        _viewModel = StateObject(wrappedValue: ContactDetailViewModel(contact: contact))
+    }
 }
 
 struct NetworkView: View {
-    let network: NetworkResponse
+    let connectChannel: ConnectChannel
     
     var body: some View {
         HStack {
-            Image(network.network.icon)
+            Image(connectChannel.socialMediaType.icon)
                 .resizable()
                 .aspectRatio(contentMode: .fill)
                 .frame(width: 30, height: 30)
-            Text(network.login)
+            Text(connectChannel.login)
                 .font(.footnote)
                 .fontWeight(.light)
         }

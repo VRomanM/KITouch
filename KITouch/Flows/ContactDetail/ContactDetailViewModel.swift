@@ -8,11 +8,22 @@
 import Combine
 
 final class ContactDetailViewModel: ObservableObject {
-    var networks = [NetworkResponse]() {
-        didSet {
-            isShowingNetworkListView = true
-        }
+    
+    //MARK: - Properties
+    
+    var contact: Contact
+    
+    @Published var isShowingConnectChannelsListView = false
+    
+    //MARK: - Constructions
+    
+    init(contact: Contact) {
+        self.contact = contact
     }
     
-    @Published var isShowingNetworkListView = false
+    //MARK: - Function
+      
+    func saveContactDetail() {
+        contact.connectChannels.removeAll()
+    }
 }

@@ -1,5 +1,5 @@
 //
-//  ContactResponse.swift
+//  Contact.swift
 //  KITouch
 //
 //  Created by Роман Вертячих on 30.05.2025.
@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct ContactResponse: Hashable, Identifiable {
+struct Contact: Hashable, Identifiable {
     var id = UUID()
     
     let name: String
@@ -17,5 +17,5 @@ struct ContactResponse: Hashable, Identifiable {
     let countMessages: Int
     let phone: String
     let birthday: Date
-    let networks: [NetworkResponse]
+    var connectChannels: [ConnectChannel]
 }

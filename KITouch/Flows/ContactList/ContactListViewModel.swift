@@ -9,13 +9,13 @@ import Combine
 
 final class ContactListViewModel: ObservableObject {
     
-    var selectedContact: ContactResponse? {
+    var selectedContact: Contact? {
         didSet {
             isShowingDetailView = true
         }
     }
     
-    var networks = [NetworkResponse]() {
+    var connectChannels = [ConnectChannel]() {
         didSet {
             isShowingNetworkListView = true
         }
@@ -23,11 +23,9 @@ final class ContactListViewModel: ObservableObject {
 
     @Published var isShowingDetailView = false
     @Published var isShowingNetworkListView = false
-    // Состояние для поискового запроса
     @Published var searchQuery = ""
 
-    // Фильтрация контактов по поисковому запросу
-    var filteredContacts: [ContactResponse] {
+    var filteredContacts: [Contact] {
         if searchQuery.isEmpty {
             return MocData.contacts
         } else {
@@ -35,12 +33,5 @@ final class ContactListViewModel: ObservableObject {
                 contact.name.localizedCaseInsensitiveContains(searchQuery)
             }
         }
-    }
-    
-    //MARK: - Function
-    
-    func addNetwork() {
-        let newNetwork = NetworkResponse(network: .email, login: "")
-        networks.append(newNetwork)
     }
 }

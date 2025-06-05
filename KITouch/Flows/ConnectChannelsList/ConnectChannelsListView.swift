@@ -1,5 +1,5 @@
 //
-//  NetworkListView.swift
+//  ConnectChannelsListView.swift
 //  KITouch
 //
 //  Created by Роман Вертячих on 02.06.2025.
@@ -7,58 +7,52 @@
 
 import SwiftUI
 
-struct NetworkListView: View {
-    @StateObject var viewModel: ContactDetailViewModel
+struct ConnectChannelsListView: View {
+    @StateObject var viewModel: ConnectChannelsListViewModel
     
     var body: some View {
         NavigationView {
             VStack {
                 Form {
-                    ForEach($viewModel.networks) { $network in
+                    ForEach($viewModel.connectChannels) { $connectChannel in
                         HStack {
-                            TextField(text: $network.login, label: { Text("Enter login") })
+                            TextField(text: $connectChannel.login, label: { Text("Enter login") })
                                 .padding()
-                            Picker(selection: $network.network, label:
+                            Picker(selection: $connectChannel.socialMediaType, label:
                                     Label(title: {}, icon: {
                                 HStack {
                                     Spacer()
-                                    Image(network.network.icon)
+                                    Image(connectChannel.socialMediaType.icon)
                                         .resizable()
                                         .aspectRatio(contentMode: .fill)
                                         .frame(width: 50, height: 50)
                                     Spacer()
                                 }
                             })) {
-                                ForEach(Network.allCases) { network in
-                                    Text(network.rawValue)
-                                        .tag(network)
+                                ForEach(SocialMediaType.allCases) { socialMediaType in
+                                    Text(socialMediaType.rawValue)
+                                        .tag(socialMediaType)
                                 }
                             }
                             .pickerStyle(.menu)
                         }
                     }
-                    .onDelete { network in
-                        viewModel.networks.remove(atOffsets: network)
+                    .onDelete { indexSet in
+                        viewModel.connectChannels.remove(atOffsets: indexSet)
                     }
                 }
                 
                 Button {
-                    
+                    viewModel.saveConnectChannels()
                 } label: {
-                    Text("Save")
-                        .font(.headline)
-                        .frame(width: 280, height: 50)
-                        .background(.blue)
-                        .foregroundColor(.white)
-                        .cornerRadius(10)
+                    KITButton(text: "Save")
                 }
                 .padding()
             }
-            .navigationTitle("Networks")
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
                     Button(action: {
-                        viewModel.isShowingNetworkListView = false
+                        viewModel.closeView()
                     }) {
                         Text("Cancel")
                             .foregroundColor(.white)
@@ -67,7 +61,7 @@ struct NetworkListView: View {
                 }
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button(action: {
-//                        viewModel.addNetwork()
+                        viewModel.addConnectChannel()
                     }) {
                         Image(systemName: "plus")
                             .foregroundColor(.white)
@@ -79,5 +73,5 @@ struct NetworkListView: View {
 }
 
 #Preview {
-    NetworkListView(viewModel: ContactDetailViewModel())
+    ConnectChannelsListView(viewModel: ConnectChannelsListViewModel(contactDetalViewModel: ContactDetailViewModel(contact: MocData.sampleContact)))
 }
