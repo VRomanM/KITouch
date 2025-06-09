@@ -9,11 +9,21 @@
 "Birthdate" = "Дата рождения";
 
 "Cancel" = "Отмена";
+"Colleague" = "Коллега";
 "Contacts" = "Контакты";
+"Contact name" = "Имя контакта";
 
+"Enter the contact type" = "Введите тип контакта";
+"Enter the correct phone number" = "Введите корректный номер";
 "Enter login" = "Введите логин";
 
+"Friend" = "Друг";
+
+"Other" = "Другое";
+
 "Phone" = "Телефон";
+
+"Relative" = "Родственник";
 
 "Save" = "Сохранить";
 "Search" = "Поиск";
@@ -21,6 +31,7 @@
 
 "Talked %@" = "Общались %@";
 
+"Unknown" = "Неизвестно";
 
 
 

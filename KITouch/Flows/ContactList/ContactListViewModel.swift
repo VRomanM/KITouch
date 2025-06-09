@@ -62,10 +62,14 @@ final class ContactListViewModel: ObservableObject {
         
         if let index = filteredContacts.firstIndex(where: { $0.id == updatedContact.id }) {
             filteredContacts[index] = updatedContact
+        } else {
+            filteredContacts.append(updatedContact)
         }
         
         if let index = contacts.firstIndex(where: { $0.id == updatedContact.id }) {
             contacts[index] = updatedContact
+        } else {
+            contacts.append(updatedContact)
         }
     }
 }

@@ -57,7 +57,9 @@ struct ContactListView: View {
                         }
                         
                         ToolbarItem(placement: .navigationBarTrailing) {
-                            Button(action: {}) {
+                            Button(action: {
+                                viewModel.selectedContact = Contact()
+                            }) {
                                 Image(systemName: "plus")
                                     .foregroundColor(.white)
                             }

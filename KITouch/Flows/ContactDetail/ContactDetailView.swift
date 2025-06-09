@@ -9,9 +9,23 @@ import SwiftUI
 
 struct ContactDetailView: View {
     @Binding var isShowingDetailView: Bool
-    let columns: [GridItem] = [GridItem(.flexible(),alignment: .leading),
+    private let columns: [GridItem] = [GridItem(.flexible(),alignment: .leading),
                                GridItem(.flexible(), alignment: .leading)]
     @StateObject var viewModel: ContactDetailViewModel
+    
+    private let phonePattern = "+X (XXX) XXX-XX-XX"
+    private var isPhoneNumberValid: Bool {
+        let digits = viewModel.contact.phone.filter { $0.isNumber }
+        return digits.count == 11 // Для российских номеров
+    }
+    
+    private let dateRange: ClosedRange<Date> = {
+        let calendar = Calendar.current
+        let minDate = calendar.date(byAdding: .year, value: -120, to: Date())!
+        let maxDate = Date()
+        return minDate...maxDate
+    }()
+    
     
     var body: some View {
         ScrollView {
@@ -35,28 +49,124 @@ struct ContactDetailView: View {
                     .cornerRadius(5)
                     .padding()
                 
-                Text(viewModel.contact.name)
-                    .font(.largeTitle)
-                    .fontWeight(.semibold)
-                Text(viewModel.contact.contactType)
-                    .font(.title2)
-                    .foregroundColor(.gray)
+                VStack(alignment: .leading, spacing: 12) {
+                    TextField("Contact name", text: $viewModel.contact.name) { isEditing in
+                        viewModel.editingElement = isEditing ? .contactName : .nothing
+                    }
+                    .font(.system(.largeTitle, design: .default, weight: .bold))
+                    .foregroundStyle(.mainFont)
+                    .padding(.horizontal, 16)
+                    .padding(.vertical, 12)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 6)
+                            .stroke(viewModel.editingElement == .contactName ? .blue : .gray.opacity(0.3), lineWidth: 1)
+                    )
+                    .submitLabel(.done)
+                }
+                .animation(.bouncy, value: viewModel.editingElement == .contactName)
+                .padding(.horizontal, 16)
+                
+                VStack(alignment: .leading, spacing: 12) {
+                    Menu {
+                        ForEach(ContactType.allCases) { type in
+                            Button(type.localizedValue) {
+                                viewModel.contact.contactType = type.rawValue
+                                if type != .other {
+                                    viewModel.contact.customContactType = ""
+                                }
+                                viewModel.editingElement = .nothing
+                            }
+                        }
+                    }
+                    label: {
+                        HStack {
+                            Text(viewModel.contact.contactType.isEmpty ? "Unknown".localized() : viewModel.contact.contactType.localized())
+                                .foregroundColor(.primary)
+                            Spacer()
+                            Image(systemName: "chevron.down")
+                                .foregroundColor(.gray)
+                        }
+                        .padding(.horizontal, 16)
+                        .padding(.vertical, 12)
+                    }
+                    
+                    if viewModel.contact.contactType == ContactType.other.rawValue {
+                        TextField("Enter the contact type", text: $viewModel.contact.customContactType) { isEditing in
+                            viewModel.editingElement = isEditing ? .contactType : .nothing
+                        }
+                            .padding(.horizontal, 16)
+                            .padding(.vertical, 12)
+                    }
+                }
+                .overlay(
+                    RoundedRectangle(cornerRadius: 6)
+                        .stroke(viewModel.editingElement == .contactType ? .blue : .gray.opacity(0.3), lineWidth: 1)
+                )
+                .padding(.horizontal, 16)
+                .padding(.bottom, 8)
+                
                 Text("Talked \(viewModel.contact.lastMessage, format: .dateTime.day().month().year())")
                     .font(.title2)
                     .foregroundColor(.gray)
                 
                 VStack(alignment: .leading) {
-                    Text("Phone")
-                        .font(.callout)
-                        .foregroundColor(.gray)
-                    Text(viewModel.contact.phone)
-                        .font(.body)
+                    VStack(alignment: .leading, spacing: 12) {
+                        Text("Phone")
+                            .font(.callout)
+                            .foregroundColor(.gray)
+                        
+                        TextField(phonePattern, text: $viewModel.contact.phone) { isEditing in
+                            viewModel.editingElement = isEditing ? .phone : .nothing
+                        }
+                        .fontDesign(.monospaced)
+                        .keyboardType(.phonePad)
+                        .textContentType(.telephoneNumber)
+                        .submitLabel(.done)
+                        .padding(.horizontal, 16)
+                        .padding(.vertical, 12)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 6)
+                                .stroke(viewModel.editingElement == .phone ? .blue : .gray.opacity(0.3), lineWidth: 1)
+                        )
+                        .onSubmit {
+                            viewModel.editingElement = .nothing
+                        }
+                        .onChange(of: viewModel.contact.phone) { _, newValue in
+                            formatPhoneNumber(newValue)
+                            viewModel.editingElement = .nothing
+                        }
+                        
+                        if !isPhoneNumberValid && !viewModel.contact.phone.isEmpty {
+                            HStack {
+                                Image(systemName: "exclamationmark.circle.fill")
+                                Text("Enter the correct phone number")
+                            }
+                            .foregroundStyle(.red)
+                            .font(.caption)
+                            .transition(.opacity)
+                        }
+                    }
+                    .animation(.bouncy, value: viewModel.editingElement == .phone)
+                    .padding()
+                    
                     Divider()
-                    Text("Birthdate")
-                        .font(.callout)
-                        .foregroundColor(.gray)
-                    Text(viewModel.contact.birthday, format: .dateTime.day().month().year())
-                        .font(.body)
+                    
+                    VStack(alignment: .leading, spacing: 12) {
+                        Text("Birthdate")
+                            .font(.callout)
+                            .foregroundColor(.gray)
+                        
+                        DatePicker(
+                            LocalizedStringKey(""), selection: $viewModel.contact.birthday,
+                            in: dateRange,
+                            displayedComponents: .date
+                        ).datePickerStyle(.compact)
+                            .tint(.blue)
+                            .labelsHidden()
+                    }
+                    .padding(.horizontal, 16)
+                    .padding(.bottom, 8)
+                    
                     Divider()
                     HStack {
                         Text("Soc. media")
@@ -91,11 +201,37 @@ struct ContactDetailView: View {
                 Spacer()
             }
         }
+        .dismissKeyboard() // Добавляем распознавание тапа за пределами TextField
     }
     
     init(contactListViewModel: ContactListViewModel, isShowingDetailView: Binding<Bool>) {
         _isShowingDetailView = isShowingDetailView
         _viewModel = StateObject(wrappedValue: ContactDetailViewModel(contactListViewModel: contactListViewModel, contact: contactListViewModel.selectedContact ?? MocData.sampleContact))
+    }
+    
+    private func formatPhoneNumber(_ newValue: String) {
+        let cleanNumber = newValue.filter { $0.isNumber }
+        var result = ""
+        var index = cleanNumber.startIndex
+        var previousChar = ""
+        
+        for patternChar in phonePattern where index < cleanNumber.endIndex {
+            if patternChar == "X" {
+                if previousChar == "+" && cleanNumber[index] == "8" {
+                    result.append("7")
+                } else {
+                    result.append(cleanNumber[index])
+                }
+                previousChar = ""
+                index = cleanNumber.index(after: index)
+            } else if result.isEmpty && patternChar == "+" {
+                result.append("+")
+                previousChar = "+"
+            } else if !result.isEmpty {
+                result.append(patternChar)
+            }
+        }
+        viewModel.contact.phone = result
     }
 }
 
@@ -111,6 +247,19 @@ struct NetworkView: View {
             Text(connectChannel.login)
                 .font(.footnote)
                 .fontWeight(.light)
+        }
+    }
+}
+
+extension View {
+    func dismissKeyboard() -> some View {
+        self.onTapGesture {
+            UIApplication.shared.sendAction(
+                #selector(UIResponder.resignFirstResponder),
+                to: nil,
+                from: nil,
+                for: nil
+            )
         }
     }
 }
