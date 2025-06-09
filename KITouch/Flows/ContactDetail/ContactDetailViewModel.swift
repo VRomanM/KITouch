@@ -16,10 +16,14 @@ final class ContactDetailViewModel: ObservableObject {
         case birthday
         case nothing
     }
+    
+    //MARK: - Private properties
+    
+    private var contactListViewModel: ContactListViewModel?
+    
     //MARK: - Properties
 
     var contact: Contact
-    var contactListViewModel: ContactListViewModel?
     @Published var isShowingConnectChannelsListView = false
     @Published var editingElement: EditingElement = .nothing
     

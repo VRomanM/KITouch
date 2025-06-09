@@ -9,9 +9,12 @@ import Combine
 
 final class ConnectChannelsListViewModel: ObservableObject {
     
+    //MARK: - Private properties
+    
+    private  var contactDetalViewModel: ContactDetailViewModel?
+    
     //MARK: - Properties
     
-    var contactDetalViewModel: ContactDetailViewModel?
     @Published var connectChannels: [ConnectChannel]
     @Published var refreshConnectChannelListView = false
     
