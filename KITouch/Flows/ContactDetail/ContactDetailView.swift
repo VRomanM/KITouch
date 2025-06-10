@@ -13,12 +13,6 @@ struct ContactDetailView: View {
                                GridItem(.flexible(), alignment: .leading)]
     @StateObject var viewModel: ContactDetailViewModel
     
-    private let phonePattern = "+X (XXX) XXX-XX-XX"
-    private var isPhoneNumberValid: Bool {
-        let digits = viewModel.contact.phone.filter { $0.isNumber }
-        return digits.count == 11 // Для российских номеров
-    }
-    
     private let dateRange: ClosedRange<Date> = {
         let calendar = Calendar.current
         let minDate = calendar.date(byAdding: .year, value: -120, to: Date())!
@@ -115,7 +109,7 @@ struct ContactDetailView: View {
                             .font(.callout)
                             .foregroundColor(.gray)
                         
-                        TextField(phonePattern, text: $viewModel.contact.phone) { isEditing in
+                        TextField(viewModel.phonePattern, text: $viewModel.contact.phone) { isEditing in
                             viewModel.editingElement = isEditing ? .phone : .nothing
                         }
                         .fontDesign(.monospaced)
@@ -132,11 +126,11 @@ struct ContactDetailView: View {
                             viewModel.editingElement = .nothing
                         }
                         .onChange(of: viewModel.contact.phone) { _, newValue in
-                            formatPhoneNumber(newValue)
+                            viewModel.formatPhoneNumber(newValue)
                             viewModel.editingElement = .nothing
                         }
                         
-                        if !isPhoneNumberValid && !viewModel.contact.phone.isEmpty {
+                        if !viewModel.isPhoneNumberValid && !viewModel.contact.phone.isEmpty {
                             HStack {
                                 Image(systemName: "exclamationmark.circle.fill")
                                 Text("Enter the correct phone number")
@@ -207,31 +201,6 @@ struct ContactDetailView: View {
     init(contactListViewModel: ContactListViewModel, isShowingDetailView: Binding<Bool>) {
         _isShowingDetailView = isShowingDetailView
         _viewModel = StateObject(wrappedValue: ContactDetailViewModel(contactListViewModel: contactListViewModel, contact: contactListViewModel.selectedContact ?? MocData.sampleContact))
-    }
-    
-    private func formatPhoneNumber(_ newValue: String) {
-        let cleanNumber = newValue.filter { $0.isNumber }
-        var result = ""
-        var index = cleanNumber.startIndex
-        var previousChar = ""
-        
-        for patternChar in phonePattern where index < cleanNumber.endIndex {
-            if patternChar == "X" {
-                if previousChar == "+" && cleanNumber[index] == "8" {
-                    result.append("7")
-                } else {
-                    result.append(cleanNumber[index])
-                }
-                previousChar = ""
-                index = cleanNumber.index(after: index)
-            } else if result.isEmpty && patternChar == "+" {
-                result.append("+")
-                previousChar = "+"
-            } else if !result.isEmpty {
-                result.append(patternChar)
-            }
-        }
-        viewModel.contact.phone = result
     }
 }
 
