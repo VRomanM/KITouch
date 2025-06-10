@@ -9,75 +9,67 @@ import SwiftUI
 
 struct ContactListView: View {
     @StateObject var viewModel = ContactListViewModel()
-
-    let date: Date = {
-        var components = DateComponents()
-        components.day = 7
-        components.month = 10
-        components.year = 2024
-        return Calendar.current.date(from: components) ?? Date()
-    }()
-
+    
     var body: some View {
         NavigationView {
-            VStack(spacing: 0) {
-                // Поисковое поле
-                HStack {
-                    TextField("Поиск", text: $viewModel.searchQuery)
-                        .padding(8)
-                        .background(Color(.systemGray6))
-                        .cornerRadius(8)
-
-                    // Кнопка отмены, появляется только если есть текст
-                    if !viewModel.searchQuery.isEmpty {
-                        Button(action: {
-                            viewModel.searchQuery = ""
-                            UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
-                        }) {
-                            Text("Отмена")
-                                .foregroundColor(.white)
-                                .padding(.trailing, 10)
+            ZStack {
+                BackgroundView()
+                VStack(spacing: 0) {
+                    HStack {
+                        TextField("Search", text: $viewModel.searchQuery)
+                            .padding(8)
+                            .background(.mainBackground)
+                            .cornerRadius(8)
+                        
+                        if !viewModel.searchQuery.isEmpty {
+                            Button(action: {
+                                viewModel.searchQuery = ""
+                                UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+                            }) {
+                                Text("Cancel")
+                                    .foregroundColor(.white)
+                                    .padding(.trailing, 10)
+                            }
+                        }
+                    }
+                    .padding(10)
+                    .background(.blue)
+                    
+                    List {
+                        ForEach(viewModel.filteredContacts) { contact in
+                            Section {
+                                ContactView(contact: contact)
+                                    .onTapGesture {
+                                        viewModel.selectedContact = contact
+                                    }
+                            }
+                        }
+                    }
+                    .listSectionSpacing(.compact)
+                    .scrollContentBackground(.hidden)
+                    .navigationBarTitleDisplayMode(.inline)
+                    .toolbar {
+                        ToolbarItem(placement: .navigationBarLeading) {
+                            Button(action: {}) {
+                                Image(systemName: "line.horizontal.3")
+                                    .foregroundColor(.white)
+                            }
+                        }
+                        
+                        ToolbarItem(placement: .navigationBarTrailing) {
+                            Button(action: {
+                                viewModel.selectedContact = Contact()
+                            }) {
+                                Image(systemName: "plus")
+                                    .foregroundColor(.white)
+                            }
                         }
                     }
                 }
-                .padding(10)
-                .background(.blue)
-
-                List {
-                    ForEach(viewModel.filteredContacts) { contact in
-                        Section {
-                            ContactView(contact: contact)
-                                .onTapGesture {
-                                    viewModel.selectedContact = contact
-                                }
-                        }
-                    }
+                .fullScreenCover(isPresented: $viewModel.isShowingDetailView) {
+                    ContactDetailView(contactListViewModel: viewModel,
+                                      isShowingDetailView: $viewModel.isShowingDetailView)
                 }
-                .listStyle(.grouped)
-                .listSectionSpacing(.compact)
-
-                .navigationTitle("Контакты")
-                .navigationBarTitleDisplayMode(.inline)
-                .toolbar {
-                    ToolbarItem(placement: .navigationBarLeading) {
-                        Button(action: {}) {
-                            Image(systemName: "line.horizontal.3")
-                                .foregroundColor(.white)
-                        }
-                    }
-
-                    ToolbarItem(placement: .navigationBarTrailing) {
-                        Button(action: {}) {
-                            Image(systemName: "plus")
-                                .foregroundColor(.white)
-                        }
-                    }
-                }
-            }
-            // Поддержка детального экрана
-            .sheet(isPresented: $viewModel.isShowingDetailView) {
-                ContactDetailView(contact: viewModel.selectedContact ?? MocData.sampleContact,
-                                  isShowingDetailView: $viewModel.isShowingDetailView)
             }
         }
     }
@@ -87,8 +79,16 @@ struct ContactListView: View {
     ContactListView()
 }
 
+struct BackgroundView: View {
+    
+    var body: some View {
+        Color.mainBackground
+        .ignoresSafeArea()
+    }
+}
+
 struct ContactView: View {
-    let contact: ContactResponse
+    let contact: Contact
     
     var body: some View {
         HStack {
@@ -107,7 +107,7 @@ struct ContactView: View {
                     .foregroundStyle(.gray)
                 Spacer()
                 HStack {
-                    Text("Общались \(contact.lastMessage, format: .dateTime.day().month().year())")
+                    Text("Talked \(contact.lastMessage, format: .dateTime.day().month().year())")
                         .font(.subheadline)
                         .foregroundStyle(.gray)
                     Spacer()
