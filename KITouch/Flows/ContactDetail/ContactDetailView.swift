@@ -125,7 +125,7 @@ struct ContactDetailView: View {
                         .onSubmit {
                             viewModel.editingElement = .nothing
                         }
-                        .onChange(of: viewModel.contact.phone) { _, newValue in
+                        .onChange(of: viewModel.contact.phone) { newValue in
                             viewModel.formatPhoneNumber(newValue)
                             viewModel.editingElement = .nothing
                         }

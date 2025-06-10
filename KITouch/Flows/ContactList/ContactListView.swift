@@ -37,17 +37,16 @@ struct ContactListView: View {
                     
                     List {
                         ForEach(viewModel.filteredContacts) { contact in
-                            Section {
-                                ContactView(contact: contact)
-                                    .onTapGesture {
-                                        viewModel.selectedContact = contact
-                                    }
-                            }
+                            ContactView(contact: contact)
+                                .onTapGesture {
+                                    viewModel.selectedContact = contact
+                                }
                         }
                     }
-                    .listSectionSpacing(.compact)
                     .scrollContentBackground(.hidden)
                     .navigationBarTitleDisplayMode(.inline)
+                    .listStyle(.insetGrouped)
+                    .listRowSpacing(10)
                     .toolbar {
                         ToolbarItem(placement: .navigationBarLeading) {
                             Button(action: {}) {
