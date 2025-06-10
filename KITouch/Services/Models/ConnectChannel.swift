@@ -30,7 +30,7 @@ enum SocialMediaType: String, CaseIterable, Identifiable {
         case .vk:
             "vk"
         case .facebook:
-            "fb"
+            "FB"
         case .instagram:
             "instagram"
         case .xTwitter:
