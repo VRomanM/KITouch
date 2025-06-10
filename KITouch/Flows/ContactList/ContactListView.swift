@@ -9,7 +9,7 @@ import SwiftUI
 
 struct ContactListView: View {
     @StateObject var viewModel = ContactListViewModel()
-    
+
     var body: some View {
         NavigationView {
             ZStack {
@@ -37,10 +37,13 @@ struct ContactListView: View {
                     
                     List {
                         ForEach(viewModel.filteredContacts) { contact in
-                            ContactView(contact: contact)
-                                .onTapGesture {
-                                    viewModel.selectedContact = contact
-                                }
+                            NavigationLink(destination:
+                                            ContactDetailView(contactListViewModel: viewModel,
+                                                              isShowingDetailView: $viewModel.isShowingDetailView,
+                                                              contact: contact
+                                                             )) {
+                                ContactView(contact: contact)
+                            }
                         }
                     }
                     .scrollContentBackground(.hidden)
@@ -64,10 +67,6 @@ struct ContactListView: View {
                             }
                         }
                     }
-                }
-                .fullScreenCover(isPresented: $viewModel.isShowingDetailView) {
-                    ContactDetailView(contactListViewModel: viewModel,
-                                      isShowingDetailView: $viewModel.isShowingDetailView)
                 }
             }
         }
