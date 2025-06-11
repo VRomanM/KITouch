@@ -10,6 +10,7 @@ import SwiftUI
 struct ContactListView: View {
     @StateObject var viewModel = ContactListViewModel()
     @State private var showNew = false
+    @State private var showSettings = false
 
     var body: some View {
         NavigationStack {
@@ -49,7 +50,9 @@ struct ContactListView: View {
                     .listRowSpacing(10)
                     .toolbar {
                         ToolbarItem(placement: .navigationBarLeading) {
-                            Button(action: {}) {
+                            Button(action: {
+                                showSettings = true
+                            }) {
                                 Image(systemName: "line.horizontal.3")
                                     .foregroundColor(.white)
                             }
@@ -76,9 +79,13 @@ struct ContactListView: View {
                                   isShowingDetailView: $viewModel.isShowingDetailView,
                                   contact: Contact())
             }
+            .navigationDestination(isPresented: $showSettings) {
+                SettingsView()
+            }
         }
     }
 }
+
 
 
 #Preview {
