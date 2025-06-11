@@ -12,7 +12,7 @@ struct ContactListView: View {
     @State private var showNew = false
 
     var body: some View {
-        NavigationView {
+        NavigationStack {
             ZStack {
                 BackgroundView()
                 VStack(spacing: 0) {
@@ -21,7 +21,7 @@ struct ContactListView: View {
                             .padding(8)
                             .background(.mainBackground)
                             .cornerRadius(8)
-                        
+
                         if !viewModel.searchQuery.isEmpty {
                             Button(action: {
                                 viewModel.searchQuery = ""
@@ -35,14 +35,10 @@ struct ContactListView: View {
                     }
                     .padding(10)
                     .background(.blue)
-                    
+
                     List {
                         ForEach(viewModel.filteredContacts) { contact in
-                            NavigationLink(destination:
-                                            ContactDetailView(contactListViewModel: viewModel,
-                                                              isShowingDetailView: $viewModel.isShowingDetailView,
-                                                              contact: contact
-                                                             )) {
+                            NavigationLink(value: contact) {
                                 ContactView(contact: contact)
                             }
                         }
@@ -51,14 +47,6 @@ struct ContactListView: View {
                     .navigationBarTitleDisplayMode(.inline)
                     .listStyle(.insetGrouped)
                     .listRowSpacing(10)
-                    .background(
-                        NavigationLink(destination: ContactDetailView(contactListViewModel: viewModel,
-                                                                      isShowingDetailView: $viewModel.isShowingDetailView,
-                                                                      contact: Contact()
-                                                                     ), isActive: $showNew) {
-                          EmptyView()
-                        }
-                    )
                     .toolbar {
                         ToolbarItem(placement: .navigationBarLeading) {
                             Button(action: {}) {
@@ -66,7 +54,7 @@ struct ContactListView: View {
                                     .foregroundColor(.white)
                             }
                         }
-                        
+
                         ToolbarItem(placement: .navigationBarTrailing) {
                             Button(action: {
                                 showNew = true
@@ -78,9 +66,20 @@ struct ContactListView: View {
                     }
                 }
             }
+            .navigationDestination(for: Contact.self) { contact in
+                ContactDetailView(contactListViewModel: viewModel,
+                                  isShowingDetailView: $viewModel.isShowingDetailView,
+                                  contact: contact)
+            }
+            .navigationDestination(isPresented: $showNew) {
+                ContactDetailView(contactListViewModel: viewModel,
+                                  isShowingDetailView: $viewModel.isShowingDetailView,
+                                  contact: Contact())
+            }
         }
     }
 }
+
 
 #Preview {
     ContactListView()
