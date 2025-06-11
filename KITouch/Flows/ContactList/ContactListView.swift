@@ -9,6 +9,7 @@ import SwiftUI
 
 struct ContactListView: View {
     @StateObject var viewModel = ContactListViewModel()
+    @State private var showNew = false
 
     var body: some View {
         NavigationView {
@@ -50,6 +51,14 @@ struct ContactListView: View {
                     .navigationBarTitleDisplayMode(.inline)
                     .listStyle(.insetGrouped)
                     .listRowSpacing(10)
+                    .background(
+                        NavigationLink(destination: ContactDetailView(contactListViewModel: viewModel,
+                                                                      isShowingDetailView: $viewModel.isShowingDetailView,
+                                                                      contact: Contact()
+                                                                     ), isActive: $showNew) {
+                          EmptyView()
+                        }
+                    )
                     .toolbar {
                         ToolbarItem(placement: .navigationBarLeading) {
                             Button(action: {}) {
@@ -60,7 +69,7 @@ struct ContactListView: View {
                         
                         ToolbarItem(placement: .navigationBarTrailing) {
                             Button(action: {
-                                viewModel.selectedContact = Contact()
+                                showNew = true
                             }) {
                                 Image(systemName: "plus")
                                     .foregroundColor(.white)
