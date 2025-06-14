@@ -33,5 +33,10 @@
 
 "Unknown" = "Неизвестно";
 
-
-
+"Settings" = "Настройки";
+"About App" = "О приложении";
+"Leave Feedback" = "Оставить отзыв";
+"Notifications" = "Уведомления";
+"App Information" = "Информация о приложении";
+"Feedback Form" = "Форма для отзыва";
+"Notification Settings" = "Настройки уведомлений";
