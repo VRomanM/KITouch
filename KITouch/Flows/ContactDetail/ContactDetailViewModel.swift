@@ -20,6 +20,7 @@ final class ContactDetailViewModel: ObservableObject {
     //MARK: - Private properties
     
     private var contactListViewModel: ContactListViewModel?
+    private let coreDataManager = CoreDataManager.sharedManager
     
     //MARK: - Properties
     
@@ -42,7 +43,15 @@ final class ContactDetailViewModel: ObservableObject {
     //MARK: - Function
       
     func saveContactDetail() {
-        contactListViewModel?.selectedContact = contact
+//        contactListViewModel?.selectedContact = contact
+               
+        // Сохраняем в CoreData
+        coreDataManager.saveContact(contact: contact) { success in
+            
+        }
+        
+        // Обновляем список контактов
+        contactListViewModel?.retrieveContactsFromCoreData()
     }
     
     func formatPhoneNumber(_ newValue: String) {

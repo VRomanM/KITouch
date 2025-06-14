@@ -5,9 +5,15 @@
 //  Created by Роман Вертячих on 30.05.2025.
 //
 
-import Combine
+import SwiftUI
 
 final class ContactListViewModel: ObservableObject {
+    
+    //MARK: - Private properties
+    
+    private let coreDataManager = CoreDataManager.sharedManager
+    
+    //MARK: - Properties
     
     var selectedContact: Contact? {
         didSet {
@@ -21,7 +27,8 @@ final class ContactListViewModel: ObservableObject {
             isShowingNetworkListView = true
         }
     }
-
+    @Published var isLoading = false
+    @Published var error: Error?
     @Published var isShowingDetailView = false
     @Published var isShowingNetworkListView = false
     @Published var searchQuery = "" {
@@ -41,7 +48,7 @@ final class ContactListViewModel: ObservableObject {
         self.filteredContacts = contacts
     }
     
-    //MARK: - Function
+    //MARK: - Private function
     
     private func loadData() -> [Contact] {
         MocData.contacts
@@ -70,6 +77,47 @@ final class ContactListViewModel: ObservableObject {
             contacts[index] = updatedContact
         } else {
             contacts.append(updatedContact)
+        }
+    }
+    
+    //MARK: - Function
+    
+    func retrieveContactsFromCoreData() {
+        isLoading = true
+        error = nil
+        
+        coreDataManager.retrieveContacts { [weak self] success, contacts in
+            DispatchQueue.main.async {
+                self?.isLoading = false
+                if let contacts = contacts {
+                    self?.contacts.append(contentsOf: contacts.compactMap({ contact in
+                        
+                        Contact(id: contact.id,
+                                name: contact.name,
+                                contactType: contact.contactType,
+                                imageName: contact.imageName,
+                                lastMessage: contact.lastMessage,
+                                countMessages: contact.countMessages,
+                                phone: contact.phone,
+                                birthday: contact.birthday,
+                                connectChannels: connectChannels)
+                    }))
+                    
+                    
+                    for contact in contacts {
+//                        if let contact = contact,
+                        contacts.append(ContactInfoData.transformToContact(contactEntity: contact))
+                           let contactFromStorage = ContactInfoData.transformToContact(contactEntity: contact) {
+                            self.setupProfile(profileFromStorage)
+//                        }
+                    }
+                }
+                if success {
+                    self?.contacts.append(contact)
+                } else {
+                    self?.error = error
+                }
+            }
         }
     }
 }

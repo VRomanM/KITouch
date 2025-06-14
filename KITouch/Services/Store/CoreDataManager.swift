@@ -1,0 +1,173 @@
+//
+//  CoreDataManager.swift
+//  KITouch
+//
+//  Created by Роман Вертячих on 11.06.2025.
+//
+
+import CoreData
+
+final class CoreDataManager {
+    
+    //MARK: - Private properties
+    
+    private struct Constants {
+        // database value
+        static let dbName           = "Model"
+    }
+    
+    enum Entities: String {
+        case contact          = "ContactEntity"
+        case connectChannels  = "ConnectChannelsEntity"
+    }
+    
+    //MARK: - Properties
+    
+    static let sharedManager = CoreDataManager()
+    
+    lazy var persistentContainer: NSPersistentContainer = {
+        let container = NSPersistentContainer(name: Constants.dbName)
+        container.loadPersistentStores { (storeDescription, error) in
+            if let error = error as NSError? {
+                fatalError("Unresolved error \(error), \(error.userInfo)")
+            }
+        }
+        return container
+    }()
+    
+    //MARK: - Constructions
+    
+    private init() {}
+    
+    //MARK: - Private function
+    
+    private func retrieveDataEntity<T>(fetchRequest: NSFetchRequest<T>, completion: @escaping (_ success: Bool, _ results: [T]?) -> Void) {
+        let managedContext = CoreDataManager.sharedManager.persistentContainer.viewContext
+        
+        do {
+            let results = try managedContext.fetch(fetchRequest)
+            completion(true, results)
+            
+        } catch let error as NSError {
+            print("Could not fetch. \(error), \(error.userInfo)")
+            completion(false, nil)
+        }
+    }
+    
+    private func deleteDataEntity(entity: Entities, completion: @escaping (_ success: Bool, _ results: NSPersistentStoreResult?) -> Void) {
+        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entity.rawValue)
+        let deleteRequest = NSBatchDeleteRequest(fetchRequest: fetchRequest)
+        let managedContext = CoreDataManager.sharedManager.persistentContainer.viewContext
+        do {
+            let results = try managedContext.execute(deleteRequest)
+            completion(true, results)
+            
+        } catch let error as NSError {
+            print("Could not fetch. \(error), \(error.userInfo)")
+            completion(false, nil)
+        }
+    }
+    
+    private func retrieveContact(by id: UUID) -> ContactEntity? {
+        var contactEntity: ContactEntity?
+        let fetchRequest: NSFetchRequest<ContactEntity> = ContactEntity.fetchRequest()
+        fetchRequest.predicate = NSPredicate(format: "id == %@", id as CVarArg)
+        fetchRequest.fetchLimit = 1
+        
+        retrieveDataEntity(fetchRequest: fetchRequest) { success, contact in
+            if contact?.count == 0 {
+                contactEntity = nil
+            }
+            contactEntity = contact?[0]
+        }
+        
+        return contactEntity
+    }
+        
+    //MARK: - Function
+    
+    func saveContact(contact: Contact, completion: @escaping (_ success: Bool) -> Void) {
+        let managedContext = persistentContainer.viewContext
+        let entity: ContactEntity
+//        guard let newContact = NSEntityDescription.insertNewObject(forEntityName: Entities.contact.rawValue, into: managedContext) as? ContactEntity else {
+//            completion(false)
+//            return
+//        }
+        
+        // Получаем существующий контакт (или создаем новый)
+//        guard let contact = try? managedContext.fetch(ContactEntity.fetchRequest()).first(where: { contactEntity in
+//            contactEntity.id == contact.id
+//        }) else {
+//            return ContactEntity(context: managedContext)
+//        }
+        
+        if let contactEntity = retrieveContact(by: contact.id) {
+            
+            entity = contactEntity
+        } else {
+            entity = ContactEntity(context: managedContext)
+            entity.id = contact.id
+        }
+        
+        let channels: [ConnectChannelEntity] = {
+            for connectChannel in contact.connectChannels {
+                let channel = ConnectChannelEntity(context: managedContext)
+                channel.id              = connectChannel.id
+                channel.login           = connectChannel.login
+                channel.socialMediaType = connectChannel.socialMediaType.rawValue
+                return [channel]
+            }
+            return []
+        }()
+        
+        //let newContact = ContactEntity(context: managedContext)
+        
+        entity.name                 = contact.name
+        entity.contactType          = contact.contactType
+        entity.customContactType    = contact.customContactType
+        entity.imageName            = contact.imageName
+        entity.lastMessage          = contact.lastMessage
+        entity.countMessages        = Int16(contact.countMessages)
+        entity.phone                = contact.phone
+        entity.birthday             = contact.birthday
+        entity.connectChannelEntity = NSSet(array: channels)
+//
+//        // Создание и заполнение ConnectChannels
+//        for connectChannel in contact.connectChannels {
+//            guard let newConnectChannel = NSEntityDescription.insertNewObject(forEntityName: Entities.connectChannels.rawValue, into: managedContext) as? ConnectChannelsEntity else {
+//                completion(false)
+//                return
+//            }
+//            
+//            newConnectChannel.id                = connectChannel.id
+//            newConnectChannel.socialMediaType   = connectChannel.socialMediaType.rawValue
+//            newConnectChannel.login             = connectChannel.login
+//        }
+        
+        
+        
+        do {
+            try managedContext.save()
+            completion(true)
+        } catch let error as NSError {
+            print("Could not save. \(error), \(error.userInfo)")
+            completion(false)
+        }
+    }
+    
+    func retrieveContacts(completion: @escaping (_ success: Bool, _ contactEntity: [ContactEntity]?) -> Void) {
+        let fetchRequest = NSFetchRequest<ContactEntity>(entityName: Entities.contact.rawValue)
+        
+        retrieveDataEntity(fetchRequest: fetchRequest) { success, contact in
+            if contact?.count == 0 {
+                completion(false, nil)
+            }
+            completion(success, contact)
+        }
+            
+    }
+    
+    func updateData() {
+        
+    }
+}
