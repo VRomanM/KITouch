@@ -28,7 +28,6 @@ final class ContactListViewModel: ObservableObject {
         }
     }
     @Published var isLoading = false
-    @Published var error: Error?
     @Published var isShowingDetailView = false
     @Published var isShowingNetworkListView = false
     @Published var searchQuery = "" {
@@ -43,17 +42,14 @@ final class ContactListViewModel: ObservableObject {
     //MARK: - Constructions
     
     init() {
-        let contacts = loadData()
-        self.contacts = contacts
-        self.filteredContacts = contacts
+//        let contacts = loadData()
+//        self.contacts = contacts
+//        self.filteredContacts = contacts
+        loadData()
     }
     
     //MARK: - Private function
-    
-    private func loadData() -> [Contact] {
-        MocData.contacts
-    }
-    
+        
     private func filterData() -> [Contact] {
         if searchQuery.isEmpty {
             return contacts
@@ -80,44 +76,52 @@ final class ContactListViewModel: ObservableObject {
         }
     }
     
-    //MARK: - Function
-    
-    func retrieveContactsFromCoreData() {
+    private func retrieveContactsFromCoreData() {
+        
         isLoading = true
-        error = nil
         
         coreDataManager.retrieveContacts { [weak self] success, contacts in
             DispatchQueue.main.async {
-                self?.isLoading = false
                 if let contacts = contacts {
-                    self?.contacts.append(contentsOf: contacts.compactMap({ contact in
+                    let mappedContacts: [Contact] = contacts.compactMap { contact in
                         
-                        Contact(id: contact.id,
-                                name: contact.name,
-                                contactType: contact.contactType,
-                                imageName: contact.imageName,
-                                lastMessage: contact.lastMessage,
-                                countMessages: contact.countMessages,
-                                phone: contact.phone,
-                                birthday: contact.birthday,
-                                connectChannels: connectChannels)
-                    }))
-                    
-                    
-                    for contact in contacts {
-//                        if let contact = contact,
-                        contacts.append(ContactInfoData.transformToContact(contactEntity: contact))
-                           let contactFromStorage = ContactInfoData.transformToContact(contactEntity: contact) {
-                            self.setupProfile(profileFromStorage)
-//                        }
+                        // Преобразование ConnectChannelEntity в ConnectChannel
+                        let connectChannels: [ConnectChannel] = (contact.connectChannelEntity as? Set<ConnectChannelEntity> ?? [])
+                            .compactMap { channelEntity in
+                                guard let socialMediaType = SocialMediaType(rawValue: channelEntity.socialMediaType) else { return nil }
+                                
+                                return ConnectChannel(
+                                    id: channelEntity.id,
+                                    socialMediaType: socialMediaType,
+                                    login: channelEntity.login
+                                )
+                            }
+                        
+                        return Contact(
+                            id: contact.id,
+                            name: contact.name,
+                            contactType: contact.contactType,
+                            imageName: contact.imageName,
+                            lastMessage: contact.lastMessage,
+                            countMessages: Int(contact.countMessages),
+                            phone: contact.phone,
+                            birthday: contact.birthday,
+                            connectChannels: connectChannels
+                        )
                     }
+                    
+                    self?.contacts = mappedContacts
+                    self?.filteredContacts = mappedContacts
                 }
-                if success {
-                    self?.contacts.append(contact)
-                } else {
-                    self?.error = error
-                }
+                self?.isLoading = false
             }
         }
+    }
+    
+    //MARK: - Function
+    
+    func loadData() {
+        retrieveContactsFromCoreData()
+        //MocData.contacts
     }
 }

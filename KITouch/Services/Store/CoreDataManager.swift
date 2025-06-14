@@ -12,7 +12,6 @@ final class CoreDataManager {
     //MARK: - Private properties
     
     private struct Constants {
-        // database value
         static let dbName           = "Model"
     }
     
@@ -77,8 +76,9 @@ final class CoreDataManager {
         retrieveDataEntity(fetchRequest: fetchRequest) { success, contact in
             if contact?.count == 0 {
                 contactEntity = nil
+            } else {
+                contactEntity = contact?[0]
             }
-            contactEntity = contact?[0]
         }
         
         return contactEntity
@@ -89,17 +89,6 @@ final class CoreDataManager {
     func saveContact(contact: Contact, completion: @escaping (_ success: Bool) -> Void) {
         let managedContext = persistentContainer.viewContext
         let entity: ContactEntity
-//        guard let newContact = NSEntityDescription.insertNewObject(forEntityName: Entities.contact.rawValue, into: managedContext) as? ContactEntity else {
-//            completion(false)
-//            return
-//        }
-        
-        // Получаем существующий контакт (или создаем новый)
-//        guard let contact = try? managedContext.fetch(ContactEntity.fetchRequest()).first(where: { contactEntity in
-//            contactEntity.id == contact.id
-//        }) else {
-//            return ContactEntity(context: managedContext)
-//        }
         
         if let contactEntity = retrieveContact(by: contact.id) {
             
@@ -119,9 +108,7 @@ final class CoreDataManager {
             }
             return []
         }()
-        
-        //let newContact = ContactEntity(context: managedContext)
-        
+                
         entity.name                 = contact.name
         entity.contactType          = contact.contactType
         entity.customContactType    = contact.customContactType
@@ -131,21 +118,7 @@ final class CoreDataManager {
         entity.phone                = contact.phone
         entity.birthday             = contact.birthday
         entity.connectChannelEntity = NSSet(array: channels)
-//
-//        // Создание и заполнение ConnectChannels
-//        for connectChannel in contact.connectChannels {
-//            guard let newConnectChannel = NSEntityDescription.insertNewObject(forEntityName: Entities.connectChannels.rawValue, into: managedContext) as? ConnectChannelsEntity else {
-//                completion(false)
-//                return
-//            }
-//            
-//            newConnectChannel.id                = connectChannel.id
-//            newConnectChannel.socialMediaType   = connectChannel.socialMediaType.rawValue
-//            newConnectChannel.login             = connectChannel.login
-//        }
-        
-        
-        
+              
         do {
             try managedContext.save()
             completion(true)

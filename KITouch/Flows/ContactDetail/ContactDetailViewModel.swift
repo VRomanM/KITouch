@@ -46,12 +46,8 @@ final class ContactDetailViewModel: ObservableObject {
 //        contactListViewModel?.selectedContact = contact
                
         // Сохраняем в CoreData
-        coreDataManager.saveContact(contact: contact) { success in
-            
-        }
-        
-        // Обновляем список контактов
-        contactListViewModel?.retrieveContactsFromCoreData()
+        coreDataManager.saveContact(contact: contact) { success in }
+        contactListViewModel?.loadData()
     }
     
     func formatPhoneNumber(_ newValue: String) {
