@@ -42,9 +42,6 @@ final class ContactListViewModel: ObservableObject {
     //MARK: - Constructions
     
     init() {
-//        let contacts = loadData()
-//        self.contacts = contacts
-//        self.filteredContacts = contacts
         loadData()
     }
     
@@ -88,7 +85,8 @@ final class ContactListViewModel: ObservableObject {
                         // Преобразование ConnectChannelEntity в ConnectChannel
                         let connectChannels: [ConnectChannel] = (contact.connectChannelEntity as? Set<ConnectChannelEntity> ?? [])
                             .compactMap { channelEntity in
-                                guard let socialMediaType = SocialMediaType(rawValue: channelEntity.socialMediaType) else { return nil }
+                                let socialMediaType = SocialMediaType(rawValue: channelEntity.socialMediaType) ?? .email
+                                    
                                 
                                 return ConnectChannel(
                                     id: channelEntity.id,

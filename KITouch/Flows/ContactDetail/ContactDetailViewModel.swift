@@ -43,10 +43,8 @@ final class ContactDetailViewModel: ObservableObject {
     //MARK: - Function
       
     func saveContactDetail() {
-//        contactListViewModel?.selectedContact = contact
-               
         // Сохраняем в CoreData
-        coreDataManager.saveContact(contact: contact) { success in }
+        coreDataManager.saveContact(contact: contact) { _ in }
         contactListViewModel?.loadData()
     }
     

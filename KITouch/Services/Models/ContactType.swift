@@ -9,12 +9,11 @@ import Foundation
 
 enum ContactType: String, CaseIterable, Identifiable {
     var id: String { rawValue }
-    var localizedValue: String { rawValue.localized() }
+    var localizedValue: String { NSLocalizedString(rawValue, comment: "") }
     
     case relative = "Relative"
     case colleague = "Colleague"
     case friend = "Friend"
     case unknown = "Unknown"
-    
     case other = "Other"
 }
