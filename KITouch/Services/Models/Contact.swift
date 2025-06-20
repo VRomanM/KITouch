@@ -19,6 +19,7 @@ struct Contact: Hashable, Identifiable {
     var phone: String
     var birthday: Date
     var connectChannels: [ConnectChannel]
+    var isNewContact: Bool
     
     var displayContactType: String {
         contactType == ContactType.other.rawValue ? customContactType : contactType
@@ -34,10 +35,10 @@ struct Contact: Hashable, Identifiable {
         self.phone = phone
         self.birthday = birthday
         self.connectChannels = connectChannels
+        self.isNewContact = false
     }
     
     init() {
-        self.id = UUID()
         self.name = ""
         self.contactType = ""
         self.customContactType = ""
@@ -47,17 +48,20 @@ struct Contact: Hashable, Identifiable {
         self.phone = ""
         self.birthday = Date(timeIntervalSince1970: 0)
         self.connectChannels = [ConnectChannel(socialMediaType: .email, login: "")]
+        self.isNewContact = true
     }
-}
-
-enum ContactType: String, CaseIterable, Identifiable {
-    var id: String { rawValue }
-    var localizedValue: String { rawValue.localized() }
     
-    case relative = "Relative"
-    case colleague = "Colleague"
-    case friend = "Friend"
-    case unknown = "Unknown"
-    
-    case other = "Other"
+    init(id: UUID, name: String, contactType: String, imageName: String, lastMessage: Date, countMessages: Int, phone: String, birthday: Date, connectChannels: [ConnectChannel]) {
+        self.id = id
+        self.name = name
+        self.contactType = contactType
+        self.customContactType = ""
+        self.imageName = imageName
+        self.lastMessage = lastMessage
+        self.countMessages = countMessages
+        self.phone = phone
+        self.birthday = birthday
+        self.connectChannels = connectChannels
+        self.isNewContact = false
+    }
 }

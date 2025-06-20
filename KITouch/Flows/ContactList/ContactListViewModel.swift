@@ -5,9 +5,15 @@
 //  Created by Роман Вертячих on 30.05.2025.
 //
 
-import Combine
+import SwiftUI
 
 final class ContactListViewModel: ObservableObject {
+    
+    //MARK: - Private properties
+    
+    private let coreDataManager = CoreDataManager.sharedManager
+    
+    //MARK: - Properties
     
     var selectedContact: Contact? {
         didSet {
@@ -21,7 +27,7 @@ final class ContactListViewModel: ObservableObject {
             isShowingNetworkListView = true
         }
     }
-
+    @Published var isLoading = false
     @Published var isShowingDetailView = false
     @Published var isShowingNetworkListView = false
     @Published var searchQuery = "" {
@@ -36,17 +42,11 @@ final class ContactListViewModel: ObservableObject {
     //MARK: - Constructions
     
     init() {
-        let contacts = loadData()
-        self.contacts = contacts
-        self.filteredContacts = contacts
+        loadData()
     }
     
-    //MARK: - Function
-    
-    private func loadData() -> [Contact] {
-        MocData.contacts
-    }
-    
+    //MARK: - Private function
+        
     private func filterData() -> [Contact] {
         if searchQuery.isEmpty {
             return contacts
@@ -71,5 +71,55 @@ final class ContactListViewModel: ObservableObject {
         } else {
             contacts.append(updatedContact)
         }
+    }
+    
+    private func retrieveContactsFromCoreData() {
+        
+        isLoading = true
+        
+        coreDataManager.retrieveContacts { [weak self] success, contacts in
+            DispatchQueue.main.async {
+                if let contacts = contacts {
+                    let mappedContacts: [Contact] = contacts.compactMap { contact in
+                        
+                        // Преобразование ConnectChannelEntity в ConnectChannel
+                        let connectChannels: [ConnectChannel] = (contact.connectChannelEntity as? Set<ConnectChannelEntity> ?? [])
+                            .compactMap { channelEntity in
+                                let socialMediaType = SocialMediaType(rawValue: channelEntity.socialMediaType) ?? .email
+                                    
+                                
+                                return ConnectChannel(
+                                    id: channelEntity.id,
+                                    socialMediaType: socialMediaType,
+                                    login: channelEntity.login
+                                )
+                            }
+                        
+                        return Contact(
+                            id: contact.id,
+                            name: contact.name,
+                            contactType: contact.contactType,
+                            imageName: contact.imageName,
+                            lastMessage: contact.lastMessage,
+                            countMessages: Int(contact.countMessages),
+                            phone: contact.phone,
+                            birthday: contact.birthday,
+                            connectChannels: connectChannels
+                        )
+                    }
+                    
+                    self?.contacts = mappedContacts
+                    self?.filteredContacts = mappedContacts
+                }
+                self?.isLoading = false
+            }
+        }
+    }
+    
+    //MARK: - Function
+    
+    func loadData() {
+        retrieveContactsFromCoreData()
+        //MocData.contacts
     }
 }
