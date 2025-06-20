@@ -9,9 +9,11 @@ import SwiftUI
 
 struct ContactListView: View {
     @StateObject var viewModel = ContactListViewModel()
-    
+    @State private var showNew = false
+    @State private var showSettings = false
+
     var body: some View {
-        NavigationView {
+        NavigationStack {
             ZStack {
                 BackgroundView()
                 VStack(spacing: 0) {
@@ -20,7 +22,7 @@ struct ContactListView: View {
                             .padding(8)
                             .background(.mainBackground)
                             .cornerRadius(8)
-                        
+
                         if !viewModel.searchQuery.isEmpty {
                             Button(action: {
                                 viewModel.searchQuery = ""
@@ -34,13 +36,12 @@ struct ContactListView: View {
                     }
                     .padding(10)
                     .background(.blue)
-                    
+
                     List {
                         ForEach(viewModel.filteredContacts) { contact in
-                            ContactView(contact: contact)
-                                .onTapGesture {
-                                    viewModel.selectedContact = contact
-                                }
+                            NavigationLink(value: contact) {
+                                ContactView(contact: contact)
+                            }
                         }
                     }
                     .scrollContentBackground(.hidden)
@@ -49,15 +50,17 @@ struct ContactListView: View {
                     .listRowSpacing(10)
                     .toolbar {
                         ToolbarItem(placement: .navigationBarLeading) {
-                            Button(action: {}) {
+                            Button(action: {
+                                showSettings = true
+                            }) {
                                 Image(systemName: "line.horizontal.3")
                                     .foregroundColor(.white)
                             }
                         }
-                        
+
                         ToolbarItem(placement: .navigationBarTrailing) {
                             Button(action: {
-                                viewModel.selectedContact = Contact()
+                                showNew = true
                             }) {
                                 Image(systemName: "plus")
                                     .foregroundColor(.white)
@@ -65,14 +68,25 @@ struct ContactListView: View {
                         }
                     }
                 }
-                .fullScreenCover(isPresented: $viewModel.isShowingDetailView) {
-                    ContactDetailView(contactListViewModel: viewModel,
-                                      isShowingDetailView: $viewModel.isShowingDetailView)
-                }
+            }
+            .navigationDestination(for: Contact.self) { contact in
+                ContactDetailView(contactListViewModel: viewModel,
+                                  isShowingDetailView: $viewModel.isShowingDetailView,
+                                  contact: contact)
+            }
+            .navigationDestination(isPresented: $showNew) {
+                ContactDetailView(contactListViewModel: viewModel,
+                                  isShowingDetailView: $viewModel.isShowingDetailView,
+                                  contact: Contact())
+            }
+            .navigationDestination(isPresented: $showSettings) {
+                SettingsView()
             }
         }
     }
 }
+
+
 
 #Preview {
     ContactListView()

@@ -12,7 +12,7 @@ struct ContactDetailView: View {
     private let columns: [GridItem] = [GridItem(.flexible(),alignment: .leading),
                                GridItem(.flexible(), alignment: .leading)]
     @StateObject var viewModel: ContactDetailViewModel
-    
+
     private let dateRange: ClosedRange<Date> = {
         let calendar = Calendar.current
         let minDate = calendar.date(byAdding: .year, value: -120, to: Date())!
@@ -24,17 +24,6 @@ struct ContactDetailView: View {
     var body: some View {
         ScrollView {
             VStack {
-                HStack {
-                    Spacer()
-                    Button {
-                        isShowingDetailView = false
-                    } label: {
-                        Image(systemName: "xmark")
-                            .foregroundColor(Color(.label))
-                            .imageScale(.large)
-                            .frame(width: 44, height: 44)
-                    }
-                }
                 Image(systemName: viewModel.contact.imageName)
                     .resizable()
                     .frame(width: 250, height: 250)
@@ -198,9 +187,9 @@ struct ContactDetailView: View {
         .dismissKeyboard() // Добавляем распознавание тапа за пределами TextField
     }
     
-    init(contactListViewModel: ContactListViewModel, isShowingDetailView: Binding<Bool>) {
+    init(contactListViewModel: ContactListViewModel, isShowingDetailView: Binding<Bool>, contact: Contact) {
         _isShowingDetailView = isShowingDetailView
-        _viewModel = StateObject(wrappedValue: ContactDetailViewModel(contactListViewModel: contactListViewModel, contact: contactListViewModel.selectedContact ?? MocData.sampleContact))
+        _viewModel = StateObject(wrappedValue: ContactDetailViewModel(contactListViewModel: contactListViewModel, contact: contact))
     }
 }
 
@@ -234,5 +223,5 @@ extension View {
 }
 
 #Preview {
-    ContactDetailView(contactListViewModel: ContactListViewModel(), isShowingDetailView: .constant(true))
+    ContactDetailView(contactListViewModel: ContactListViewModel(), isShowingDetailView: .constant(true), contact: Contact())
 }
