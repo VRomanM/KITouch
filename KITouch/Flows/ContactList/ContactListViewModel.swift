@@ -15,12 +15,12 @@ final class ContactListViewModel: ObservableObject {
     
     //MARK: - Properties
     
-    var selectedContact: Contact? {
-        didSet {
-            updateSelectedContacts()
-            isShowingDetailView = true
-        }
-    }
+//    var selectedContact: Contact? {
+//        didSet {
+//            updateSelectedContacts()
+//            isShowingDetailView = true
+//        }
+//    }
 
     @State var showNew = false
     @State var showSettings = false
@@ -60,21 +60,21 @@ final class ContactListViewModel: ObservableObject {
         }
     }
     
-    private func updateSelectedContacts() {
-        guard let updatedContact = selectedContact else { return }
-        
-        if let index = filteredContacts.firstIndex(where: { $0.id == updatedContact.id }) {
-            filteredContacts[index] = updatedContact
-        } else {
-            filteredContacts.append(updatedContact)
-        }
-        
-        if let index = contacts.firstIndex(where: { $0.id == updatedContact.id }) {
-            contacts[index] = updatedContact
-        } else {
-            contacts.append(updatedContact)
-        }
-    }
+//    private func updateSelectedContacts() {
+//        guard let updatedContact = selectedContact else { return }
+//        
+//        if let index = filteredContacts.firstIndex(where: { $0.id == updatedContact.id }) {
+//            filteredContacts[index] = updatedContact
+//        } else {
+//            filteredContacts.append(updatedContact)
+//        }
+//        
+//        if let index = contacts.firstIndex(where: { $0.id == updatedContact.id }) {
+//            contacts[index] = updatedContact
+//        } else {
+//            contacts.append(updatedContact)
+//        }
+//    }
     
     private func retrieveContactsFromCoreData() {
         

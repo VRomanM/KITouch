@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct ContactDetailView: View {
-    @Environment(\.dismiss) private var dismiss // Добавить эту строку
+    @Environment(\.dismiss) private var dismiss
 
     private let columns: [GridItem] = [GridItem(.flexible(),alignment: .leading),
                                GridItem(.flexible(), alignment: .leading)]
@@ -185,7 +185,7 @@ struct ContactDetailView: View {
                 Spacer()
             }
         }
-        .dismissKeyboard() // Добавляем распознавание тапа за пределами TextField
+        .dismissKeyboard()
     }
     
     init(contactListViewModel: ContactListViewModel, contact: Contact) {

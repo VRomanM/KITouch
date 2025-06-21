@@ -5,6 +5,8 @@
   Created by Роман Вертячих on 31.05.2025.
   
 */
+"About App" = "О приложении";
+"App Information" = "Информация о приложении";
 
 "Birthdate" = "Дата рождения";
 
@@ -17,9 +19,15 @@
 "Enter the correct phone number" = "Введите корректный номер";
 "Enter login" = "Введите логин";
 
+"Feedback Form" = "Форма для отзыва";
 "Friend" = "Друг";
 
 "Other" = "Другое";
+
+"Leave Feedback" = "Оставить отзыв";
+
+"Notifications" = "Уведомления";
+"Notification Settings" = "Настройки уведомлений";
 
 "Phone" = "Телефон";
 
@@ -27,16 +35,9 @@
 
 "Save" = "Сохранить";
 "Search" = "Поиск";
+"Settings" = "Настройки";
 "Soc. media" = "Соц. сети";
 
 "Talked %@" = "Общались %@";
 
 "Unknown" = "Неизвестно";
-
-"Settings" = "Настройки";
-"About App" = "О приложении";
-"Leave Feedback" = "Оставить отзыв";
-"Notifications" = "Уведомления";
-"App Information" = "Информация о приложении";
-"Feedback Form" = "Форма для отзыва";
-"Notification Settings" = "Настройки уведомлений";
