@@ -14,16 +14,9 @@ final class ContactListViewModel: ObservableObject {
     private let coreDataManager = CoreDataManager.sharedManager
     
     //MARK: - Properties
-    
-//    var selectedContact: Contact? {
-//        didSet {
-//            updateSelectedContacts()
-//            isShowingDetailView = true
-//        }
-//    }
 
-    @State var showNew = false
-    @State var showSettings = false
+    @Published var showNew = false
+    @Published var showSettings = false
 
     var connectChannels = [ConnectChannel]() {
         didSet {
@@ -33,13 +26,8 @@ final class ContactListViewModel: ObservableObject {
     @Published var isLoading = false
     @Published var isShowingDetailView = false
     @Published var isShowingNetworkListView = false
-    @Published var searchQuery = "" {
-        didSet {
-            filteredContacts = filterData()
-        }
-    }
+    @Published var searchQuery = ""
 
-    var filteredContacts = [Contact]()
     var contacts = [Contact]()
     
     //MARK: - Constructions
@@ -49,32 +37,6 @@ final class ContactListViewModel: ObservableObject {
     }
     
     //MARK: - Private function
-        
-    private func filterData() -> [Contact] {
-        if searchQuery.isEmpty {
-            return contacts
-        } else {
-            return contacts.filter { contact in
-                contact.name.localizedCaseInsensitiveContains(searchQuery)
-            }
-        }
-    }
-    
-//    private func updateSelectedContacts() {
-//        guard let updatedContact = selectedContact else { return }
-//        
-//        if let index = filteredContacts.firstIndex(where: { $0.id == updatedContact.id }) {
-//            filteredContacts[index] = updatedContact
-//        } else {
-//            filteredContacts.append(updatedContact)
-//        }
-//        
-//        if let index = contacts.firstIndex(where: { $0.id == updatedContact.id }) {
-//            contacts[index] = updatedContact
-//        } else {
-//            contacts.append(updatedContact)
-//        }
-//    }
     
     private func retrieveContactsFromCoreData() {
         
@@ -112,7 +74,6 @@ final class ContactListViewModel: ObservableObject {
                     }
                     
                     self?.contacts = mappedContacts
-                    self?.filteredContacts = mappedContacts
                 }
                 self?.isLoading = false
             }
@@ -124,5 +85,15 @@ final class ContactListViewModel: ObservableObject {
     func loadData() {
         retrieveContactsFromCoreData()
         //MocData.contacts
+    }
+    
+    func filteredContacts() -> [Contact] {
+        if searchQuery.isEmpty {
+            return contacts
+        } else {
+            return contacts.filter { contact in
+                contact.name.localizedCaseInsensitiveContains(searchQuery)
+            }
+        }
     }
 }

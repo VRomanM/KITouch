@@ -36,7 +36,7 @@ struct ContactListView: View {
                     .background(.blue)
 
                     List {
-                        ForEach(viewModel.filteredContacts) { contact in
+                        ForEach(viewModel.filteredContacts()) { contact in
                             NavigationLink(value: contact) {
                                 ContactView(contact: contact)
                             }
