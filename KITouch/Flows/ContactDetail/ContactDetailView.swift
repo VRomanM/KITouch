@@ -55,9 +55,6 @@ struct ContactDetailView: View {
                         ForEach(ContactType.allCases) { type in
                             Button(type.localizedValue) {
                                 viewModel.contact.contactType = type.rawValue
-                                if type != .other {
-                                    viewModel.contact.customContactType = ""
-                                }
                                 viewModel.editingElement = .nothing
                             }
                         }

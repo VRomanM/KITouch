@@ -44,6 +44,9 @@ final class ContactDetailViewModel: ObservableObject {
       
     func saveContactDetail() {
         // Сохраняем в CoreData
+        if contact.contactType != ContactType.other.rawValue {
+            contact.customContactType = ""
+        }
         coreDataManager.saveContact(contact: contact) { _ in }
         contactListViewModel?.loadData()
     }

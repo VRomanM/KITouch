@@ -51,11 +51,11 @@ struct Contact: Hashable, Identifiable {
         self.isNewContact = true
     }
     
-    init(id: UUID, name: String, contactType: String, imageName: String, lastMessage: Date, countMessages: Int, phone: String, birthday: Date, connectChannels: [ConnectChannel]) {
+    init(id: UUID, name: String, contactType: String, customContactType: String, imageName: String, lastMessage: Date, countMessages: Int, phone: String, birthday: Date, connectChannels: [ConnectChannel]) {
         self.id = id
         self.name = name
         self.contactType = contactType
-        self.customContactType = ""
+        self.customContactType = customContactType
         self.imageName = imageName
         self.lastMessage = lastMessage
         self.countMessages = countMessages

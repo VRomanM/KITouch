@@ -108,10 +108,10 @@ struct ContactView: View {
                 .aspectRatio(contentMode: .fit)
             VStack(alignment: .leading) {
                 Spacer()
-                Text(contact.name)
+                Text(NSLocalizedString(contact.name, comment: ""))
                     .font(.title2)
                     .fontWeight(.semibold)
-                Text(contact.contactType)
+                Text(NSLocalizedString(contact.contactType, comment: ""))
                     .font(.subheadline)
                     .foregroundStyle(.gray)
                 Spacer()
