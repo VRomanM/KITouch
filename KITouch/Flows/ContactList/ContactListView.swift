@@ -92,7 +92,7 @@ struct BackgroundView: View {
     
     var body: some View {
         Color.mainBackground
-        .ignoresSafeArea()
+            .ignoresSafeArea()
     }
 }
 
