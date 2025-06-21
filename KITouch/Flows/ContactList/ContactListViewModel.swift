@@ -21,7 +21,10 @@ final class ContactListViewModel: ObservableObject {
             isShowingDetailView = true
         }
     }
-    
+
+    @State var showNew = false
+    @State var showSettings = false
+
     var connectChannels = [ConnectChannel]() {
         didSet {
             isShowingNetworkListView = true

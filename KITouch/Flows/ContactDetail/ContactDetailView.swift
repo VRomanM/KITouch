@@ -9,6 +9,8 @@ import SwiftUI
 
 struct ContactDetailView: View {
     @Binding var isShowingDetailView: Bool
+    @Environment(\.dismiss) private var dismiss // Добавить эту строку
+
     private let columns: [GridItem] = [GridItem(.flexible(),alignment: .leading),
                                GridItem(.flexible(), alignment: .leading)]
     @StateObject var viewModel: ContactDetailViewModel
@@ -177,7 +179,7 @@ struct ContactDetailView: View {
                 }
                 Button(action: {
                     viewModel.saveContactDetail()
-                    isShowingDetailView = false
+                    dismiss() 
                 }) {
                     KITButton(text: "Save")
                 }
