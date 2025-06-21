@@ -69,12 +69,10 @@ struct ContactListView: View {
             }
             .navigationDestination(for: Contact.self) { contact in
                 ContactDetailView(contactListViewModel: viewModel,
-                                  isShowingDetailView: $viewModel.isShowingDetailView,
                                   contact: contact)
             }
             .navigationDestination(isPresented: $viewModel.showNew) {
                 ContactDetailView(contactListViewModel: viewModel,
-                                  isShowingDetailView: $viewModel.isShowingDetailView,
                                   contact: Contact())
             }
             .navigationDestination(isPresented: $viewModel.showSettings) {

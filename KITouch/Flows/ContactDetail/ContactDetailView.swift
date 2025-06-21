@@ -8,7 +8,6 @@
 import SwiftUI
 
 struct ContactDetailView: View {
-    @Binding var isShowingDetailView: Bool
     @Environment(\.dismiss) private var dismiss // Добавить эту строку
 
     private let columns: [GridItem] = [GridItem(.flexible(),alignment: .leading),
@@ -179,7 +178,7 @@ struct ContactDetailView: View {
                 }
                 Button(action: {
                     viewModel.saveContactDetail()
-                    dismiss() 
+                    dismiss()
                 }) {
                     KITButton(text: "Save")
                 }
@@ -189,8 +188,7 @@ struct ContactDetailView: View {
         .dismissKeyboard() // Добавляем распознавание тапа за пределами TextField
     }
     
-    init(contactListViewModel: ContactListViewModel, isShowingDetailView: Binding<Bool>, contact: Contact) {
-        _isShowingDetailView = isShowingDetailView
+    init(contactListViewModel: ContactListViewModel, contact: Contact) {
         _viewModel = StateObject(wrappedValue: ContactDetailViewModel(contactListViewModel: contactListViewModel, contact: contact))
     }
 }
@@ -225,5 +223,5 @@ extension View {
 }
 
 #Preview {
-    ContactDetailView(contactListViewModel: ContactListViewModel(), isShowingDetailView: .constant(true), contact: Contact())
+    ContactDetailView(contactListViewModel: ContactListViewModel(), contact: Contact())
 }
