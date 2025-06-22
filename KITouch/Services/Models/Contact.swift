@@ -7,8 +7,15 @@
 
 import Foundation
 
-struct Contact: Hashable, Identifiable {
+protocol Contactable {
+    var idString: String { get }
+    var name: String { get set }
+    var birthday: Date? { get set }
+}
+
+struct Contact: Contactable, Hashable, Identifiable {
     var id = UUID()
+    var idString: String { id.uuidString }
     
     var name: String
     var contactType: String
@@ -17,7 +24,7 @@ struct Contact: Hashable, Identifiable {
     let lastMessage: Date
     let countMessages: Int
     var phone: String
-    var birthday: Date
+    var birthday: Date?
     var connectChannels: [ConnectChannel]
     var isNewContact: Bool
     
@@ -25,7 +32,7 @@ struct Contact: Hashable, Identifiable {
         contactType == ContactType.other.rawValue ? customContactType : contactType
     }
     
-    init(name: String, contactType: String, imageName: String, lastMessage: Date, countMessages: Int, phone: String, birthday: Date, connectChannels: [ConnectChannel]) {
+    init(name: String, contactType: String, imageName: String, lastMessage: Date, countMessages: Int, phone: String, birthday: Date?, connectChannels: [ConnectChannel]) {
         self.name = name
         self.contactType = contactType
         self.customContactType = ""
@@ -51,7 +58,7 @@ struct Contact: Hashable, Identifiable {
         self.isNewContact = true
     }
     
-    init(id: UUID, name: String, contactType: String, customContactType: String, imageName: String, lastMessage: Date, countMessages: Int, phone: String, birthday: Date, connectChannels: [ConnectChannel]) {
+    init(id: UUID, name: String, contactType: String, customContactType: String, imageName: String, lastMessage: Date, countMessages: Int, phone: String, birthday: Date?, connectChannels: [ConnectChannel]) {
         self.id = id
         self.name = name
         self.contactType = contactType

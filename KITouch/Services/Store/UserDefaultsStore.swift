@@ -12,7 +12,7 @@ final class UserDefaultsStore {
     //MARK: - Properties
     
     enum Key: String {
-        case isFirstLaunch
+        case pendingContactId
     }
     
     private let userDefaults = UserDefaults.standard

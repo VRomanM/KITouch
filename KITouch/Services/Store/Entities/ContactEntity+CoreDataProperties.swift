@@ -10,13 +10,13 @@ import Foundation
 import CoreData
 
 
-extension ContactEntity {
+extension ContactEntity: Contactable {
 
     @nonobjc public class func fetchRequest() -> NSFetchRequest<ContactEntity> {
         return NSFetchRequest<ContactEntity>(entityName: "ContactEntity")
     }
 
-    @NSManaged public var birthday: Date
+    @NSManaged public var birthday: Date?
     @NSManaged public var contactType: String
     @NSManaged public var countMessages: Int16
     @NSManaged public var customContactType: String
@@ -27,6 +27,7 @@ extension ContactEntity {
     @NSManaged public var phone: String
     @NSManaged public var connectChannelEntity: NSSet?
 
+    var idString: String { id.uuidString }
 }
 
 // MARK: Generated accessors for connectChannelEntity

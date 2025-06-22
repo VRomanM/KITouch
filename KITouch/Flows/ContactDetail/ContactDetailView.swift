@@ -138,7 +138,7 @@ struct ContactDetailView: View {
                             .foregroundColor(.gray)
                         
                         DatePicker(
-                            LocalizedStringKey(""), selection: $viewModel.contact.birthday,
+                            LocalizedStringKey(""), selection: $viewModel.unwrapBirthday,
                             in: dateRange,
                             displayedComponents: .date
                         ).datePickerStyle(.compact)
