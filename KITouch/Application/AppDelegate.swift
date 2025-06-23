@@ -29,40 +29,12 @@ class AppDelegate: NSObject, UIApplicationDelegate {
 //        pendingContactId = "D13F7858-6CAD-42F1-A67B-8E43E3A53F96"
 //        store.setString("D13F7858-6CAD-42F1-A67B-8E43E3A53F96", key: .pendingContactId)
 //        //<--
-
-        // Обработка случая, когда приложение запущено по нажатию на уведомление
-//        if let notificationResponse = launchOptions?[.remoteNotification] as? UNNotificationResponse {
-//            handleNotification(response: notificationResponse)
-//        }
         
         return true
     }
-    
-//    func applicationDidBecomeActive(_ application: UIApplication) {
-//        // Проверяем, есть ли отложенный контакт для открытия
-//        if let contactId = store.getString(key: .pendingContactId) {
-//            pendingContactId = contactId
-//            store.removeString(key: .pendingContactId)
-//        }
-//    }
-//    
-//    func handleNotification(response: UNNotificationResponse) {
-//        let userInfo = response.notification.request.content.userInfo
-//        if let contactId = userInfo["contactId"] as? String {
-//            pendingContactId = contactId
-//            // Сохраняем ID контакта для последующей обработки после загрузки приложения
-//            store.setString(contactId, key: .pendingContactId)
-//        }
-//    }
 }
 
 extension AppDelegate: UNUserNotificationCenterDelegate {
-    
-    func userNotificationCenter(_ center: UNUserNotificationCenter,
-                                willPresent notification: UNNotification,
-                                withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
-        completionHandler([.banner, .sound, .badge])
-    }
     
     func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
         let userInfo = response.notification.request.content.userInfo

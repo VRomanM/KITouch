@@ -11,7 +11,6 @@ struct ContactListView: View {
     @StateObject var viewModel = ContactListViewModel()
     @State var store = UserDefaultsStore()
     @State private var selectedContactId: String?
-//    @State private var isInitialLoad = true
 
     var body: some View {
         NavigationStack {
@@ -94,26 +93,6 @@ struct ContactListView: View {
                     selectedContactId = contactId
                 }
             }
-//            .onReceive(NotificationCenter.default.publisher(for: UIApplication.didBecomeActiveNotification)) { _ in
-//                // Проверяем, есть ли контакт для открытия при запуске
-//                
-////                if let appDelegate = UIApplication.shared.delegate as? AppDelegate,
-//                if let appDelegate = UNUserNotificationCenter.current().delegate as? AppDelegate,
-//                   let contactId = appDelegate.pendingContactId {
-//                    selectedContactId = contactId
-//                    appDelegate.pendingContactId = nil
-//                }
-//            }
-//            .onAppear {
-//                if isInitialLoad {
-//                    // Проверяем сохраненный contactId при первом открытии
-//                    if let contactId = store.getString(key: .pendingContactId) {
-//                        selectedContactId = contactId
-//                        store.removeString(key: .pendingContactId)
-//                    }
-//                    isInitialLoad = false
-//                }
-//            }
         }
     }
 }
