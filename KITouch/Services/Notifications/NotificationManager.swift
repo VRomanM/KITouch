@@ -7,10 +7,11 @@
 
 import UserNotifications
 
-final class NotificationManager {
+final class NotificationManager: ObservableObject {
     
     //MARK: - Private properties
     
+    @Published private(set) var latestNotification: UNNotificationResponse? = .none // default value
     private let coreDataManager = CoreDataManager.sharedManager
     
     //MARK: - Properties
@@ -23,11 +24,15 @@ final class NotificationManager {
     
     //MARK: - Private function
 
-    private func removeScheduledNotifications(for contact: Contactable) {
+    private func removeScheduledNotifications(for contact: Contact) {
         UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: ["birthday_\(contact.idString)"])
     }
     
     //MARK: - Function
+    
+    func handle(notification: UNNotificationResponse) {
+        self.latestNotification = notification
+    }
     
     func requestNotificationAuthorization() {
         let center = UNUserNotificationCenter.current()
@@ -40,19 +45,7 @@ final class NotificationManager {
         }
     }
     
-    func checkAndRescheduleBirthdayNotifications() {
-        coreDataManager.retrieveContacts { [weak self] _, contacts in
-            DispatchQueue.main.async {
-                if let contacts = contacts {
-                    for contact in contacts {
-                        self?.scheduleBirthdayNotification(for: contact)
-                    }
-                }
-            }
-        }
-    }
-    
-    func scheduleBirthdayNotification<T: Contactable>(for contact: T) {
+    func scheduleBirthdayNotification(for contact: Contact) {
         removeScheduledNotifications(for: contact)
         
         guard let birthday = contact.birthday else { return }
@@ -77,12 +70,11 @@ final class NotificationManager {
         
         // Создаем содержимое уведомления
         let content = UNMutableNotificationContent()
-        content.title           = NSLocalizedString("Birthday!", comment: "")
+        content.title           = NSLocalizedString("Birthday", comment: "")
         content.body            = NSLocalizedString("Today is the birthday of \(contact.name)", comment: "")
         content.sound           = UNNotificationSound.default
         content.userInfo        = [
-            "contactId": contact.idString,
-            "navigation": "contactDetail"
+            "contactId": contact.idString
         ]
         content.categoryIdentifier = "BIRTHDAY_CATEGORY"
         content.threadIdentifier = "birthday_notifications"

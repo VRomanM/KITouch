@@ -9,7 +9,8 @@ import SwiftUI
 
 @main
 struct KITouchApp: App {
-    @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
+    // MARK: - AppDelegate
+    @UIApplicationDelegateAdaptor var appDelegate: CustomAppDelegate
     
     var body: some Scene {
         WindowGroup {

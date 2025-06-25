@@ -14,10 +14,10 @@ final class ContactListViewModel: ObservableObject {
     private let coreDataManager = CoreDataManager.sharedManager
     
     //MARK: - Properties
-
+    
     @Published var showNew = false
     @Published var showSettings = false
-
+    
     var connectChannels = [ConnectChannel]() {
         didSet {
             isShowingNetworkListView = true
@@ -27,7 +27,8 @@ final class ContactListViewModel: ObservableObject {
     @Published var isShowingDetailView = false
     @Published var isShowingNetworkListView = false
     @Published var searchQuery = ""
-
+    @Published var navigationPath = NavigationPath()
+    
     var contacts = [Contact]()
     
     //MARK: - Constructions
@@ -51,7 +52,7 @@ final class ContactListViewModel: ObservableObject {
                         let connectChannels: [ConnectChannel] = (contact.connectChannelEntity as? Set<ConnectChannelEntity> ?? [])
                             .compactMap { channelEntity in
                                 let socialMediaType = SocialMediaType(rawValue: channelEntity.socialMediaType) ?? .email
-                                    
+                                
                                 
                                 return ConnectChannel(
                                     id: channelEntity.id,
@@ -88,6 +89,10 @@ final class ContactListViewModel: ObservableObject {
         //MocData.contacts
     }
     
+    func findContact(by id: String?) -> Contact? {
+        return contacts.first { $0.idString == id }
+    }
+    
     func filteredContacts() -> [Contact] {
         if searchQuery.isEmpty {
             return contacts
@@ -98,3 +103,4 @@ final class ContactListViewModel: ObservableObject {
         }
     }
 }
+

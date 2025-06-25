@@ -7,13 +7,7 @@
 
 import Foundation
 
-protocol Contactable {
-    var idString: String { get }
-    var name: String { get set }
-    var birthday: Date? { get set }
-}
-
-struct Contact: Contactable, Hashable, Identifiable {
+struct Contact: Hashable, Identifiable {
     var id = UUID()
     var idString: String { id.uuidString }
     

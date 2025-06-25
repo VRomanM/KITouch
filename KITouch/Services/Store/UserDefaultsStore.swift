@@ -12,7 +12,7 @@ final class UserDefaultsStore {
     //MARK: - Properties
     
     enum Key: String {
-        case pendingContactId
+        case ExampleKey
     }
     
     private let userDefaults = UserDefaults.standard
