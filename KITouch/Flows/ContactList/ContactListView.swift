@@ -7,11 +7,17 @@
 
 import SwiftUI
 
+fileprivate enum ContactRoute: Hashable {
+    case detail(contact: Contact)
+    case settings
+    case newContact
+}
+
 struct ContactListView: View {
     @StateObject var viewModel = ContactListViewModel()
-
+    
     var body: some View {
-        NavigationStack {
+        NavigationStack(path: $viewModel.navigationPath) {
             ZStack {
                 BackgroundView()
                 VStack(spacing: 0) {
@@ -37,19 +43,30 @@ struct ContactListView: View {
 
                     List {
                         ForEach(viewModel.filteredContacts()) { contact in
-                            NavigationLink(value: contact) {
-                                ContactView(contact: contact)
-                            }
+                            ContactView(contact: contact)
+                                .onTapGesture {
+                                    viewModel.navigationPath.append(ContactRoute.detail(contact: contact))
+                                }
                         }
                     }
                     .scrollContentBackground(.hidden)
                     .navigationBarTitleDisplayMode(.inline)
                     .listStyle(.insetGrouped)
                     .listRowSpacing(10)
+                    .navigationDestination(for: ContactRoute.self) { route in
+                                    switch route {
+                                    case .detail(let contact):
+                                        ContactDetailView(contactListViewModel: viewModel, contact: contact)
+                                    case .settings:
+                                        SettingsView()
+                                    case .newContact:
+                                        ContactDetailView(contactListViewModel: viewModel, contact: Contact())
+                                    }
+                                }
                     .toolbar {
                         ToolbarItem(placement: .navigationBarLeading) {
                             Button(action: {
-                                viewModel.showSettings = true
+                                viewModel.navigationPath.append(ContactRoute.settings)
                             }) {
                                 Image(systemName: "line.horizontal.3")
                                     .foregroundColor(.white)
@@ -58,7 +75,7 @@ struct ContactListView: View {
 
                         ToolbarItem(placement: .navigationBarTrailing) {
                             Button(action: {
-                                viewModel.showNew = true
+                                viewModel.navigationPath.append(ContactRoute.newContact)
                             }) {
                                 Image(systemName: "plus")
                                     .foregroundColor(.white)
@@ -67,22 +84,22 @@ struct ContactListView: View {
                     }
                 }
             }
-            .navigationDestination(for: Contact.self) { contact in
-                ContactDetailView(contactListViewModel: viewModel,
-                                  contact: contact)
+            .onNotification { notification in
+                DispatchQueue.main.async {
+                    // Переход осуществялем через главную очередь, т.к. если в момент перехода с Пуша приложение было закрыто происходит инициализация
+                    // экземпляра класса viewModel и первичная загрузка контактов из CoreData, так же в главном потоке
+                    if let contactId = notification.notification.request.content.userInfo["contactId"] as? String,
+                       let contact = viewModel.findContact(by: contactId) {
+                        viewModel.navigationPath.append(ContactRoute.detail(contact: contact))
+                    }
+                }
             }
-            .navigationDestination(isPresented: $viewModel.showNew) {
-                ContactDetailView(contactListViewModel: viewModel,
-                                  contact: Contact())
-            }
-            .navigationDestination(isPresented: $viewModel.showSettings) {
-                SettingsView()
+            .onOpenURL { url in
+                // Обработка deep links
             }
         }
     }
 }
-
-
 
 #Preview {
     ContactListView()
@@ -108,10 +125,10 @@ struct ContactView: View {
                 .aspectRatio(contentMode: .fit)
             VStack(alignment: .leading) {
                 Spacer()
-                Text(contact.name)
+                Text(NSLocalizedString(contact.name, comment: ""))
                     .font(.title2)
                     .fontWeight(.semibold)
-                Text(contact.contactType)
+                Text(NSLocalizedString(contact.contactType, comment: ""))
                     .font(.subheadline)
                     .foregroundStyle(.gray)
                 Spacer()

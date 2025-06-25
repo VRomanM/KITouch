@@ -9,6 +9,9 @@ import SwiftUI
 
 @main
 struct KITouchApp: App {
+    // MARK: - AppDelegate
+    @UIApplicationDelegateAdaptor var appDelegate: CustomAppDelegate
+    
     var body: some Scene {
         WindowGroup {
             ContactListView()

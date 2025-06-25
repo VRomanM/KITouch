@@ -6,6 +6,7 @@
 //
 
 import Combine
+import Foundation
 
 final class ContactDetailViewModel: ObservableObject {
     
@@ -19,6 +20,7 @@ final class ContactDetailViewModel: ObservableObject {
     
     //MARK: - Private properties
     
+    private let notificationManager = NotificationManager.sharedManager
     private var contactListViewModel: ContactListViewModel?
     private let coreDataManager = CoreDataManager.sharedManager
     
@@ -30,6 +32,12 @@ final class ContactDetailViewModel: ObservableObject {
         return digits.count == 11 // Для российских номеров
     }
     var contact: Contact
+    var unwrapBirthday: Date {
+        didSet {
+            contact.birthday = unwrapBirthday
+        }
+    }
+    
     @Published var isShowingConnectChannelsListView = false
     @Published var editingElement: EditingElement = .nothing
     
@@ -37,6 +45,7 @@ final class ContactDetailViewModel: ObservableObject {
     
     init(contactListViewModel: ContactListViewModel?, contact: Contact) {
         self.contact = contact
+        self.unwrapBirthday = contact.birthday ?? Date.now
         self.contactListViewModel = contactListViewModel
     }
     
@@ -44,7 +53,11 @@ final class ContactDetailViewModel: ObservableObject {
       
     func saveContactDetail() {
         // Сохраняем в CoreData
+        if contact.contactType != ContactType.other.rawValue {
+            contact.customContactType = ""
+        }
         coreDataManager.saveContact(contact: contact) { _ in }
+        notificationManager.scheduleBirthdayNotification(for: contact)
         contactListViewModel?.loadData()
     }
     

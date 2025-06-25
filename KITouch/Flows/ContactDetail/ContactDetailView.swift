@@ -55,9 +55,6 @@ struct ContactDetailView: View {
                         ForEach(ContactType.allCases) { type in
                             Button(type.localizedValue) {
                                 viewModel.contact.contactType = type.rawValue
-                                if type != .other {
-                                    viewModel.contact.customContactType = ""
-                                }
                                 viewModel.editingElement = .nothing
                             }
                         }
@@ -141,7 +138,7 @@ struct ContactDetailView: View {
                             .foregroundColor(.gray)
                         
                         DatePicker(
-                            LocalizedStringKey(""), selection: $viewModel.contact.birthday,
+                            LocalizedStringKey(""), selection: $viewModel.unwrapBirthday,
                             in: dateRange,
                             displayedComponents: .date
                         ).datePickerStyle(.compact)

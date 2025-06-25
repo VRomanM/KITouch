@@ -9,6 +9,7 @@
 "App Information" = "Информация о приложении";
 
 "Birthdate" = "Дата рождения";
+"Birthday%@" = "День рождения";
 
 "Cancel" = "Отмена";
 "Colleague" = "Коллега";
@@ -39,5 +40,6 @@
 "Soc. media" = "Соц. сети";
 
 "Talked %@" = "Общались %@";
+"Today is the birthday of %@" = "Сегодня день рождения у %@";
 
 "Unknown" = "Неизвестно";
