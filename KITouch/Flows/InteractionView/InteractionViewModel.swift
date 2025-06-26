@@ -23,7 +23,7 @@ final class InteractionViewModel: ObservableObject {
         self.contactDetailViewModel = contactDetailViewModel
         self.existingInteraction = nil // Явно указываем, что это новое взаимодействие
     }
-
+    
     // Инициализатор для редактирования существующего взаимодействия
     init(interaction: Interaction, contactDetailViewModel: ContactDetailViewModel) {
         self.contactId = interaction.contactId

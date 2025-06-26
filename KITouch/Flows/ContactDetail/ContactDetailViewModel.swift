@@ -69,7 +69,7 @@ final class ContactDetailViewModel: ObservableObject {
         notificationManager.scheduleBirthdayNotification(for: contact)
         contactListViewModel?.loadData()
     }
-
+    
     func formatPhoneNumber(_ newValue: String) {
         let cleanNumber = newValue.filter { $0.isNumber }
         var result = ""

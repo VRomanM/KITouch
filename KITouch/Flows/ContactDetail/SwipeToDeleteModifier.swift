@@ -13,7 +13,6 @@ struct SimpleSwipeToDeleteModifier: ViewModifier {
 
     func body(content: Content) -> some View {
         ZStack {
-            // Фон с кнопкой удаления
             HStack {
                 Spacer()
                 Button(action: onDelete) {
@@ -25,7 +24,6 @@ struct SimpleSwipeToDeleteModifier: ViewModifier {
                 }
             }
 
-            // Основной контент
             content
                 .background(Color(.systemBackground))
                 .offset(x: offset)

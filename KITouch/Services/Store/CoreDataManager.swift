@@ -145,7 +145,7 @@ final class CoreDataManager {
     func saveInteraction(interaction: Interaction, completion: @escaping (Bool) -> Void) {
         let context = persistentContainer.viewContext
         let interactionEntity = InteractionEntity(context: context)
-        interactionEntity.id = interaction.id // ДОБАВЬТЕ ЭТУ СТРОКУ
+        interactionEntity.id = interaction.id 
         interactionEntity.date = interaction.date
         interactionEntity.notes = interaction.notes
         interactionEntity.contactId = interaction.contactId
@@ -182,8 +182,6 @@ final class CoreDataManager {
         }
     }
 
-
-    // Добавьте этот метод в CoreDataManager
     func updateInteraction(interaction: Interaction, completion: @escaping (Result<Void, Error>) -> Void) {
         let context = persistentContainer.viewContext
         let request: NSFetchRequest<InteractionEntity> = InteractionEntity.fetchRequest()
