@@ -39,6 +39,7 @@ final class ContactDetailViewModel: ObservableObject {
     }
     
     @Published var isShowingConnectChannelsListView = false
+    @Published var isEmojiPickerPresented = false
     @Published var editingElement: EditingElement = .nothing
     
     //MARK: - Constructions

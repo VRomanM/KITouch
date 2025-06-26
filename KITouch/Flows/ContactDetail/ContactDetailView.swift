@@ -13,7 +13,6 @@ struct ContactDetailView: View {
     private let columns: [GridItem] = [GridItem(.flexible(),alignment: .leading),
                                GridItem(.flexible(), alignment: .leading)]
     @StateObject var viewModel: ContactDetailViewModel
-
     private let dateRange: ClosedRange<Date> = {
         let calendar = Calendar.current
         let minDate = calendar.date(byAdding: .year, value: -120, to: Date())!
@@ -25,13 +24,16 @@ struct ContactDetailView: View {
     var body: some View {
         ScrollView {
             VStack {
-                Image(systemName: viewModel.contact.imageName)
-                    .resizable()
-                    .frame(width: 250, height: 250)
-                    .foregroundStyle(.tint)
-                    .aspectRatio(contentMode: .fit)
-                    .cornerRadius(5)
-                    .padding()
+                Button {
+                    viewModel.isEmojiPickerPresented = true
+                } label: {
+                    Text(viewModel.contact.imageName)
+                        .font(.system(size: 40))
+                        .padding()
+                }
+                .sheet(isPresented: $viewModel.isEmojiPickerPresented) {
+                    EmojiPickerView(selectedEmoji: $viewModel.contact.imageName)
+                }
                 
                 VStack(alignment: .leading, spacing: 12) {
                     TextField("Contact name", text: $viewModel.contact.name) { isEditing in
@@ -190,6 +192,42 @@ struct ContactDetailView: View {
     }
 }
 
+struct EmojiPickerView: View {
+    @Binding var selectedEmoji: String
+    @Environment(\.dismiss) var dismiss
+    
+    let emojis = ["😀", "😎", "🤩", "😍", "🥳", "🤠", "👻", "🐶", "🦊", "🐵", "🦄", "🌈", "🎮", "⚽️", "🎸", "🍕"]
+    
+    var body: some View {
+        NavigationView {
+            ScrollView {
+                LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 5), spacing: 20) {
+                    ForEach(emojis, id: \.self) { emoji in
+                        Button {
+                            selectedEmoji = emoji
+                            dismiss()
+                        } label: {
+                            Text(emoji)
+                                .font(.system(size: 40))
+                                .frame(width: 60, height: 60)
+                        }
+                    }
+                }
+                .padding()
+            }
+            .navigationTitle("Choose Emoji")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Cancel") {
+                        dismiss()
+                    }
+                }
+            }
+        }
+    }
+}
+
 struct NetworkView: View {
     let connectChannel: ConnectChannel
     
@@ -202,19 +240,6 @@ struct NetworkView: View {
             Text(connectChannel.login)
                 .font(.footnote)
                 .fontWeight(.light)
-        }
-    }
-}
-
-extension View {
-    func dismissKeyboard() -> some View {
-        self.onTapGesture {
-            UIApplication.shared.sendAction(
-                #selector(UIResponder.resignFirstResponder),
-                to: nil,
-                from: nil,
-                for: nil
-            )
         }
     }
 }

@@ -14,7 +14,7 @@ struct Contact: Hashable, Identifiable {
     var name: String
     var contactType: String
     var customContactType: String = ""
-    let imageName: String
+    var imageName: String
     let lastMessage: Date
     let countMessages: Int
     var phone: String
@@ -43,7 +43,7 @@ struct Contact: Hashable, Identifiable {
         self.name = ""
         self.contactType = ""
         self.customContactType = ""
-        self.imageName = "person"
+        self.imageName = "😎"
         self.lastMessage = Date.distantPast
         self.countMessages = 0
         self.phone = ""

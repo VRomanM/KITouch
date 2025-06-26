@@ -118,11 +118,9 @@ struct ContactView: View {
     
     var body: some View {
         HStack {
-            Image(systemName: contact.imageName)
-                .resizable()
-                .frame(width: 80, height: 80)
-                .foregroundStyle(.tint)
-                .aspectRatio(contentMode: .fit)
+            Text(contact.imageName)
+                .font(.system(size: 40))
+                .padding()
             VStack(alignment: .leading) {
                 Spacer()
                 Text(contact.name.localized())
