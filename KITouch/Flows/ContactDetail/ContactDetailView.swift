@@ -173,16 +173,18 @@ struct ContactDetailView: View {
                 content: {
                     ConnectChannelsListView(viewModel: ConnectChannelsListViewModel(contactDetalViewModel: viewModel))
                 }
-                Button(action: {
-                    viewModel.saveContactDetail()
-                    dismiss()
-                }) {
-                    KITButton(text: "Save")
-                }
                 Spacer()
             }
         }
         .dismissKeyboard()
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                Button("Save") {
+                    viewModel.saveContactDetail()
+                    dismiss()
+                }
+            }
+        }
     }
     
     init(contactListViewModel: ContactListViewModel, contact: Contact) {
