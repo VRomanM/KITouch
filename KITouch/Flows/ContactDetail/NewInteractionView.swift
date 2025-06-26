@@ -24,7 +24,7 @@ struct NewInteractionView: View {
                         .frame(minHeight: 100)
                 }
             }
-            .navigationTitle("Новое взаимодействие")
+            .navigationTitle(viewModel.isEditing ? "Редактировать взаимодействие" : "Новое взаимодействие")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {

@@ -18,4 +18,12 @@ struct Interaction: Hashable, Identifiable {
         self.notes = notes
         self.contactId = contactId
     }
+
+    init(id: UUID, date: Date, notes: String, contactId: UUID) {
+        self.id = id
+        self.date = date
+        self.notes = notes
+        self.contactId = contactId
+    }
 }
+
