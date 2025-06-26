@@ -61,7 +61,7 @@ struct ContactDetailView: View {
                     }
                     label: {
                         HStack {
-                            Text(NSLocalizedString(viewModel.contact.contactType.isEmpty ? "Unknown" : viewModel.contact.contactType, comment: ""))
+                            Text(viewModel.contact.contactType.isEmpty ? "Unknown".localized() : viewModel.contact.contactType.localized())
                                 .foregroundColor(.primary)
                             Spacer()
                             Image(systemName: "chevron.down")

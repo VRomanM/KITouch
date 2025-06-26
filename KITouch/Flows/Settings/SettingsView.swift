@@ -10,13 +10,13 @@ import SwiftUI
 struct SettingsView: View {
     var body: some View {
         List {
-            NavigationLink(NSLocalizedString("About App", comment: ""),
-                          destination: Text(NSLocalizedString("App Information", comment: "")))
-            NavigationLink(NSLocalizedString("Leave Feedback", comment: ""),
-                          destination: Text(NSLocalizedString("Feedback Form", comment: "")))
-            NavigationLink(NSLocalizedString("Notifications", comment: ""),
-                          destination: Text(NSLocalizedString("Notification Settings", comment: "")))
+            NavigationLink("About App",
+                          destination: Text("App Information"))
+            NavigationLink("Leave Feedback",
+                          destination: Text("Feedback Form"))
+            NavigationLink("Notifications",
+                          destination: Text("Notification Settings"))
         }
-        .navigationTitle(NSLocalizedString("Settings", comment: ""))
+        .navigationTitle("Settings")
     }
 }

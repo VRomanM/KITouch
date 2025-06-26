@@ -11,7 +11,7 @@ struct KITButton: View {
     let text: String
     
     var body: some View {
-        Text(NSLocalizedString(text, comment: ""))
+        Text(text.localized())
             .font(.headline)
             .frame(width: 280, height: 50)
             .background(.blue)

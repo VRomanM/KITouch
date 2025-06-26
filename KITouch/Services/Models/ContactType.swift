@@ -9,7 +9,7 @@ import Foundation
 
 enum ContactType: String, CaseIterable, Identifiable {
     var id: String { rawValue }
-    var localizedValue: String { NSLocalizedString(rawValue, comment: "") }
+    var localizedValue: String { rawValue.localized() }
     
     case relative = "Relative"
     case colleague = "Colleague"

@@ -70,8 +70,8 @@ final class NotificationManager: ObservableObject {
         
         // Создаем содержимое уведомления
         let content = UNMutableNotificationContent()
-        content.title           = NSLocalizedString("Birthday", comment: "")
-        content.body            = NSLocalizedString("Today is the birthday of \(contact.name)", comment: "")
+        content.title           = "Birthday%@".localized(with: "!")
+        content.body            = "Today is the birthday of %@".localized(with: contact.name)
         content.sound           = UNNotificationSound.default
         content.userInfo        = [
             "contactId": contact.idString
