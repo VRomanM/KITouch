@@ -40,13 +40,16 @@ final class ContactDetailViewModel: ObservableObject {
     
     @Published var isShowingConnectChannelsListView = false
     @Published var editingElement: EditingElement = .nothing
-    
+    @Published var isShowingNewInteractionView = false
+    @Published var interactions: [Interaction] = []
+
     //MARK: - Constructions
     
     init(contactListViewModel: ContactListViewModel?, contact: Contact) {
         self.contact = contact
         self.unwrapBirthday = contact.birthday ?? Date.now
         self.contactListViewModel = contactListViewModel
+        loadInteractions()
     }
     
     //MARK: - Function
@@ -84,6 +87,14 @@ final class ContactDetailViewModel: ObservableObject {
             }
         }
         contact.phone = result
+    }
+
+    func loadInteractions() {
+        coreDataManager.fetchInteractions(for: contact.id) { [weak self] interactions in
+            DispatchQueue.main.async {
+                self?.interactions = interactions
+            }
+        }
     }
 }
 

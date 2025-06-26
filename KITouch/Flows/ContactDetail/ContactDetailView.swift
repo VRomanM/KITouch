@@ -173,7 +173,40 @@ struct ContactDetailView: View {
                 content: {
                     ConnectChannelsListView(viewModel: ConnectChannelsListViewModel(contactDetalViewModel: viewModel))
                 }
+
+                // Добавьте после секции с социальными сетями, перед Spacer()
+                Divider()
+
+                HStack {
+                    Text("Последнее взаимодействие")
+                        .font(.callout)
+                        .foregroundColor(.gray)
+                    Spacer()
+                    Button {
+                        viewModel.isShowingNewInteractionView = true
+                    } label: {
+                        Image(systemName: "plus")
+                            .resizable()
+                            .frame(width: 20, height: 20)
+                    }
+                }
+                .padding(.horizontal, 16)
+                .padding(.top, 8)
+                .fullScreenCover(isPresented: $viewModel.isShowingNewInteractionView) {
+                    NewInteractionView(viewModel: NewInteractionViewModel(contactId: viewModel.contact.id, contactDetailViewModel: viewModel))
+                }
+
+                // Таблица взаимодействий
+                LazyVStack(spacing: 8) {
+                    ForEach(viewModel.interactions) { interaction in
+                        InteractionRowView(interaction: interaction)
+                    }
+                }
+                .padding(.horizontal, 16)
+                .padding(.bottom, 16)
+
                 Spacer()
+
             }
         }
         .dismissKeyboard()
