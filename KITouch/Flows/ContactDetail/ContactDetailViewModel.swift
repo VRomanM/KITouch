@@ -124,4 +124,24 @@ final class ContactDetailViewModel: ObservableObject {
             }
         }
     }
+
+    func deleteInteraction(_ interaction: Interaction) {
+        // Удаляем из локального массива
+        interactions.removeAll { $0.id == interaction.id }
+
+        // Удаляем из CoreData
+        coreDataManager.deleteInteraction(interaction) { [weak self] result in
+            switch result {
+            case .success:
+                print("Interaction deleted successfully from CoreData")
+            case .failure(let error):
+                print("Failed to delete interaction from CoreData: \(error)")
+                // В случае ошибки перезагружаем данные
+                DispatchQueue.main.async {
+                    self?.loadInteractions()
+                }
+            }
+        }
+    }
+
 }

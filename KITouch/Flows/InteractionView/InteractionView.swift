@@ -7,34 +7,34 @@
 
 import SwiftUI
 
-struct NewInteractionView: View {
+struct InteractionView: View {
     @Environment(\.dismiss) private var dismiss
-    @StateObject var viewModel: NewInteractionViewModel
+    @StateObject var viewModel: InteractionViewModel
 
     var body: some View {
         NavigationView {
             Form {
                 Section {
-                    DatePicker("Дата", selection: $viewModel.date, displayedComponents: .date)
+                    DatePicker("Date", selection: $viewModel.date, displayedComponents: .date)
                         .datePickerStyle(.compact)
                 }
 
-                Section("Заметки") {
+                Section("Notes") {
                     TextEditor(text: $viewModel.notes)
                         .frame(minHeight: 100)
                 }
             }
-            .navigationTitle(viewModel.isEditing ? "Редактировать взаимодействие" : "Новое взаимодействие")
+            .navigationTitle(viewModel.isEditing ? "Edit" : "New Interaction")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
-                    Button("Отмена") {
+                    Button("Cancel") {
                         dismiss()
                     }
                 }
 
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("Готово") {
+                    Button("Done") {
                         viewModel.saveInteraction()
                         dismiss()
                     }

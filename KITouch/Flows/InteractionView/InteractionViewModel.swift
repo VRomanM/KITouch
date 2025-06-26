@@ -8,7 +8,7 @@
 import Foundation
 import Combine
 
-final class NewInteractionViewModel: ObservableObject {
+final class InteractionViewModel: ObservableObject {
     @Published var date = Date()
     @Published var notes = ""
 

@@ -85,6 +85,7 @@ struct ContactDetailView: View {
                     Text("Talked \(viewModel.contact.lastMessage, format: .dateTime.day().month().year())")
                         .font(.title2)
                         .foregroundColor(.gray)
+                        .padding(.horizontal, 16)
 
                     VStack(alignment: .leading) {
                         VStack(alignment: .leading, spacing: 12) {
@@ -159,6 +160,8 @@ struct ContactDetailView: View {
                                     .frame(width: 20, height: 20)
                             }
                         }
+                        .padding(.horizontal, 16)
+
 
                         LazyVGrid(columns: columns) {
                             ForEach(viewModel.contact.connectChannels) { connectChannel in
@@ -174,7 +177,7 @@ struct ContactDetailView: View {
                         Divider()
 
                         HStack {
-                            Text("Последнее взаимодействие")
+                            Text("Last interaction")
                                 .font(.callout)
                                 .foregroundColor(.gray)
                             Spacer()
@@ -189,7 +192,7 @@ struct ContactDetailView: View {
                         .padding(.horizontal, 16)
                         .padding(.top, 8)
                         .fullScreenCover(isPresented: $viewModel.isShowingNewInteractionView) {
-                            NewInteractionView(viewModel: NewInteractionViewModel(contactId: viewModel.contact.id, contactDetailViewModel: viewModel))
+                            InteractionView(viewModel: InteractionViewModel(contactId: viewModel.contact.id, contactDetailViewModel: viewModel))
                         }
 
                         // Таблица взаимодействий
@@ -200,13 +203,16 @@ struct ContactDetailView: View {
                                         viewModel.selectedInteraction = interaction
                                         viewModel.isShowingEditInteractionView = true
                                     }
+                                    .swipeToDelete {
+                                        viewModel.deleteInteraction(interaction)
+                                    }
                             }
                         }
                         .padding(.horizontal, 16)
                         .padding(.bottom, 16)
                         .fullScreenCover(isPresented: $viewModel.isShowingEditInteractionView) {
                             if let interaction = viewModel.selectedInteraction {
-                                NewInteractionView(viewModel: NewInteractionViewModel(
+                                InteractionView(viewModel: InteractionViewModel(
                                     interaction: interaction,
                                     contactDetailViewModel: viewModel
                                 ))

@@ -218,4 +218,25 @@ final class CoreDataManager {
             completion(.failure(error))
         }
     }
+
+    func deleteInteraction(_ interaction: Interaction, completion: @escaping (Result<Void, Error>) -> Void) {
+        let context = persistentContainer.viewContext
+        let request: NSFetchRequest<InteractionEntity> = InteractionEntity.fetchRequest()
+        request.predicate = NSPredicate(format: "id == %@", interaction.id as CVarArg)
+
+        do {
+            let results = try context.fetch(request)
+            if let entity = results.first {
+                context.delete(entity)
+                try context.save()
+                completion(.success(()))
+            } else {
+                let error = NSError(domain: "InteractionNotFound", code: 404,
+                                  userInfo: [NSLocalizedDescriptionKey: "Interaction with ID \(interaction.id) not found"])
+                completion(.failure(error))
+            }
+        } catch {
+            completion(.failure(error))
+        }
+    }
 }

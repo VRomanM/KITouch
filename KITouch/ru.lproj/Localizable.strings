@@ -16,9 +16,13 @@
 "Contacts" = "Контакты";
 "Contact name" = "Имя контакта";
 
+"Date" = "Дата";
+"Done" = "Готово";
+
 "Enter the contact type" = "Введите тип контакта";
 "Enter the correct phone number" = "Введите корректный номер";
 "Enter login" = "Введите логин";
+"Edit" = "Редактировать";
 
 "Feedback Form" = "Форма для отзыва";
 "Friend" = "Друг";
@@ -29,6 +33,8 @@
 
 "Notifications" = "Уведомления";
 "Notification Settings" = "Настройки уведомлений";
+"Notes" = "Заметки";
+"New Interaction" = "Новое взаимодействие";
 
 "Phone" = "Телефон";
 
@@ -38,7 +44,7 @@
 "Search" = "Поиск";
 "Settings" = "Настройки";
 "Soc. media" = "Соц. сети";
-
+"Last interaction" = "Последнее взаимодействие";
 "Talked %@" = "Общались %@";
 "Today is the birthday of %@" = "Сегодня день рождения у %@";
 
