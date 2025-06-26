@@ -144,41 +144,41 @@ final class CoreDataManager {
 
     func saveInteraction(interaction: Interaction, completion: @escaping (Bool) -> Void) {
         let context = persistentContainer.viewContext
-//
-//        let interactionEntity = InteractionEntity(context: context)
-//        interactionEntity.id = interaction.id
-//        interactionEntity.date = interaction.date
-//        interactionEntity.notes = interaction.notes
-//        interactionEntity.contactId = interaction.contactId
-//
-//        do {
-//            try context.save()
-//            completion(true)
-//        } catch {
-//            print("Ошибка сохранения взаимодействия: \(error)")
-//            completion(false)
-//        }
+
+        let interactionEntity = InteractionEntity(context: context)
+        interactionEntity.id = interaction.id
+        interactionEntity.date = interaction.date
+        interactionEntity.notes = interaction.notes
+        interactionEntity.contactId = interaction.contactId
+
+        do {
+            try context.save()
+            completion(true)
+        } catch {
+            print("Ошибка сохранения взаимодействия: \(error)")
+            completion(false)
+        }
     }
 
     func fetchInteractions(for contactId: UUID, completion: @escaping ([Interaction]) -> Void) {
-//        let context = persistentContainer.viewContext
-//        let request: NSFetchRequest<InteractionEntity> = InteractionEntity.fetchRequest()
-//        request.predicate = NSPredicate(format: "contactId == %@", contactId as CVarArg)
-//        request.sortDescriptors = [NSSortDescriptor(keyPath: \InteractionEntity.date, ascending: false)]
-//
-//        do {
-//            let interactionEntities = try context.fetch(request)
-//            let interactions = interactionEntities.map { entity in
-//                Interaction(
-//                    date: entity.date ?? Date(),
-//                    notes: entity.notes ?? "",
-//                    contactId: entity.contactId ?? UUID()
-//                )
-//            }
-//            completion(interactions)
-//        } catch {
-//            print("Ошибка загрузки взаимодействий: \(error)")
-//            completion([])
-//        }
+        let context = persistentContainer.viewContext
+        let request: NSFetchRequest<InteractionEntity> = InteractionEntity.fetchRequest()
+        request.predicate = NSPredicate(format: "contactId == %@", contactId as CVarArg)
+        request.sortDescriptors = [NSSortDescriptor(keyPath: \InteractionEntity.date, ascending: false)]
+
+        do {
+            let interactionEntities = try context.fetch(request)
+            let interactions = interactionEntities.map { entity in
+                Interaction(
+                    date: entity.date ?? Date(),
+                    notes: entity.notes ?? "",
+                    contactId: entity.contactId ?? UUID()
+                )
+            }
+            completion(interactions)
+        } catch {
+            print("Ошибка загрузки взаимодействий: \(error)")
+            completion([])
+        }
     }
 }
