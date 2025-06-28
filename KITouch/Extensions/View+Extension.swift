@@ -11,7 +11,15 @@ extension View {
     func onNotification(perform action: @escaping (UNNotificationResponse) -> Void) -> some View {
         modifier(NotificationViewModifier(onNotification: action, handler: NotificationManager.sharedManager))
     }
-    
+}
+
+extension View {
+    func swipeToDelete(onDelete: @escaping () -> Void) -> some View {
+        self.modifier(SimpleSwipeToDeleteModifier(onDelete: onDelete))
+    }
+}
+
+extension View {
     func dismissKeyboard() -> some View {
         self.onTapGesture {
             UIApplication.shared.sendAction(
@@ -23,3 +31,4 @@ extension View {
         }
     }
 }
+
