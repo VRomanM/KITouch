@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="23605" systemVersion="24B91" minimumToolsVersion="Automatic" sourceLanguage="Swift" usedWithSwiftData="YES" userDefinedModelVersionIdentifier="">
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="23605" systemVersion="24E263" minimumToolsVersion="Automatic" sourceLanguage="Swift" usedWithSwiftData="YES" userDefinedModelVersionIdentifier="">
     <entity name="ConnectChannelEntity" representedClassName="ConnectChannelEntity" syncable="YES">
         <attribute name="id" attributeType="UUID" usesScalarValueType="NO"/>
         <attribute name="login" attributeType="String" defaultValueString=""/>
@@ -17,5 +17,13 @@
         <attribute name="name" attributeType="String"/>
         <attribute name="phone" attributeType="String" defaultValueString=""/>
         <relationship name="connectChannelEntity" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="ConnectChannelEntity" inverseName="contactEntity" inverseEntity="ConnectChannelEntity"/>
+        <relationship name="interectionEntity" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="InteractionEntity" inverseName="relationship" inverseEntity="InteractionEntity"/>
+    </entity>
+    <entity name="InteractionEntity" representedClassName="InteractionEntity" syncable="YES">
+        <attribute name="contactId" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="date" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="id" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="notes" optional="YES" attributeType="String"/>
+        <relationship name="relationship" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="ContactEntity" inverseName="interectionEntity" inverseEntity="ContactEntity"/>
     </entity>
 </model>
