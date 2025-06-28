@@ -44,12 +44,12 @@ final class ContactDetailViewModel: ObservableObject {
     }
 
     @Published var isShowingConnectChannelsListView = false
+    @Published var isEmojiPickerPresented = false
     @Published var editingElement: EditingElement = .nothing
     @Published var isShowingNewInteractionView = false
     @Published var isShowingEditInteractionView = false
     @Published var selectedInteraction: Interaction?
     @Published var interactions: [Interaction] = []
-    @Published var isEmojiPickerPresented = false
 
     //MARK: - Constructions
     init(contactListViewModel: ContactListViewModel?, contact: Contact) {

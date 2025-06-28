@@ -12,7 +12,6 @@ struct ContactDetailView: View {
     private let columns: [GridItem] = [GridItem(.flexible(),alignment: .leading),
                                      GridItem(.flexible(), alignment: .leading)]
     @StateObject var viewModel: ContactDetailViewModel
-
     private let dateRange: ClosedRange<Date> = {
         let calendar = Calendar.current
         let minDate = calendar.date(byAdding: .year, value: -120, to: Date())!
@@ -33,7 +32,6 @@ struct ContactDetailView: View {
                 .sheet(isPresented: $viewModel.isEmojiPickerPresented) {
                     EmojiPickerView(selectedEmoji: $viewModel.contact.imageName)
                 }
-
                 VStack(alignment: .leading, spacing: 12) {
                     TextField("Contact name", text: $viewModel.contact.name) { isEditing in
                         viewModel.editingElement = isEditing ? .contactName : .nothing
@@ -66,6 +64,15 @@ struct ContactDetailView: View {
                                 Image(systemName: "chevron.down")
                                     .foregroundColor(.gray)
                             }
+                    }
+                        .padding(.horizontal, 16)
+                        .padding(.vertical, 12)
+                    }
+                    
+                    if viewModel.contact.contactType == ContactType.other.rawValue {
+                        TextField("Enter the contact type", text: $viewModel.contact.customContactType) { isEditing in
+                            viewModel.editingElement = isEditing ? .contactType : .nothing
+                        }
                             .padding(.horizontal, 16)
                             .padding(.vertical, 12)
                         }
@@ -226,7 +233,7 @@ struct ContactDetailView: View {
 
                 Spacer()
             }
-        }
+
         .dismissKeyboard()
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
@@ -243,28 +250,12 @@ struct ContactDetailView: View {
     }
 }
 
-struct NetworkView: View {
-    let connectChannel: ConnectChannel
-
-    var body: some View {
-        HStack {
-            Image(connectChannel.socialMediaType.icon)
-                .resizable()
-                .aspectRatio(contentMode: .fill)
-                .frame(width: 30, height: 30)
-            Text(connectChannel.login)
-                .font(.footnote)
-                .fontWeight(.light)
-        }
-    }
-}
-
 struct EmojiPickerView: View {
     @Binding var selectedEmoji: String
     @Environment(\.dismiss) var dismiss
-
+    
     let emojis = ["😀", "😎", "🤩", "😍", "🥳", "🤠", "👻", "🐶", "🦊", "🐵", "🦄", "🌈", "🎮", "⚽️", "🎸", "🍕"]
-
+    
     var body: some View {
         NavigationView {
             ScrollView {
@@ -291,6 +282,22 @@ struct EmojiPickerView: View {
                     }
                 }
             }
+        }
+    }
+}
+
+struct NetworkView: View {
+    let connectChannel: ConnectChannel
+
+    var body: some View {
+        HStack {
+            Image(connectChannel.socialMediaType.icon)
+                .resizable()
+                .aspectRatio(contentMode: .fill)
+                .frame(width: 30, height: 30)
+            Text(connectChannel.login)
+                .font(.footnote)
+                .fontWeight(.light)
         }
     }
 }

@@ -1,5 +1,5 @@
 //
-//  View+Notifications.swift
+//  View+Extension.swift
 //  KITouch
 //
 //  Created by Роман Вертячих on 23.06.2025.
@@ -31,3 +31,4 @@ extension View {
         }
     }
 }
+

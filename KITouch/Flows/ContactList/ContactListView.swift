@@ -118,17 +118,15 @@ struct ContactView: View {
     
     var body: some View {
         HStack {
-            Image(systemName: contact.imageName)
-                .resizable()
-                .frame(width: 80, height: 80)
-                .foregroundStyle(.tint)
-                .aspectRatio(contentMode: .fit)
+            Text(contact.imageName)
+                .font(.system(size: 40))
+                .padding()
             VStack(alignment: .leading) {
                 Spacer()
-                Text(NSLocalizedString(contact.name, comment: ""))
+                Text(contact.name.localized())
                     .font(.title2)
                     .fontWeight(.semibold)
-                Text(NSLocalizedString(contact.contactType, comment: ""))
+                Text(contact.contactType.localized())
                     .font(.subheadline)
                     .foregroundStyle(.gray)
                 Spacer()
