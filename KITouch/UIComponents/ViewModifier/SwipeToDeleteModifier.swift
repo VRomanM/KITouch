@@ -48,10 +48,3 @@ struct SimpleSwipeToDeleteModifier: ViewModifier {
         .clipped()
     }
 }
-
-
-extension View {
-    func swipeToDelete(onDelete: @escaping () -> Void) -> some View {
-        self.modifier(SimpleSwipeToDeleteModifier(onDelete: onDelete))
-    }
-}

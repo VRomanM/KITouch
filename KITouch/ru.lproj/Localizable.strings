@@ -19,10 +19,10 @@
 "Date" = "Дата";
 "Done" = "Готово";
 
+"Edit" = "Редактировать";
 "Enter the contact type" = "Введите тип контакта";
 "Enter the correct phone number" = "Введите корректный номер";
 "Enter login" = "Введите логин";
-"Edit" = "Редактировать";
 
 "Feedback Form" = "Форма для отзыва";
 "Friend" = "Друг";
@@ -31,9 +31,9 @@
 
 "Leave Feedback" = "Оставить отзыв";
 
+"Notes" = "Заметки";
 "Notifications" = "Уведомления";
 "Notification Settings" = "Настройки уведомлений";
-"Notes" = "Заметки";
 "New Interaction" = "Новое взаимодействие";
 
 "Phone" = "Телефон";

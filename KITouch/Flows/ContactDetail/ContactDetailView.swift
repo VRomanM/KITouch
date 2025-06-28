@@ -256,19 +256,6 @@ struct NetworkView: View {
     }
 }
 
-extension View {
-    func dismissKeyboard() -> some View {
-        self.onTapGesture {
-            UIApplication.shared.sendAction(
-                #selector(UIResponder.resignFirstResponder),
-                to: nil,
-                from: nil,
-                for: nil
-            )
-        }
-    }
-}
-
 #Preview {
     ContactDetailView(contactListViewModel: ContactListViewModel(), contact: Contact())
 }
