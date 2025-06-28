@@ -23,13 +23,16 @@ struct ContactDetailView: View {
     var body: some View {
         ScrollView {
             VStack {
-                Image(systemName: viewModel.contact.imageName)
-                    .resizable()
-                    .frame(width: 250, height: 250)
-                    .foregroundStyle(.tint)
-                    .aspectRatio(contentMode: .fit)
-                    .cornerRadius(5)
-                    .padding()
+                Button {
+                    viewModel.isEmojiPickerPresented = true
+                } label: {
+                    Text(viewModel.contact.imageName)
+                        .font(.system(size: 40))
+                        .padding()
+                }
+                .sheet(isPresented: $viewModel.isEmojiPickerPresented) {
+                    EmojiPickerView(selectedEmoji: $viewModel.contact.imageName)
+                }
 
                 VStack(alignment: .leading, spacing: 12) {
                     TextField("Contact name", text: $viewModel.contact.name) { isEditing in
@@ -57,7 +60,7 @@ struct ContactDetailView: View {
                             }
                         } label: {
                             HStack {
-                                Text(NSLocalizedString(viewModel.contact.contactType.isEmpty ? "Unknown" : viewModel.contact.contactType, comment: ""))
+                                Text(viewModel.contact.contactType.isEmpty ? "Unknown".localized() : viewModel.contact.contactType.localized())
                                     .foregroundColor(.primary)
                                 Spacer()
                                 Image(systemName: "chevron.down")
@@ -252,6 +255,42 @@ struct NetworkView: View {
             Text(connectChannel.login)
                 .font(.footnote)
                 .fontWeight(.light)
+        }
+    }
+}
+
+struct EmojiPickerView: View {
+    @Binding var selectedEmoji: String
+    @Environment(\.dismiss) var dismiss
+
+    let emojis = ["😀", "😎", "🤩", "😍", "🥳", "🤠", "👻", "🐶", "🦊", "🐵", "🦄", "🌈", "🎮", "⚽️", "🎸", "🍕"]
+
+    var body: some View {
+        NavigationView {
+            ScrollView {
+                LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 5), spacing: 20) {
+                    ForEach(emojis, id: \.self) { emoji in
+                        Button {
+                            selectedEmoji = emoji
+                            dismiss()
+                        } label: {
+                            Text(emoji)
+                                .font(.system(size: 40))
+                                .frame(width: 60, height: 60)
+                        }
+                    }
+                }
+                .padding()
+            }
+            .navigationTitle("Choose Emoji")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Cancel") {
+                        dismiss()
+                    }
+                }
+            }
         }
     }
 }
