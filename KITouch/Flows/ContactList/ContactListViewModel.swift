@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import ContactsUI
 
 final class ContactListViewModel: ObservableObject {
     

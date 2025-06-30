@@ -11,6 +11,7 @@ fileprivate enum ContactRoute: Hashable {
     case detail(contact: Contact)
     case settings
     case newContact
+    case fromContacts
 }
 
 struct ContactListView: View {
@@ -68,6 +69,11 @@ struct ContactListView: View {
                                         SettingsView()
                                     case .newContact:
                                         ContactDetailView(contactListViewModel: viewModel, contact: Contact())
+                                    case .fromContacts:
+                                        ContactPickerView { contact in
+                                            viewModel.navigationPath.removeLast()
+                                            viewModel.navigationPath.append(ContactRoute.detail(contact: contact))
+                                        }
                                     }
                                 }
                     .toolbar {
@@ -79,11 +85,20 @@ struct ContactListView: View {
                                     .foregroundColor(.white)
                             }
                         }
-
                         ToolbarItem(placement: .navigationBarTrailing) {
-                            Button(action: {
-                                viewModel.navigationPath.append(ContactRoute.newContact)
-                            }) {
+                            Menu {
+                                Button(action: {
+                                    viewModel.navigationPath.append(ContactRoute.newContact)
+                                }) {
+                                    Label("Новый", systemImage: "person.fill.badge.plus")
+                                }
+                                
+                                Button(action: {
+                                    viewModel.navigationPath.append(ContactRoute.fromContacts)
+                                }) {
+                                    Label("Из контактов", systemImage: "person.crop.circle.fill.badge.plus")
+                                }
+                            } label: {
                                 Image(systemName: "plus")
                                     .foregroundColor(.white)
                             }
