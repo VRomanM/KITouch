@@ -24,8 +24,9 @@ final class CoreDataManager {
         return container
     }()
     enum Entities: String {
-        case contact          = "ContactEntity"
-        case connectChannels  = "ConnectChannelsEntity"
+        case contact                = "ContactEntity"
+        case connectChannels        = "ConnectChannelsEntity"
+        case interaction            = "InteractionEntity"
     }
     
     //MARK: - Properties
@@ -51,17 +52,14 @@ final class CoreDataManager {
         }
     }
     
-    private func deleteDataEntity(entity: Entities, completion: @escaping (_ success: Bool, _ results: NSPersistentStoreResult?) -> Void) {
-        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entity.rawValue)
+    private func deleteDataEntity(fetchRequest: NSFetchRequest<NSFetchRequestResult>, completion: @escaping (_ results: NSPersistentStoreResult?, _ error: NSError?) -> Void) {
         let deleteRequest = NSBatchDeleteRequest(fetchRequest: fetchRequest)
-        let managedContext = CoreDataManager.sharedManager.persistentContainer.viewContext
+        let managedContext = persistentContainer.viewContext
         do {
             let results = try managedContext.execute(deleteRequest)
-            completion(true, results)
-            
+            completion(results, nil)
         } catch let error as NSError {
-            print("Could not fetch. \(error), \(error.userInfo)")
-            completion(false, nil)
+            completion(nil, error)
         }
     }
     
@@ -83,6 +81,8 @@ final class CoreDataManager {
     }
         
     //MARK: - Function
+    
+    ///MARK: - Contact
     
     func saveContact(contact: Contact, completion: @escaping (_ success: Bool) -> Void) {
         let managedContext = persistentContainer.viewContext
@@ -138,10 +138,25 @@ final class CoreDataManager {
             
     }
     
+    func deleteContact(_ contact: Contact, completion: @escaping (Result<Void, Error>) -> Void) {
+        let request = NSFetchRequest<NSFetchRequestResult>(entityName: Entities.contact.rawValue)
+        request.predicate = NSPredicate(format: "id == %@", contact.id as CVarArg)
+        
+        deleteDataEntity(fetchRequest: request) { results, error in
+            if let error = error {
+                completion(.failure(error))
+            } else {
+                completion(.success(()))
+            }
+        }
+    }
+    
     func updateData() {
         
     }
 
+    ///MARK: - Interaction
+    
     func saveInteraction(interaction: Interaction, completion: @escaping (Bool) -> Void) {
         let context = persistentContainer.viewContext
         let interactionEntity = InteractionEntity(context: context)
@@ -218,23 +233,15 @@ final class CoreDataManager {
     }
 
     func deleteInteraction(_ interaction: Interaction, completion: @escaping (Result<Void, Error>) -> Void) {
-        let context = persistentContainer.viewContext
-        let request: NSFetchRequest<InteractionEntity> = InteractionEntity.fetchRequest()
+        let request = NSFetchRequest<NSFetchRequestResult>(entityName: Entities.interaction.rawValue)
         request.predicate = NSPredicate(format: "id == %@", interaction.id as CVarArg)
-
-        do {
-            let results = try context.fetch(request)
-            if let entity = results.first {
-                context.delete(entity)
-                try context.save()
-                completion(.success(()))
-            } else {
-                let error = NSError(domain: "InteractionNotFound", code: 404,
-                                  userInfo: [NSLocalizedDescriptionKey: "Interaction with ID \(interaction.id) not found"])
+        
+        deleteDataEntity(fetchRequest: request) { results, error in
+            if let error = error {
                 completion(.failure(error))
+            } else {
+                completion(.success(()))
             }
-        } catch {
-            completion(.failure(error))
         }
     }
 }

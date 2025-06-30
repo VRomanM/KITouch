@@ -47,6 +47,13 @@ struct ContactListView: View {
                                 .onTapGesture {
                                     viewModel.navigationPath.append(ContactRoute.detail(contact: contact))
                                 }
+                                .swipeActions(edge: .trailing, allowsFullSwipe: true) {
+                                    Button(role: .destructive) {
+                                        viewModel.deleteContacts(contact: contact)
+                                    } label: {
+                                        Label("Delete", systemImage: "trash")
+                                    }
+                                }
                         }
                     }
                     .scrollContentBackground(.hidden)

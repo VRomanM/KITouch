@@ -93,6 +93,25 @@ final class ContactListViewModel: ObservableObject {
         return contacts.first { $0.idString == id }
     }
     
+    func deleteContacts(contact: Contact){
+        // Удаляем из локального массива
+        contacts.removeAll { $0.id == contact.id }
+
+        // Удаляем из CoreData
+        coreDataManager.deleteContact(contact) { [weak self] result in
+            switch result {
+            case .success:
+                print("Contact deleted successfully from CoreData")
+            case .failure(let error):
+                print("Failed to delete contact from CoreData: \(error)")
+                // В случае ошибки перезагружаем данные
+                DispatchQueue.main.async {
+                    self?.loadData()
+                }
+            }
+        }
+    }
+    
     func filteredContacts() -> [Contact] {
         if searchQuery.isEmpty {
             return contacts
