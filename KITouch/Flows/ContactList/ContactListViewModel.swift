@@ -25,10 +25,10 @@ final class ContactListViewModel: ObservableObject {
         }
     }
     @Published var isLoading = false
-    @Published var isShowingDetailView = false
     @Published var isShowingNetworkListView = false
     @Published var searchQuery = ""
     @Published var navigationPath = NavigationPath()
+    @Published var showContactsPermissionAlert = false
     
     var contacts = [Contact]()
     
@@ -83,6 +83,18 @@ final class ContactListViewModel: ObservableObject {
         }
     }
     
+    private func requestContactsAccess() {
+        CNContactStore().requestAccess(for: .contacts) { granted, error in
+            DispatchQueue.main.async {
+                if granted {
+                    self.navigationPath.append(ContactRoute.fromContacts)
+                } else {
+                    self.showContactsPermissionAlert = true
+                }
+            }
+        }
+    }
+    
     //MARK: - Function
     
     func loadData() {
@@ -121,6 +133,27 @@ final class ContactListViewModel: ObservableObject {
                 contact.name.localizedCaseInsensitiveContains(searchQuery)
             }
         }
+    }
+    
+    func checkContactsPermission() {
+        let status = CNContactStore.authorizationStatus(for: .contacts)
+        switch status {
+        case .authorized:
+            navigationPath.append(ContactRoute.fromContacts)
+        case .limited:
+            navigationPath.append(ContactRoute.fromContacts)
+        case .notDetermined:
+            requestContactsAccess()
+        case .denied, .restricted:
+            showContactsPermissionAlert = true
+        @unknown default:
+            requestContactsAccess()
+        }
+    }
+    
+    func openAppSettings() {
+        guard let url = URL(string: UIApplication.openSettingsURLString) else { return }
+        UIApplication.shared.open(url)
     }
 }
 

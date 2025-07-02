@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-fileprivate enum ContactRoute: Hashable {
+enum ContactRoute: Hashable {
     case detail(contact: Contact)
     case settings
     case newContact
@@ -70,10 +70,11 @@ struct ContactListView: View {
                                     case .newContact:
                                         ContactDetailView(contactListViewModel: viewModel, contact: Contact())
                                     case .fromContacts:
-                                        ContactPickerView { contact in
-                                            viewModel.navigationPath.removeLast()
-                                            viewModel.navigationPath.append(ContactRoute.detail(contact: contact))
-                                        }
+                                        ContactPickerView(
+                                            onSelectContact: { contact in
+                                                viewModel.navigationPath.removeLast()
+                                                viewModel.navigationPath.append(ContactRoute.detail(contact: contact))
+                                            })
                                     }
                                 }
                     .toolbar {
@@ -94,13 +95,21 @@ struct ContactListView: View {
                                 }
                                 
                                 Button(action: {
-                                    viewModel.navigationPath.append(ContactRoute.fromContacts)
+                                    viewModel.checkContactsPermission()
                                 }) {
                                     Label("Из контактов", systemImage: "person.crop.circle.fill.badge.plus")
                                 }
                             } label: {
                                 Image(systemName: "plus")
                                     .foregroundColor(.white)
+                            }
+                            .alert("Доступ к контактам", isPresented: $viewModel.showContactsPermissionAlert) {
+                                Button("Настройки", role: .none) {
+                                    viewModel.openAppSettings()
+                                }
+                                Button("Отмена", role: .cancel) {}
+                            } message: {
+                                Text("Разрешите доступ к контактам в настройках приложения")
                             }
                         }
                     }

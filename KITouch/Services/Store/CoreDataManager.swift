@@ -97,14 +97,15 @@ final class CoreDataManager {
         }
         
         let channels: [ConnectChannelEntity] = {
+            var channels: [ConnectChannelEntity] = []
             for connectChannel in contact.connectChannels {
                 let channel = ConnectChannelEntity(context: managedContext)
                 channel.id              = connectChannel.id
                 channel.login           = connectChannel.login
                 channel.socialMediaType = connectChannel.socialMediaType.rawValue
-                return [channel]
+                channels.append(channel)
             }
-            return []
+            return channels
         }()
                 
         entity.name                 = contact.name

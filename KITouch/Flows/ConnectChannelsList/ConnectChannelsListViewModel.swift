@@ -38,6 +38,10 @@ final class ConnectChannelsListViewModel: ObservableObject {
         viewModel.isShowingConnectChannelsListView = false
     }
     
+    func deleteChannel(_ channel: ConnectChannel) {
+        connectChannels.removeAll { $0 == channel }
+    }
+    
     init(contactDetalViewModel: ContactDetailViewModel?) {
         self.contactDetalViewModel = contactDetalViewModel
         self.connectChannels = contactDetalViewModel?.contact.connectChannels ?? [ConnectChannel]()

@@ -1,0 +1,11 @@
+/* 
+  InfoPlist.strings
+  KITouch
+
+  Created by Роман Вертячих on 01.07.2025.
+  
+*/
+
+"CFBundleName" = "На связи";
+
+"NSContactsUsageDescription" = "Приложению необходим доступ к вашим контактам, чтобы вы могли импортировать их в приложение";
