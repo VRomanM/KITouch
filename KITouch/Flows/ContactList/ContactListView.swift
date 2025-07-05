@@ -62,21 +62,21 @@ struct ContactListView: View {
                     .listStyle(.insetGrouped)
                     .listRowSpacing(10)
                     .navigationDestination(for: ContactRoute.self) { route in
-                                    switch route {
-                                    case .detail(let contact):
-                                        ContactDetailView(contactListViewModel: viewModel, contact: contact)
-                                    case .settings:
-                                        SettingsView()
-                                    case .newContact:
-                                        ContactDetailView(contactListViewModel: viewModel, contact: Contact())
-                                    case .fromContacts:
-                                        ContactPickerView(
-                                            onSelectContact: { contact in
-                                                viewModel.navigationPath.removeLast()
-                                                viewModel.navigationPath.append(ContactRoute.detail(contact: contact))
-                                            })
-                                    }
-                                }
+                        switch route {
+                        case .detail(let contact):
+                            ContactDetailView(contactListViewModel: viewModel, contact: contact)
+                        case .settings:
+                            SettingsView()
+                        case .newContact:
+                            ContactDetailView(contactListViewModel: viewModel, contact: Contact())
+                        case .fromContacts:
+                            ContactPickerView(
+                                onSelectContact: { contact in
+                                    viewModel.navigationPath.removeLast()
+                                    viewModel.navigationPath.append(ContactRoute.detail(contact: contact))
+                                })
+                        }
+                    }
                     .toolbar {
                         ToolbarItem(placement: .navigationBarLeading) {
                             Button(action: {

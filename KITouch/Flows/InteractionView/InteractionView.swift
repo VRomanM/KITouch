@@ -44,3 +44,9 @@ struct InteractionView: View {
         }
     }
 }
+
+#Preview {
+    let contact = Contact()
+    InteractionView(viewModel: InteractionViewModel(contactId: contact.id,
+                                                    contactDetailViewModel: ContactDetailViewModel(contactListViewModel: ContactListViewModel(), contact: contact)))
+}

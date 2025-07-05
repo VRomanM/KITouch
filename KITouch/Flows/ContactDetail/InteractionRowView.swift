@@ -31,3 +31,7 @@ struct InteractionRowView: View {
         .cornerRadius(8)
     }
 }
+
+#Preview {
+    InteractionRowView(interaction: Interaction(date: Date(), notes: "Hello World", contactId: UUID()))
+}
