@@ -11,8 +11,26 @@
 // Created by Роман Вертячих on 02.06.2025.
 //
 
-import Combine
-import Foundation
+import SwiftUI
+
+// Добавляем enum для периодов
+enum NotificationPeriod: String, CaseIterable, Identifiable {
+    case daily = "Ежедневно"
+    case weekly = "Еженедельно"
+    case monthly = "Ежемесячно"
+    case custom = "Вручную"
+    
+    var id: String { self.rawValue }
+    
+    var localizedValue: LocalizedStringKey {
+        switch self {
+        case .daily: return "Ежедневно"
+        case .weekly: return "Еженедельно"
+        case .monthly: return "Ежемесячно"
+        case .custom: return "Вручную"
+        }
+    }
+}
 
 final class ContactDetailViewModel: ObservableObject {
     enum EditingElement {
@@ -36,6 +54,12 @@ final class ContactDetailViewModel: ObservableObject {
         return digits.count == 11 // Для российских номеров
     }
 
+    @Published var notificationEnabled: Bool = false
+    @Published var notificationPeriod: NotificationPeriod = .weekly
+    @Published var notificationDate: Date = Calendar.current.date(byAdding: .day, value: 1, to: Date())!
+    @Published var isShowingInteractionListView = false
+    @Published var navigationPath = NavigationPath()
+    
     @Published var contact: Contact
     @Published var unwrapBirthday: Date {
         didSet {

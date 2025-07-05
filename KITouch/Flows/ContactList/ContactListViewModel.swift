@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import ContactsUI
 
 final class ContactListViewModel: ObservableObject {
     
@@ -24,10 +25,10 @@ final class ContactListViewModel: ObservableObject {
         }
     }
     @Published var isLoading = false
-    @Published var isShowingDetailView = false
     @Published var isShowingNetworkListView = false
     @Published var searchQuery = ""
     @Published var navigationPath = NavigationPath()
+    @Published var showContactsPermissionAlert = false
     
     var contacts = [Contact]()
     
@@ -82,6 +83,18 @@ final class ContactListViewModel: ObservableObject {
         }
     }
     
+    private func requestContactsAccess() {
+        CNContactStore().requestAccess(for: .contacts) { granted, error in
+            DispatchQueue.main.async {
+                if granted {
+                    self.navigationPath.append(ContactRoute.fromContacts)
+                } else {
+                    self.showContactsPermissionAlert = true
+                }
+            }
+        }
+    }
+    
     //MARK: - Function
     
     func loadData() {
@@ -93,6 +106,25 @@ final class ContactListViewModel: ObservableObject {
         return contacts.first { $0.idString == id }
     }
     
+    func deleteContacts(contact: Contact){
+        // Удаляем из локального массива
+        contacts.removeAll { $0.id == contact.id }
+
+        // Удаляем из CoreData
+        coreDataManager.deleteContact(contact) { [weak self] result in
+            switch result {
+            case .success:
+                print("Contact deleted successfully from CoreData")
+            case .failure(let error):
+                print("Failed to delete contact from CoreData: \(error)")
+                // В случае ошибки перезагружаем данные
+                DispatchQueue.main.async {
+                    self?.loadData()
+                }
+            }
+        }
+    }
+    
     func filteredContacts() -> [Contact] {
         if searchQuery.isEmpty {
             return contacts
@@ -101,6 +133,27 @@ final class ContactListViewModel: ObservableObject {
                 contact.name.localizedCaseInsensitiveContains(searchQuery)
             }
         }
+    }
+    
+    func checkContactsPermission() {
+        let status = CNContactStore.authorizationStatus(for: .contacts)
+        switch status {
+        case .authorized:
+            navigationPath.append(ContactRoute.fromContacts)
+        case .limited:
+            navigationPath.append(ContactRoute.fromContacts)
+        case .notDetermined:
+            requestContactsAccess()
+        case .denied, .restricted:
+            showContactsPermissionAlert = true
+        @unknown default:
+            requestContactsAccess()
+        }
+    }
+    
+    func openAppSettings() {
+        guard let url = URL(string: UIApplication.openSettingsURLString) else { return }
+        UIApplication.shared.open(url)
     }
 }
 

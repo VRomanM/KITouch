@@ -7,10 +7,11 @@
 
 import SwiftUI
 
-fileprivate enum ContactRoute: Hashable {
+enum ContactRoute: Hashable {
     case detail(contact: Contact)
     case settings
     case newContact
+    case fromContacts
 }
 
 struct ContactListView: View {
@@ -47,6 +48,13 @@ struct ContactListView: View {
                                 .onTapGesture {
                                     viewModel.navigationPath.append(ContactRoute.detail(contact: contact))
                                 }
+                                .swipeActions(edge: .trailing, allowsFullSwipe: true) {
+                                    Button(role: .destructive) {
+                                        viewModel.deleteContacts(contact: contact)
+                                    } label: {
+                                        Label("Delete", systemImage: "trash")
+                                    }
+                                }
                         }
                     }
                     .scrollContentBackground(.hidden)
@@ -54,15 +62,21 @@ struct ContactListView: View {
                     .listStyle(.insetGrouped)
                     .listRowSpacing(10)
                     .navigationDestination(for: ContactRoute.self) { route in
-                                    switch route {
-                                    case .detail(let contact):
-                                        ContactDetailView(contactListViewModel: viewModel, contact: contact)
-                                    case .settings:
-                                        SettingsView()
-                                    case .newContact:
-                                        ContactDetailView(contactListViewModel: viewModel, contact: Contact())
-                                    }
-                                }
+                        switch route {
+                        case .detail(let contact):
+                            ContactDetailView(contactListViewModel: viewModel, contact: contact)
+                        case .settings:
+                            SettingsView()
+                        case .newContact:
+                            ContactDetailView(contactListViewModel: viewModel, contact: Contact())
+                        case .fromContacts:
+                            ContactPickerView(
+                                onSelectContact: { contact in
+                                    viewModel.navigationPath.removeLast()
+                                    viewModel.navigationPath.append(ContactRoute.detail(contact: contact))
+                                })
+                        }
+                    }
                     .toolbar {
                         ToolbarItem(placement: .navigationBarLeading) {
                             Button(action: {
@@ -72,13 +86,30 @@ struct ContactListView: View {
                                     .foregroundColor(.white)
                             }
                         }
-
                         ToolbarItem(placement: .navigationBarTrailing) {
-                            Button(action: {
-                                viewModel.navigationPath.append(ContactRoute.newContact)
-                            }) {
+                            Menu {
+                                Button(action: {
+                                    viewModel.navigationPath.append(ContactRoute.newContact)
+                                }) {
+                                    Label("Новый", systemImage: "person.fill.badge.plus")
+                                }
+                                
+                                Button(action: {
+                                    viewModel.checkContactsPermission()
+                                }) {
+                                    Label("Из контактов", systemImage: "person.crop.circle.fill.badge.plus")
+                                }
+                            } label: {
                                 Image(systemName: "plus")
                                     .foregroundColor(.white)
+                            }
+                            .alert("Доступ к контактам", isPresented: $viewModel.showContactsPermissionAlert) {
+                                Button("Настройки", role: .none) {
+                                    viewModel.openAppSettings()
+                                }
+                                Button("Отмена", role: .cancel) {}
+                            } message: {
+                                Text("Разрешите доступ к контактам в настройках приложения")
                             }
                         }
                     }
