@@ -9,17 +9,25 @@ import SwiftUI
 
 struct KITButton: View {
     let text: String
+    var action: () -> Void
     
     var body: some View {
-        Text(text.localized())
-            .font(.headline)
-            .frame(width: 280, height: 50)
-            .background(.blue)
-            .foregroundColor(.white)
-            .cornerRadius(10)
+        Button(action: action) {
+            Text(text)
+                .font(.headline)
+                .foregroundColor(.white)
+                .frame(maxWidth: .infinity)
+                .frame(height: 50)
+                .background(Color.accentColor)
+                .clipShape(Capsule())
+        }
+        .buttonStyle(.plain)
+        .padding()
+        .background(Material.ultraThin)
+        .shadow(radius: 10)
     }
 }
 
 #Preview {
-    KITButton(text: "Test")
+    KITButton(text: "Test", action: {})
 }

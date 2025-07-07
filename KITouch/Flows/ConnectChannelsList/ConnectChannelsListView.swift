@@ -9,8 +9,7 @@ import SwiftUI
 
 struct ConnectChannelsListView: View {
     @StateObject var viewModel: ConnectChannelsListViewModel
-    @State private var showingTypePicker = false
-    @State private var editingChannel: ConnectChannel?
+    @FocusState private var focusedField: ConnectChannel?
     
     var body: some View {
         NavigationStack {
@@ -21,39 +20,55 @@ struct ConnectChannelsListView: View {
                 .ignoresSafeArea()
                 
                 // Основной контент
-                ScrollView {
-                    LazyVStack(spacing: 16) {
-                        ForEach($viewModel.connectChannels) { $channel in
-                            ConnectChannelCard(
-                                channel: $channel,
-                                onDelete: { viewModel.deleteChannel(channel) }
-                            )
-                            .transition(.slide)
+                ScrollViewReader { proxy in
+                    ScrollView {
+                        LazyVStack(spacing: 16) {
+                            ForEach($viewModel.connectChannels) { $channel in
+                                ConnectChannelCard(
+                                    channel: $channel,
+                                    onDelete: { viewModel.deleteChannel(channel) }
+                                )
+                                .id(channel.id)
+                                .focused($focusedField, equals: channel)
+                                .transition(.slide)
+                                
+                            }
+                            .padding(.horizontal)
+                            // Кнопка добавления
+                            AddButton {
+                                withAnimation {
+                                    let newChannel = viewModel.addConnectChannel()
+                                    // Прокручиваем к новому элементу после его добавления
+                                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                                        withAnimation {
+                                            proxy.scrollTo(newChannel.id, anchor: .top)
+                                        }
+                                    }
+                                }
+                            }
+                            .padding(.top, 8)
+                            .padding(.bottom, 80)
                         }
-                        .padding(.horizontal)
-                        
-                        // Кнопка добавления
-                        AddButton {
-                            withAnimation {
-                                viewModel.addConnectChannel()
+                        .padding(.vertical)
+                    }
+                    .onChange(of: focusedField) { newValue in
+                        // Прокручиваем к выбранному TextField при появлении клавиатуры
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                            if let focusedIndex = newValue {
+                                withAnimation {
+                                    proxy.scrollTo(focusedIndex.id, anchor: .top)
+                                }
                             }
                         }
-                        .padding(.top, 8)
-                        .padding(.bottom, 80)
                     }
-                    .padding(.vertical)
                 }
-                
                 // Плавающая кнопка сохранения
                 VStack {
                     Spacer()
-                    SubmitButton(action: viewModel.saveConnectChannels)
-                        .padding()
-                        .background(Material.ultraThin)
-                        .shadow(radius: 10)
+                    KITButton(text: "Save".localized(), action: viewModel.saveConnectChannels)
                 }
             }
-            .navigationTitle("Social Connections")
+            .navigationTitle("Soc. media")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
@@ -63,6 +78,7 @@ struct ConnectChannelsListView: View {
                     .fontWeight(.medium)
                 }
             }
+            .dismissKeyboard()
         }
     }
 }
@@ -140,7 +156,7 @@ struct AddButton: View {
             HStack {
                 Image(systemName: "plus.circle.fill")
                     .imageScale(.large)
-                Text("Add Connection")
+                Text("Add")
                     .fontWeight(.medium)
             }
             .foregroundColor(.accentColor)
@@ -150,64 +166,6 @@ struct AddButton: View {
             .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
         }
         .buttonStyle(.plain)
-    }
-}
-
-struct SubmitButton: View {
-    var action: () -> Void
-    
-    var body: some View {
-        Button(action: action) {
-            Text("Save Connections")
-                .font(.headline)
-                .foregroundColor(.white)
-                .frame(maxWidth: .infinity)
-                .frame(height: 50)
-                .background(Color.accentColor)
-                .clipShape(Capsule())
-        }
-        .buttonStyle(.plain)
-    }
-}
-
-struct EditChannelView: View {
-    @State var channel: ConnectChannel
-    var onSave: (ConnectChannel) -> Void
-    
-    var body: some View {
-        NavigationStack {
-            Form {
-                Section {
-                    Picker("Platform", selection: $channel.socialMediaType) {
-                        ForEach(SocialMediaType.allCases) { type in
-                            Label(type.rawValue, systemImage: type.icon)
-                                .tag(type)
-                        }
-                    }
-                    .pickerStyle(.inline)
-                    
-                    TextField("Username", text: $channel.login)
-                        .autocorrectionDisabled()
-                }
-            }
-            .navigationTitle("Edit Connection")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancel") {
-                        onSave(channel)
-                    }
-                }
-                
-                ToolbarItem(placement: .confirmationAction) {
-                    Button("Save") {
-                        onSave(channel)
-                    }
-                    .disabled(channel.login.isEmpty)
-                }
-            }
-        }
-        .presentationDetents([.medium])
     }
 }
 
@@ -239,7 +197,7 @@ struct MediaTypePickerView: View {
                 }
                 .foregroundColor(.primary)
             }
-            .navigationTitle("Select Platform")
+            .navigationTitle("Select soc. media")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
