@@ -88,6 +88,7 @@ struct ContactDetailView: View {
                 Text("Get reminders to stay in touch")
             }
         }
+        .scrollDismissesKeyboard(.immediately)
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .confirmationAction) {
