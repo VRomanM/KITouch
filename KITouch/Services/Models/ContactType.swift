@@ -14,6 +14,5 @@ enum ContactType: String, CaseIterable, Identifiable {
     case relative = "Relative"
     case colleague = "Colleague"
     case friend = "Friend"
-    case unknown = "Unknown"
     case other = "Other"
 }

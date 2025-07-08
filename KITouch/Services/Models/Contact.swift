@@ -21,6 +21,9 @@ struct Contact: Hashable, Identifiable {
     var birthday: Date?
     var connectChannels: [ConnectChannel]
     var isNewContact: Bool
+    var reminder: Bool = false
+    var reminderDate: Date?
+    var reminderFrequency: String = ""
     
     var displayContactType: String {
         contactType == ContactType.other.rawValue ? customContactType : contactType
@@ -52,7 +55,19 @@ struct Contact: Hashable, Identifiable {
         self.isNewContact = true
     }
     
-    init(id: UUID, name: String, contactType: String, customContactType: String, imageName: String, lastMessage: Date, countMessages: Int, phone: String, birthday: Date?, connectChannels: [ConnectChannel]) {
+    init(id: UUID,
+         name: String,
+         contactType: String,
+         customContactType: String,
+         imageName: String,
+         lastMessage: Date,
+         countMessages: Int,
+         phone: String,
+         birthday: Date?,
+         reminder: Bool,
+         reminderDate: Date?,
+         reminderFrequency: String,
+         connectChannels: [ConnectChannel]) {
         self.id = id
         self.name = name
         self.contactType = contactType
@@ -62,6 +77,9 @@ struct Contact: Hashable, Identifiable {
         self.countMessages = countMessages
         self.phone = phone
         self.birthday = birthday
+        self.reminder = reminder
+        self.reminderDate = reminderDate
+        self.reminderFrequency = reminderFrequency
         self.connectChannels = connectChannels
         self.isNewContact = false
     }

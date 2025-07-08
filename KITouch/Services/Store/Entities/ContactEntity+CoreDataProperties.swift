@@ -25,6 +25,9 @@ extension ContactEntity {
     @NSManaged public var lastMessage: Date
     @NSManaged public var name: String
     @NSManaged public var phone: String
+    @NSManaged public var reminder: Bool
+    @NSManaged public var reminderDate: Date?
+    @NSManaged public var reminderFrequency: String
     @NSManaged public var connectChannelEntity: NSSet?
 
     var idString: String { id.uuidString }

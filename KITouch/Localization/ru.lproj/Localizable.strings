@@ -6,49 +6,69 @@
   
 */
 "About App" = "О приложении";
+"Add" = "Добавить";
 "App Information" = "Информация о приложении";
 
 "Birthdate" = "Дата рождения";
 "Birthday%@" = "День рождения%@";
 
 "Cancel" = "Отмена";
+"Choose Emoji" = "Выбери Эмоджи";
 "Colleague" = "Коллега";
 "Contacts" = "Контакты";
+"Contact Info" = "Информация о контакте";
 "Contact name" = "Имя контакта";
 
 "Date" = "Дата";
+"Daily" = "Ежедневно";
 "Delete" = "Удалить";
 "Done" = "Готово";
 
 "Edit" = "Редактировать";
-"Choose Emoji" = "Выбери Эмоджи";
 "Enter the contact type" = "Введите тип контакта";
 "Enter the correct phone number" = "Введите корректный номер";
+"Enter type" = "Введи тип";
 "Enter login" = "Введите логин";
 
 "Feedback Form" = "Форма для отзыва";
+"Frequency" = "Частота";
 "Friend" = "Друг";
 
-"Other" = "Другое";
+"Get reminders to stay in touch" = "Получай уведомления и оставайся на связи";
+
+"Interactions" = "Взаимодействия";
 
 "Last interaction" = "Последнее взаимодействие";
 "Leave Feedback" = "Оставить отзыв";
+
+"Monthly" = "Ежемесячно";
 
 "New Interaction" = "Новое взаимодействие";
 "Notes" = "Заметки";
 "Notifications" = "Уведомления";
 "Notification Settings" = "Настройки уведомлений";
 
+"Other" = "Другое";
+
 "Phone" = "Телефон";
 
 "Relative" = "Родственник";
+"Reminders" = "Напоминания";
 
 "Save" = "Сохранить";
 "Search" = "Поиск";
+"See All %@" = "Показать все %@";
+"Select Type" = "Выбери тип";
 "Settings" = "Настройки";
 "Soc. media" = "Соц. сети";
+"Social Media" = "Социальные сети";
 
 "Talked %@" = "Общались %@";
 "Today is the birthday of %@" = "Сегодня день рождения у %@";
 
 "Unknown" = "Неизвестно";
+
+"Weekly" = "Еженедельно";
+"When" = "Когда";
+
+"Yearly" = "Ежегодно";

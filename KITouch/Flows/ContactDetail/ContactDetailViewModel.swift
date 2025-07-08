@@ -13,34 +13,8 @@
 
 import SwiftUI
 
-// Добавляем enum для периодов
-enum NotificationPeriod: String, CaseIterable, Identifiable {
-    case daily = "Ежедневно"
-    case weekly = "Еженедельно"
-    case monthly = "Ежемесячно"
-    case custom = "Вручную"
-    
-    var id: String { self.rawValue }
-    
-    var localizedValue: LocalizedStringKey {
-        switch self {
-        case .daily: return "Ежедневно"
-        case .weekly: return "Еженедельно"
-        case .monthly: return "Ежемесячно"
-        case .custom: return "Вручную"
-        }
-    }
-}
-
 final class ContactDetailViewModel: ObservableObject {
-    enum EditingElement {
-        case contactName
-        case contactType
-        case phone
-        case birthday
-        case nothing
-    }
-
+    
     //MARK: - Private properties
     private let notificationManager = NotificationManager.sharedManager
     private var contactListViewModel: ContactListViewModel?
@@ -69,7 +43,6 @@ final class ContactDetailViewModel: ObservableObject {
 
     @Published var isShowingConnectChannelsListView = false
     @Published var isEmojiPickerPresented = false
-    @Published var editingElement: EditingElement = .nothing
     @Published var isShowingNewInteractionView = false
     @Published var isShowingEditInteractionView = false
     @Published var selectedInteraction: Interaction?

@@ -47,7 +47,7 @@ struct ContactDetailView: View {
             // Social Media Section
             Section(header: Text("Social Media")) {
                 socialMediaGrid
-                Button("Edit Connections") {
+                Button("Edit") {
                     viewModel.isShowingConnectChannelsListView = true
                 }
                 .foregroundColor(.accentColor)
@@ -60,16 +60,13 @@ struct ContactDetailView: View {
                 }
                 
                 if viewModel.interactions.count > 3 {
-                    Button("See All (\(viewModel.interactions.count))") {
+                    Button("See All %@".localized(with: String(viewModel.interactions.count))) {
                         viewModel.isShowingInteractionListView = true
                     }
-//                    NavigationLink("See All (\(viewModel.interactions.count))") {
-//                        InteractionsListView(interactions: viewModel.interactions)
-//                    }
                 }
                 
                 Button(action: addInteraction) {
-                    Label("Add Interaction", systemImage: "plus")
+                    Label("Add", systemImage: "plus")
                 }
                 .foregroundColor(.accentColor)
             }
@@ -79,15 +76,10 @@ struct ContactDetailView: View {
                 Toggle("Reminders", isOn: $viewModel.notificationEnabled)
                 
                 if viewModel.notificationEnabled {
-                    DatePicker("Next Reminder",
+                    DatePicker("When",
                                selection: $viewModel.notificationDate,
                                in: Date()...)
-                    
-                    Picker("Frequency", selection: $viewModel.notificationPeriod) {
-                        ForEach(NotificationPeriod.allCases) { period in
-                            Text(period.localizedValue)
-                        }
-                    }
+                    notificationFrequency
                 }
             }
             header: {
@@ -96,7 +88,6 @@ struct ContactDetailView: View {
                 Text("Get reminders to stay in touch")
             }
         }
-        .navigationTitle("Contact Details")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .confirmationAction) {
@@ -131,7 +122,7 @@ struct ContactDetailView: View {
     }
     
     private var nameTextField: some View {
-        TextField("Name", text: $viewModel.contact.name)
+        TextField("Contact name", text: $viewModel.contact.name)
             .font(.title2.bold())
             .textFieldStyle(.plain)
     }
@@ -145,7 +136,7 @@ struct ContactDetailView: View {
             }
         } label: {
             HStack {
-                Text(viewModel.contact.contactType.isEmpty ? "Select Type" : viewModel.contact.contactType.localized())
+                Text(viewModel.contact.contactType.isEmpty ? "Select Type".localized() : viewModel.contact.contactType.localized())
                 Image(systemName: "chevron.down")
             }
             .font(.subheadline)
@@ -165,18 +156,18 @@ struct ContactDetailView: View {
                 .foregroundColor(.secondary)
             TextField("Phone", text: $viewModel.contact.phone)
                 .keyboardType(.phonePad)
-                .onChange(of: viewModel.contact.phone) { viewModel.formatPhoneNumber($0) }
-            
-            if !viewModel.isPhoneNumberValid && !viewModel.contact.phone.isEmpty {
-                Image(systemName: "exclamationmark.triangle.fill")
-                    .foregroundColor(.red)
-            }
+//                .onChange(of: viewModel.contact.phone) { viewModel.formatPhoneNumber($0) }
+//            
+//            if !viewModel.isPhoneNumberValid && !viewModel.contact.phone.isEmpty {
+//                Image(systemName: "exclamationmark.triangle.fill")
+//                    .foregroundColor(.red)
+//            }
         }
     }
     
     private var birthdayPicker: some View {
         HStack {
-            Image(systemName: "calendar")
+            Image(systemName: "birthday.cake.fill")
                 .foregroundColor(.secondary)
             DatePicker("Birthday",
                       selection: $viewModel.unwrapBirthday,
@@ -203,6 +194,14 @@ struct ContactDetailView: View {
                 .padding(.vertical, 4)
                 .background(Color(.secondarySystemFill))
                 .clipShape(Capsule())
+            }
+        }
+    }
+    
+    private var notificationFrequency: some View {
+        Picker("Frequency", selection: $viewModel.notificationPeriod) {
+            ForEach(NotificationPeriod.allCases) { period in
+                Text(period.localizedValue).tag(period)
             }
         }
     }
