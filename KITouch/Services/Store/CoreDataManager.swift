@@ -16,9 +16,26 @@ final class CoreDataManager {
     }
     private lazy var persistentContainer: NSPersistentContainer = {
         let container = NSPersistentContainer(name: Constants.dbName)
+        
+        // Включаем автоматическую миграцию
+        let description = container.persistentStoreDescriptions.first
+        description?.shouldMigrateStoreAutomatically = true
+        description?.shouldInferMappingModelAutomatically = true
+        
         container.loadPersistentStores { (storeDescription, error) in
             if let error = error as NSError? {
                 fatalError("Unresolved error \(error), \(error.userInfo)")
+                
+                //MARK: -> Только для разработки!
+//                // Если сломалось хранилище CoreData в Previews. Пытаемся пересоздать его, а вместо fatalError просто выводим ошибку
+//                print("⚠️ Core Data error: \(error), \(error.userInfo)")
+//                
+//                // Попытка пересоздать хранилище (только для разработки!)
+//                if let storeURL = description?.url {
+//                    try? FileManager.default.removeItem(at: storeURL)
+//                    container.loadPersistentStores { _, _ in }
+//                }
+                //MARK: <- Только для разработки!
             }
         }
         return container
@@ -116,6 +133,10 @@ final class CoreDataManager {
         entity.countMessages        = Int16(contact.countMessages)
         entity.phone                = contact.phone
         entity.birthday             = contact.birthday
+        entity.reminder             = contact.reminder
+        entity.reminderDate         = contact.reminderDate
+        entity.reminderRepeat       = contact.reminderRepeat
+        entity.reminderBirthday     = contact.reminderBirthday
         entity.connectChannelEntity = NSSet(array: channels)
               
         do {

@@ -27,44 +27,39 @@ final class ContactDetailViewModel: ObservableObject {
         let digits = contact.phone.filter { $0.isNumber }
         return digits.count == 11 // Для российских номеров
     }
-
-    @Published var notificationEnabled: Bool = false
-    @Published var notificationPeriod: NotificationPeriod = .weekly
-    @Published var notificationDate: Date = Calendar.current.date(byAdding: .day, value: 1, to: Date())!
-    @Published var isShowingInteractionListView = false
-    @Published var navigationPath = NavigationPath()
     
+    // Данные
     @Published var contact: Contact
-    @Published var unwrapBirthday: Date {
-        didSet {
-            contact.birthday = unwrapBirthday
-        }
-    }
-
+    @Published var interactions: [Interaction] = []
+    @Published var selectedInteraction: Interaction?
+    
+    // Навигация
+    @Published var navigationPath = NavigationPath()
+    @Published var isShowingInteractionListView = false
     @Published var isShowingConnectChannelsListView = false
     @Published var isEmojiPickerPresented = false
     @Published var isShowingNewInteractionView = false
     @Published var isShowingEditInteractionView = false
-    @Published var selectedInteraction: Interaction?
-    @Published var interactions: [Interaction] = []
-
+    
     //MARK: - Constructions
     init(contactListViewModel: ContactListViewModel?, contact: Contact) {
         self.contact = contact
-        self.unwrapBirthday = contact.birthday ?? Date.now
         self.contactListViewModel = contactListViewModel
         loadInteractions()
     }
-
+    
     //MARK: - Functions
     func saveContactDetail() {
         // Сохраняем в CoreData
         if contact.contactType != ContactType.other.rawValue {
             contact.customContactType = ""
         }
-
         coreDataManager.saveContact(contact: contact) { _ in }
-        notificationManager.scheduleBirthdayNotification(for: contact)
+        
+        // Настраиваем уведомления
+        notificationManager.setContactScheduleNotifications(for: contact)
+        
+        // Обновляем данные из CoreData
         contactListViewModel?.loadData()
     }
     
@@ -141,5 +136,4 @@ final class ContactDetailViewModel: ObservableObject {
             }
         }
     }
-
 }

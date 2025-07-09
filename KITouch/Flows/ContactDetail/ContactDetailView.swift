@@ -73,19 +73,31 @@ struct ContactDetailView: View {
             
             // Notification Section
             Section {
-                Toggle("Reminders", isOn: $viewModel.notificationEnabled)
-                
-                if viewModel.notificationEnabled {
-                    DatePicker("When",
-                               selection: $viewModel.notificationDate,
-                               in: Date()...)
-                    notificationFrequency
+                Toggle("Birthday", isOn: $viewModel.contact.reminderBirthday)
+                if viewModel.contact.reminderBirthday {
+                    Text("You'll be notified one day before the birthday")
+                        .font(.footnote)
+                        .foregroundColor(.secondary)
                 }
-            }
-            header: {
-                Text("Notifications")
+                
+                Toggle("Keep in touch", isOn: $viewModel.contact.reminder)
+                
+                if viewModel.contact.reminder {
+                    DatePicker("When",
+                               selection: $viewModel.contact.reminderDate,
+                               in: Date()...)
+                    
+                    Picker("Repeat", selection: $viewModel.contact.reminderRepeat) {
+                        ForEach(NotificationPeriod.allCases) { period in
+                            Text(period.localizedValue).tag(period)
+                        }
+                    }
+                }
+                
+            } header: {
+                Text("Reminders")
             } footer: {
-                Text("Get reminders to stay in touch")
+                Text("Get reminders to keep in touch")
             }
         }
         .scrollDismissesKeyboard(.immediately)
@@ -171,7 +183,7 @@ struct ContactDetailView: View {
             Image(systemName: "birthday.cake.fill")
                 .foregroundColor(.secondary)
             DatePicker("Birthday",
-                      selection: $viewModel.unwrapBirthday,
+                       selection: $viewModel.contact.birthday,
                       in: dateRange,
                       displayedComponents: .date)
             .labelsHidden()
@@ -199,14 +211,6 @@ struct ContactDetailView: View {
         }
     }
     
-    private var notificationFrequency: some View {
-        Picker("Frequency", selection: $viewModel.notificationPeriod) {
-            ForEach(NotificationPeriod.allCases) { period in
-                Text(period.localizedValue).tag(period)
-            }
-        }
-    }
-    
     // MARK: - Actions
     
     private func addInteraction() {
@@ -221,6 +225,10 @@ struct ContactDetailView: View {
     init(contactListViewModel: ContactListViewModel, contact: Contact) {
         _viewModel = StateObject(wrappedValue: ContactDetailViewModel(contactListViewModel: contactListViewModel, contact: contact))
     }
+}
+
+#Preview {
+    ContactDetailView(contactListViewModel: ContactListViewModel(), contact: Contact())
 }
 
 //struct ContactDetailView: View {
@@ -510,7 +518,3 @@ struct ContactDetailView: View {
 //        }
 //    }
 //}
-
-#Preview {
-    ContactDetailView(contactListViewModel: ContactListViewModel(), contact: Contact())
-}

@@ -13,19 +13,115 @@ final class NotificationManager: ObservableObject {
     
     @Published private(set) var latestNotification: UNNotificationResponse? = .none // default value
     private let coreDataManager = CoreDataManager.sharedManager
+    private let center = UNUserNotificationCenter.current()
     
     //MARK: - Properties
     
     static let sharedManager = NotificationManager()
+    enum ReminderType: String, CaseIterable {
+        case birthday = "birthdayReminder:"
+        case beforeBirthday = "beforeBirthdayReminder:"
+        case regular = "regularReminder:"
+        case regularHalfYear = "regularHalfYear:"
+    }
     
     //MARK: - Constructions
     
     private init() {}
     
     //MARK: - Private function
-
-    private func removeScheduledNotifications(for contact: Contact) {
-        UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: ["birthday_\(contact.idString)"])
+    
+    private func getNotificationIdentifier(for contact: Contact, type: ReminderType) -> String {
+        return "\(type.rawValue)\(contact.idString)"
+    }
+    
+    private func removeScheduledNotifications(for contact: Contact, type: ReminderType) {
+        center.removePendingNotificationRequests(withIdentifiers: [getNotificationIdentifier(for: contact, type: type)])
+    }
+    
+    private func getNotificationTrigger(startDate: Date, repeatPeriod: NotificationPeriod) -> UNCalendarNotificationTrigger {
+        let calendar = Calendar.current
+        var dateComponents = DateComponents()
+        
+        switch repeatPeriod {
+            
+        case .daily:
+            dateComponents = calendar.dateComponents([.hour, .minute], from: startDate)
+        case .weekly:
+            dateComponents = calendar.dateComponents([.weekday, .hour, .minute], from: startDate)
+        case .monthly:
+            dateComponents = calendar.dateComponents([.day, .hour, .minute], from: startDate)
+        case .halfYearly:
+            // Высчитываем полгода от месяца startDate через остаток от деления
+            var nextMonth: Int?
+            dateComponents = calendar.dateComponents([.month, .day, .hour, .minute], from: startDate)
+            if let month = dateComponents.month {
+                if month == 6 {
+                    nextMonth = 12
+                } else if month == 12 {
+                    nextMonth = 6
+                } else if month < 6 {
+                    nextMonth = month % 6 + 6
+                } else if month > 6 {
+                    nextMonth = month % 6
+                }
+                dateComponents.month = nextMonth
+            }
+        case .yearly:
+            dateComponents = calendar.dateComponents([.month, .day, .hour, .minute], from: startDate)
+        case .never:
+            dateComponents = calendar.dateComponents([.year, .month, .day, .hour, .minute], from: startDate)
+        }
+        return UNCalendarNotificationTrigger(dateMatching: dateComponents, repeats: repeatPeriod == .never ? false : true)
+    }
+    
+    private func getNotificationContent(contact: Contact, type: ReminderType) -> UNMutableNotificationContent {
+        let content = UNMutableNotificationContent()
+        content.sound           = UNNotificationSound.default
+        content.userInfo        = [
+            "contactId": contact.idString
+        ]
+        
+        switch type {
+            
+        case .birthday:
+            content.title           = "Birthday!".localized()
+            content.body            = "Today is the birthday of %@".localized(with: contact.name)
+        case .beforeBirthday:
+            content.title           = "Birthday!".localized()
+            content.body            = "Tomorrow is the birthday of %@".localized(with: contact.name)
+        case .regular:
+            content.title           = "Keep in touch".localized()
+            content.body            = "Contact with %@".localized(with: contact.name, contact.imageName)
+        case .regularHalfYear:
+            content.title           = "Keep in touch".localized()
+            content.body            = "Contact with %@".localized(with: contact.name, contact.imageName)
+        }
+    
+        return content
+    }
+    
+    private func scheduleNotification(for contact: Contact, startDate: Date, type: ReminderType, repeatPeriod: NotificationPeriod) {
+        let trigger = getNotificationTrigger(startDate: startDate, repeatPeriod: repeatPeriod)
+        let content = getNotificationContent(contact: contact, type: type)
+        
+        // Создаем запрос
+        let request = UNNotificationRequest(
+            identifier: getNotificationIdentifier(for: contact, type: type),
+            content: content,
+            trigger: trigger
+        )
+        
+        // Добавляем запрос в центр уведомлений
+        UNUserNotificationCenter.current().add(request) { error in
+            if let error = error {
+                print("Error adding notification: \(error.localizedDescription)")
+            } else {
+                print("Notification added for \(contact.name)")
+            }
+        }
+        
+        center.add(request)
     }
     
     //MARK: - Function
@@ -45,58 +141,38 @@ final class NotificationManager: ObservableObject {
         }
     }
     
-    func scheduleBirthdayNotification(for contact: Contact) {
-        removeScheduledNotifications(for: contact)
-        
-        guard let birthday = contact.birthday else { return }
-        
+    func setContactScheduleNotifications(for contact: Contact) {
         let calendar = Calendar.current
-        let birthdayComponents = calendar.dateComponents([.day, .month], from: birthday)
         
-        var dateComponents      = DateComponents()
-        dateComponents.day      = birthdayComponents.day
-        dateComponents.month    = birthdayComponents.month
-        dateComponents.hour     = 10
-        
-        //Для тестирования ->
-        let currentDateComponents = calendar.dateComponents([.day, .month, .hour, .minute], from: Date())
-        dateComponents.day      = currentDateComponents.day
-        dateComponents.month    = currentDateComponents.month
-        dateComponents.hour     = currentDateComponents.hour
-        dateComponents.minute   = currentDateComponents.minute! + 1
-        //Для тестирования <-
-        
-        let trigger = UNCalendarNotificationTrigger(dateMatching: dateComponents, repeats: true)
-        
-        // Создаем содержимое уведомления
-        let content = UNMutableNotificationContent()
-        content.title           = "Birthday%@".localized(with: "!")
-        content.body            = "Today is the birthday of %@".localized(with: contact.name)
-        content.sound           = UNNotificationSound.default
-        content.userInfo        = [
-            "contactId": contact.idString
-        ]
-        content.categoryIdentifier = "BIRTHDAY_CATEGORY"
-        content.threadIdentifier = "birthday_notifications"
-        
-        // Добавляем deep link для открытия конкретного контакта
-        if let deepLink = URL(string: "yourapp://contacts/\(contact.idString)") {
-            content.userInfo["deepLink"] = deepLink.absoluteString
+        // Удаление всех уведомлений
+        for reminderType in ReminderType.allCases {
+            removeScheduledNotifications(for: contact, type: reminderType)
         }
         
-        // Создаем запрос
-        let request = UNNotificationRequest(
-            identifier: "birthday_\(contact.idString)",
-            content: content,
-            trigger: trigger
-        )
+        // Назначение уведомлений согласно настройкам контакта
+        if contact.reminderBirthday {
+            // В день рождения
+            scheduleNotification(for: contact, startDate: contact.birthday, type: .birthday, repeatPeriod: .yearly)
+            
+            // За день до дня рождения
+            if let previousDayBeforeBirthday = calendar.date(byAdding: .day, value: -1, to: contact.birthday) {
+                scheduleNotification(for: contact, startDate: previousDayBeforeBirthday, type: .beforeBirthday, repeatPeriod: .yearly)
+            }
+        }
         
-        // Добавляем запрос в центр уведомлений
-        UNUserNotificationCenter.current().add(request) { error in
-            if let error = error {
-                print("Error adding notification: \(error.localizedDescription)")
-            } else {
-                print("Notification added for \(contact.name)")
+        if contact.reminder {
+            if let repeatPeriod = NotificationPeriod(rawValue: contact.reminderRepeat) {
+                if repeatPeriod == .halfYearly {
+                    // для уведомлений раз в 6 месяцев необходимо задать 2 расписания
+                    // текущий месяц
+                    scheduleNotification(for: contact, startDate: contact.reminderDate, type: .birthday, repeatPeriod: repeatPeriod)
+                    // + 6 месяцев
+                    if let nextHalfYear = calendar.date(byAdding: .month, value: 6, to: contact.reminderDate) {
+                        scheduleNotification(for: contact, startDate: nextHalfYear, type: .regularHalfYear, repeatPeriod: repeatPeriod)
+                    }
+                } else {
+                    scheduleNotification(for: contact, startDate: contact.birthday, type: .regular, repeatPeriod: repeatPeriod)
+                }
             }
         }
     }

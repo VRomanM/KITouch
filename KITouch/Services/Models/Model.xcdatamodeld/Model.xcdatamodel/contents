@@ -7,7 +7,7 @@
         <relationship name="contactEntity" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="ContactEntity" inverseName="connectChannelEntity" inverseEntity="ContactEntity"/>
     </entity>
     <entity name="ContactEntity" representedClassName="ContactEntity" syncable="YES">
-        <attribute name="birthday" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="birthday" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="contactType" attributeType="String"/>
         <attribute name="countMessages" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="customContactType" attributeType="String"/>
@@ -16,9 +16,10 @@
         <attribute name="lastMessage" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="name" attributeType="String"/>
         <attribute name="phone" attributeType="String" defaultValueString=""/>
-        <attribute name="reminder" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
-        <attribute name="reminderDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
-        <attribute name="reminderFrequency" optional="YES" attributeType="String"/>
+        <attribute name="reminder" attributeType="Boolean" usesScalarValueType="YES"/>
+        <attribute name="reminderBirthday" attributeType="Boolean" usesScalarValueType="YES"/>
+        <attribute name="reminderDate" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="reminderRepeat" attributeType="String" defaultValueString="Monthly"/>
         <relationship name="connectChannelEntity" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="ConnectChannelEntity" inverseName="contactEntity" inverseEntity="ConnectChannelEntity"/>
         <relationship name="interectionEntity" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="InteractionEntity" inverseName="relationship" inverseEntity="InteractionEntity"/>
     </entity>
