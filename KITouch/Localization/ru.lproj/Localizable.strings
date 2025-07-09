@@ -10,32 +10,46 @@
 "App Information" = "Информация о приложении";
 
 "Birthdate" = "Дата рождения";
+"Birthday" = "День рождения";
+"Birthday!" = "День рождения!";
 "Birthday%@" = "День рождения%@";
 
 "Cancel" = "Отмена";
+"Choose Emoji" = "Выбери Эмоджи";
 "Colleague" = "Коллега";
 "Connection channel" = "Канал связи";
 "Contacts" = "Контакты";
+"Contact Info" = "Информация о контакте";
 "Contact name" = "Имя контакта";
+"Contact with %@" = "Свяжись с %@";
 
 "Date" = "Дата";
+"Daily" = "Ежедневно";
 "Delete" = "Удалить";
 "Done" = "Готово";
 
 "Edit" = "Редактировать";
-"Choose Emoji" = "Выбери Эмоджи";
 "Enter the contact type" = "Введите тип контакта";
 "Enter the correct phone number" = "Введите корректный номер";
+"Enter type" = "Введи тип";
 "Enter login" = "Введите логин";
+"Every 6 months" = "Каждые 6 месяцев";
 
 "Feedback Form" = "Форма для отзыва";
 "Friend" = "Друг";
 
-"Other" = "Другое";
+"Get reminders to keep in touch" = "Получай уведомления, чтобы оставаться на связи";
+
+"Interactions" = "Взаимодействия";
+
+"Keep in touch" = "Оставайся на связи";
 
 "Last interaction" = "Последнее взаимодействие";
 "Leave Feedback" = "Оставить отзыв";
 
+"Monthly" = "Ежемесячно";
+
+"Never" = "Никогда";
 "New Interaction" = "Новое взаимодействие";
 "Notes" = "Заметки";
 "Notifications" = "Уведомления";
@@ -44,15 +58,26 @@
 "Phone" = "Телефон";
 
 "Relative" = "Родственник";
+"Repeat" = "Повтор";
+"Reminders" = "Напоминания";
 
 "Save" = "Сохранить";
 "Search" = "Поиск";
-"Select soc. media" = "Выбери соц. сеть";
+"See All %@" = "Показать все %@";
+"Select Type" = "Выбери тип";
 "Settings" = "Настройки";
 "Soc. media" = "Соц. сети";
+"Social Media" = "Социальные сети";
 
 "Talked %@" = "Общались %@";
 "Today is the birthday of %@" = "Сегодня день рождения у %@";
+"Tomorrow is the birthday of %@" = "Завтра день рождения у %@";
 
 "Unknown" = "Неизвестно";
 "Username" = "Пользователь";
+
+"Weekly" = "Еженедельно";
+"When" = "Когда";
+
+"Yearly" = "Ежегодно";
+"You'll be notified one day before the birthday" = "Вы получите уведомление за день до дня рождения";
