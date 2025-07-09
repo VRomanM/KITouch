@@ -6,6 +6,7 @@
   
 */
 "About App" = "О приложении";
+"Add" = "Добавить";
 "App Information" = "Информация о приложении";
 
 "Birthdate" = "Дата рождения";
@@ -13,6 +14,7 @@
 
 "Cancel" = "Отмена";
 "Colleague" = "Коллега";
+"Connection channel" = "Канал связи";
 "Contacts" = "Контакты";
 "Contact name" = "Имя контакта";
 
@@ -45,6 +47,7 @@
 
 "Save" = "Сохранить";
 "Search" = "Поиск";
+"Select soc. media" = "Выбери соц. сеть";
 "Settings" = "Настройки";
 "Soc. media" = "Соц. сети";
 
@@ -52,3 +55,4 @@
 "Today is the birthday of %@" = "Сегодня день рождения у %@";
 
 "Unknown" = "Неизвестно";
+"Username" = "Пользователь";

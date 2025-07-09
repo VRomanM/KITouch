@@ -16,14 +16,13 @@ final class ConnectChannelsListViewModel: ObservableObject {
     //MARK: - Properties
     
     @Published var connectChannels: [ConnectChannel]
-    @Published var refreshConnectChannelListView = false
     
     //MARK: - Function
     
-    func addConnectChannel() {
+    func addConnectChannel() -> ConnectChannel {
         let newConnectChannel = ConnectChannel(socialMediaType: .email, login: "")
         connectChannels.append(newConnectChannel)
-        refreshConnectChannelListView.toggle()
+        return newConnectChannel
     }
     
     func saveConnectChannels() {
@@ -45,6 +44,5 @@ final class ConnectChannelsListViewModel: ObservableObject {
     init(contactDetalViewModel: ContactDetailViewModel?) {
         self.contactDetalViewModel = contactDetalViewModel
         self.connectChannels = contactDetalViewModel?.contact.connectChannels ?? [ConnectChannel]()
-        self.refreshConnectChannelListView = refreshConnectChannelListView
     }
 }
