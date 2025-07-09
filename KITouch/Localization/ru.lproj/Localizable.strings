@@ -41,7 +41,7 @@
 
 "Interactions" = "Взаимодействия";
 
-"Keep in touch" = "Оставаться на связи";
+"Keep in touch" = "Оставайся на связи";
 
 "Last interaction" = "Последнее взаимодействие";
 "Leave Feedback" = "Оставить отзыв";
@@ -72,6 +72,7 @@
 
 "Talked %@" = "Общались %@";
 "Today is the birthday of %@" = "Сегодня день рождения у %@";
+"Tomorrow is the birthday of %@" = "Завтра день рождения у %@";
 
 "Unknown" = "Неизвестно";
 

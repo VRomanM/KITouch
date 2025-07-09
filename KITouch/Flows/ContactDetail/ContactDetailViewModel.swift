@@ -57,7 +57,7 @@ final class ContactDetailViewModel: ObservableObject {
         coreDataManager.saveContact(contact: contact) { _ in }
         
         // Настраиваем уведомления
-        notificationManager.setContactScheduleNotifications(for: contact)
+        notificationManager.setContactScheduleNotifications(for: contact, debug: false)
         
         // Обновляем данные из CoreData
         contactListViewModel?.loadData()

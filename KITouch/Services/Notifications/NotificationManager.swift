@@ -39,7 +39,7 @@ final class NotificationManager: ObservableObject {
         center.removePendingNotificationRequests(withIdentifiers: [getNotificationIdentifier(for: contact, type: type)])
     }
     
-    private func getNotificationTrigger(startDate: Date, repeatPeriod: NotificationPeriod) -> UNCalendarNotificationTrigger {
+    private func getNotificationTrigger(startDate: Date, repeatPeriod: NotificationPeriod, debug: Bool) -> UNCalendarNotificationTrigger {
         let calendar = Calendar.current
         var dateComponents = DateComponents()
         
@@ -72,6 +72,11 @@ final class NotificationManager: ObservableObject {
         case .never:
             dateComponents = calendar.dateComponents([.year, .month, .day, .hour, .minute], from: startDate)
         }
+        
+        if debug {
+            dateComponents = calendar.dateComponents([.second], from: startDate)
+        }
+        
         return UNCalendarNotificationTrigger(dateMatching: dateComponents, repeats: repeatPeriod == .never ? false : true)
     }
     
@@ -92,17 +97,17 @@ final class NotificationManager: ObservableObject {
             content.body            = "Tomorrow is the birthday of %@".localized(with: contact.name)
         case .regular:
             content.title           = "Keep in touch".localized()
-            content.body            = "Contact with %@".localized(with: contact.name, contact.imageName)
+            content.body            = "Contact with %@".localized(with: contact.name)
         case .regularHalfYear:
             content.title           = "Keep in touch".localized()
-            content.body            = "Contact with %@".localized(with: contact.name, contact.imageName)
+            content.body            = "Contact with %@".localized(with: contact.name)
         }
     
         return content
     }
     
-    private func scheduleNotification(for contact: Contact, startDate: Date, type: ReminderType, repeatPeriod: NotificationPeriod) {
-        let trigger = getNotificationTrigger(startDate: startDate, repeatPeriod: repeatPeriod)
+    private func scheduleNotification(for contact: Contact, startDate: Date, type: ReminderType, repeatPeriod: NotificationPeriod, debug: Bool) {
+        let trigger = getNotificationTrigger(startDate: startDate, repeatPeriod: repeatPeriod, debug: debug)
         let content = getNotificationContent(contact: contact, type: type)
         
         // Создаем запрос
@@ -141,7 +146,7 @@ final class NotificationManager: ObservableObject {
         }
     }
     
-    func setContactScheduleNotifications(for contact: Contact) {
+    func setContactScheduleNotifications(for contact: Contact, debug: Bool = false) {
         let calendar = Calendar.current
         
         // Удаление всех уведомлений
@@ -152,11 +157,11 @@ final class NotificationManager: ObservableObject {
         // Назначение уведомлений согласно настройкам контакта
         if contact.reminderBirthday {
             // В день рождения
-            scheduleNotification(for: contact, startDate: contact.birthday, type: .birthday, repeatPeriod: .yearly)
+            scheduleNotification(for: contact, startDate: contact.birthday, type: .birthday, repeatPeriod: .yearly, debug: debug)
             
             // За день до дня рождения
             if let previousDayBeforeBirthday = calendar.date(byAdding: .day, value: -1, to: contact.birthday) {
-                scheduleNotification(for: contact, startDate: previousDayBeforeBirthday, type: .beforeBirthday, repeatPeriod: .yearly)
+                scheduleNotification(for: contact, startDate: previousDayBeforeBirthday, type: .beforeBirthday, repeatPeriod: .yearly, debug: debug)
             }
         }
         
@@ -165,13 +170,13 @@ final class NotificationManager: ObservableObject {
                 if repeatPeriod == .halfYearly {
                     // для уведомлений раз в 6 месяцев необходимо задать 2 расписания
                     // текущий месяц
-                    scheduleNotification(for: contact, startDate: contact.reminderDate, type: .birthday, repeatPeriod: repeatPeriod)
+                    scheduleNotification(for: contact, startDate: contact.reminderDate, type: .birthday, repeatPeriod: repeatPeriod, debug: debug)
                     // + 6 месяцев
                     if let nextHalfYear = calendar.date(byAdding: .month, value: 6, to: contact.reminderDate) {
-                        scheduleNotification(for: contact, startDate: nextHalfYear, type: .regularHalfYear, repeatPeriod: repeatPeriod)
+                        scheduleNotification(for: contact, startDate: nextHalfYear, type: .regularHalfYear, repeatPeriod: repeatPeriod, debug: debug)
                     }
                 } else {
-                    scheduleNotification(for: contact, startDate: contact.birthday, type: .regular, repeatPeriod: repeatPeriod)
+                    scheduleNotification(for: contact, startDate: contact.birthday, type: .regular, repeatPeriod: repeatPeriod, debug: debug)
                 }
             }
         }
