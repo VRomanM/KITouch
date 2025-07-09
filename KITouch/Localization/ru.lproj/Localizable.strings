@@ -17,6 +17,7 @@
 "Cancel" = "Отмена";
 "Choose Emoji" = "Выбери Эмоджи";
 "Colleague" = "Коллега";
+"Connection channel" = "Канал связи";
 "Contacts" = "Контакты";
 "Contact Info" = "Информация о контакте";
 "Contact name" = "Имя контакта";
@@ -54,8 +55,6 @@
 "Notifications" = "Уведомления";
 "Notification Settings" = "Настройки уведомлений";
 
-"Other" = "Другое";
-
 "Phone" = "Телефон";
 
 "Relative" = "Родственник";
@@ -81,3 +80,4 @@
 
 "Yearly" = "Ежегодно";
 "You'll be notified one day before the birthday" = "Вы получите уведомление за день до дня рождения";
+"Username" = "Пользователь";
