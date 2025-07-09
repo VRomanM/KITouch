@@ -170,13 +170,13 @@ final class NotificationManager: ObservableObject {
                 if repeatPeriod == .halfYearly {
                     // для уведомлений раз в 6 месяцев необходимо задать 2 расписания
                     // текущий месяц
-                    scheduleNotification(for: contact, startDate: contact.reminderDate, type: .birthday, repeatPeriod: repeatPeriod, debug: debug)
+                    scheduleNotification(for: contact, startDate: contact.reminderDate, type: .regularHalfYear, repeatPeriod: repeatPeriod, debug: debug)
                     // + 6 месяцев
                     if let nextHalfYear = calendar.date(byAdding: .month, value: 6, to: contact.reminderDate) {
                         scheduleNotification(for: contact, startDate: nextHalfYear, type: .regularHalfYear, repeatPeriod: repeatPeriod, debug: debug)
                     }
                 } else {
-                    scheduleNotification(for: contact, startDate: contact.birthday, type: .regular, repeatPeriod: repeatPeriod, debug: debug)
+                    scheduleNotification(for: contact, startDate: contact.reminderDate, type: .regular, repeatPeriod: repeatPeriod, debug: debug)
                 }
             }
         }
