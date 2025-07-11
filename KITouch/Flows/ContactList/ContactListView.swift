@@ -91,25 +91,25 @@ struct ContactListView: View {
                                 Button(action: {
                                     viewModel.navigationPath.append(ContactRoute.newContact)
                                 }) {
-                                    Label("Новый", systemImage: "person.fill.badge.plus")
+                                    Label("New", systemImage: "person.fill.badge.plus")
                                 }
                                 
                                 Button(action: {
                                     viewModel.checkContactsPermission()
                                 }) {
-                                    Label("Из контактов", systemImage: "person.crop.circle.fill.badge.plus")
+                                    Label("From contacts", systemImage: "person.crop.circle.fill.badge.plus")
                                 }
                             } label: {
                                 Image(systemName: "plus")
                                     .foregroundColor(.white)
                             }
-                            .alert("Доступ к контактам", isPresented: $viewModel.showContactsPermissionAlert) {
+                            .alert("Contacts Access Required", isPresented: $viewModel.showContactsPermissionAlert) {
                                 Button("Настройки", role: .none) {
                                     viewModel.openAppSettings()
                                 }
-                                Button("Отмена", role: .cancel) {}
+                                Button("Cancel", role: .cancel) {}
                             } message: {
-                                Text("Разрешите доступ к контактам в настройках приложения")
+                                Text("To grant contacts access:\n1. Open Settings\n2. Go to Privacy\n3. Select Contacts\n4. Find this app\n5. Enable access")
                             }
                         }
                     }
