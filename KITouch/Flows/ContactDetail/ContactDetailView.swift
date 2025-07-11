@@ -20,104 +20,121 @@ struct ContactDetailView: View {
     }
     
     var body: some View {
-        Form {
-            // Header Section
-            Section {
-                HStack(alignment: .top) {
-                    emojiPickerButton
-                    VStack(alignment: .leading) {
-                        nameTextField
-                        HStack {
-                            contactTypeMenu
-                            if viewModel.contact.contactType == ContactType.other.rawValue {
-                                otherTypeTextField
+        ZStack {
+            Form {
+                // Header Section
+                Section {
+                    HStack(alignment: .top) {
+                        emojiPickerButton
+                        VStack(alignment: .leading) {
+                            nameTextField
+                            HStack {
+                                contactTypeMenu
+                                if viewModel.contact.contactType == ContactType.other.rawValue {
+                                    otherTypeTextField
+                                }
                             }
                         }
                     }
-                }
-                .padding(.vertical, 4)
-            }
-            
-            // Contact Info Section
-            Section(header: Text("Contact Info")) {
-                phoneField
-                birthdayPicker
-            }
-            
-            // Social Media Section
-            Section(header: Text("Social Media")) {
-                socialMediaGrid
-                Button("Edit") {
-                    viewModel.isShowingConnectChannelsListView = true
-                }
-                .foregroundColor(.accentColor)
-            }
-            
-            // Interactions Section
-            Section(header: Text("Interactions")) {
-                ForEach(viewModel.interactions.prefix(3)) { interaction in
-                    InteractionRowView(interaction: interaction)
+                    .padding(.vertical, 4)
                 }
                 
-                if viewModel.interactions.count > 3 {
-                    Button("See All %@".localized(with: String(viewModel.interactions.count))) {
-                        viewModel.isShowingInteractionListView = true
+                // Contact Info Section
+                Section(header: Text("Contact Info")) {
+                    phoneField
+                    birthdayPicker
+                }
+                
+                // Social Media Section
+                Section(header: Text("Social Media")) {
+                    socialMediaGrid
+                    Button("Edit") {
+                        viewModel.isShowingConnectChannelsListView = true
                     }
+                    .foregroundColor(.accentColor)
                 }
                 
-                Button(action: addInteraction) {
-                    Label("Add", systemImage: "plus")
-                }
-                .foregroundColor(.accentColor)
-            }
-            
-            // Notification Section
-            Section {
-                Toggle("Birthday", isOn: $viewModel.contact.reminderBirthday)
-                if viewModel.contact.reminderBirthday {
-                    Text("You'll be notified one day before the birthday")
-                        .font(.footnote)
-                        .foregroundColor(.secondary)
-                }
-                
-                Toggle("Keep in touch", isOn: $viewModel.contact.reminder)
-                
-                if viewModel.contact.reminder {
-                    DatePicker("When",
-                               selection: $viewModel.contact.reminderDate,
-                               in: Date()...)
+                // Interactions Section
+                Section(header: Text("Interactions")) {
+                    ForEach(viewModel.interactions.prefix(3)) { interaction in
+                        InteractionRowView(interaction: interaction)
+                    }
                     
-                    Picker("Repeat", selection: $viewModel.contact.reminderRepeat) {
-                        ForEach(NotificationPeriod.allCases) { period in
-                            Text(period.localizedValue).tag(period)
+                    if viewModel.interactions.count > 3 {
+                        Button("See All %@".localized(with: String(viewModel.interactions.count))) {
+                            viewModel.isShowingInteractionListView = true
                         }
                     }
+                    
+                    Button(action: addInteraction) {
+                        Label("Add", systemImage: "plus")
+                    }
+                    .foregroundColor(.accentColor)
                 }
                 
-            } header: {
-                Text("Reminders")
-            } footer: {
-                Text("Get reminders to keep in touch")
+                // Notification Section
+                Section {
+                    if viewModel.isAccessNotifications {
+                        Label {
+                            Text("The app does not have access to create notifications")
+                                .font(.footnote)
+                                .foregroundColor(.secondary)
+                        } icon: {
+                            Image(systemName: "exclamationmark.triangle.fill")
+                                .foregroundColor(.red)
+                        }
+                    }
+                    Toggle("Birthday", isOn: $viewModel.contact.reminderBirthday)
+                    if viewModel.contact.reminderBirthday {
+                        Text("You'll be notified one day before the birthday")
+                            .font(.footnote)
+                            .foregroundColor(.secondary)
+                    }
+                    
+                    Toggle("Keep in touch", isOn: $viewModel.contact.reminder)
+                    
+                    if viewModel.contact.reminder {
+                        DatePicker("When",
+                                   selection: $viewModel.contact.reminderDate,
+                                   in: Date()...)
+                        
+                        Picker("Repeat", selection: $viewModel.contact.reminderRepeat) {
+                            ForEach(NotificationPeriod.allCases) { period in
+                                Text(period.localizedValue).tag(period)
+                            }
+                        }
+                    }
+                    
+                } header: {
+                    Text("Reminders")
+                } footer: {
+                    Text("Get reminders to keep in touch")
+                }
             }
-        }
-        .scrollDismissesKeyboard(.immediately)
-        .navigationBarTitleDisplayMode(.inline)
-        .toolbar {
-            ToolbarItem(placement: .confirmationAction) {
-                Button("Done", action: saveAndDismiss)
+            .scrollDismissesKeyboard(.immediately)
+            .navigationBarTitleDisplayMode(.inline)
+            .fullScreenCover(isPresented: $viewModel.isShowingInteractionListView) {
+                InteractionsListView(interactions: viewModel.interactions)
             }
-        }
-        .fullScreenCover(isPresented: $viewModel.isShowingInteractionListView) {
-            InteractionsListView(interactions: viewModel.interactions)
-        }
-        .fullScreenCover(isPresented: $viewModel.isShowingConnectChannelsListView) {
-            ConnectChannelsListView(viewModel: ConnectChannelsListViewModel(contactDetalViewModel: viewModel))
-        }
-        .sheet(isPresented: $viewModel.isShowingNewInteractionView) {
-            InteractionView(viewModel: InteractionViewModel(contactId: viewModel.contact.id, contactDetailViewModel: viewModel))
-        }
-        .sheet(isPresented: $viewModel.isEmojiPickerPresented) {
-            EmojiPickerView(selectedEmoji: $viewModel.contact.imageName)
+            .fullScreenCover(isPresented: $viewModel.isShowingConnectChannelsListView) {
+                ConnectChannelsListView(viewModel: ConnectChannelsListViewModel(contactDetalViewModel: viewModel))
+            }
+            .sheet(isPresented: $viewModel.isShowingNewInteractionView) {
+                InteractionView(viewModel: InteractionViewModel(contactId: viewModel.contact.id, contactDetailViewModel: viewModel))
+            }
+            .sheet(isPresented: $viewModel.isEmojiPickerPresented) {
+                EmojiPickerView(selectedEmoji: $viewModel.contact.imageName)
+            }
+            .onAppear {
+                viewModel.checkNotificationAccess()
+            }
+            .padding(.bottom, 80) // Добавляем отступ снизу для кнопки
+            
+            // Плавающая кнопка сохранения
+            VStack {
+                Spacer()
+                KITButton(text: "Save".localized(), action: saveAndDismiss)
+            }
         }
     }
     
