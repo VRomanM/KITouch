@@ -40,12 +40,17 @@ final class ContactDetailViewModel: ObservableObject {
     @Published var isEmojiPickerPresented = false
     @Published var isShowingNewInteractionView = false
     @Published var isShowingEditInteractionView = false
+    @Published var isAccessNotifications = false
     
     //MARK: - Constructions
     init(contactListViewModel: ContactListViewModel?, contact: Contact) {
         self.contact = contact
         self.contactListViewModel = contactListViewModel
         loadInteractions()
+        
+        self.notificationManager.checkNotificationAuthorization { [weak self] isAuthorized in
+            self?.isAccessNotifications = isAuthorized
+        }
     }
     
     //MARK: - Functions
@@ -62,6 +67,14 @@ final class ContactDetailViewModel: ObservableObject {
         // Обновляем данные из CoreData
         contactListViewModel?.loadData()
     }
+    
+    func checkNotificationAccess() {
+            notificationManager.checkNotificationAuthorization { [weak self] isAuthorized in
+                DispatchQueue.main.async {
+                    self?.isAccessNotifications = !isAuthorized
+                }
+            }
+        }
     
     func formatPhoneNumber(_ newValue: String) {
         let cleanNumber = newValue.filter { $0.isNumber }

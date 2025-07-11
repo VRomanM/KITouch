@@ -55,6 +55,8 @@
 "Notifications" = "Уведомления";
 "Notification Settings" = "Настройки уведомлений";
 
+"Other" = "Другое";
+
 "Phone" = "Телефон";
 
 "Relative" = "Родственник";
@@ -70,6 +72,7 @@
 "Social Media" = "Социальные сети";
 
 "Talked %@" = "Общались %@";
+"The app does not have access to create notifications" = "У приложения нет доступа для создания уведомлений";
 "Today is the birthday of %@" = "Сегодня день рождения у %@";
 "Tomorrow is the birthday of %@" = "Завтра день рождения у %@";
 
