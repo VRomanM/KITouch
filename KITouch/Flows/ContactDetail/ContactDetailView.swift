@@ -65,6 +65,13 @@ struct ContactDetailView: View {
                                 InteractionRowView(interaction: interaction)
                             }
                             .buttonStyle(.plain)
+                            .swipeActions(edge: .trailing, allowsFullSwipe: true) {
+                                Button(role: .destructive) {
+                                    viewModel.deleteInteraction(interaction)
+                                } label: {
+                                    Label("", systemImage: "trash")
+                                }
+                            }
                         }
 
                         if viewModel.interactions.count > 3 {
