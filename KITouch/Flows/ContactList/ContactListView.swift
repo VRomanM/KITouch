@@ -8,7 +8,7 @@
 import SwiftUI
 
 enum ContactRoute: Hashable {
-    case detail(contact: Contact)
+    case detail(contact: Contact, isShowNewInteraction: Bool = false)
     case settings
     case newContact
     case fromContacts
@@ -44,7 +44,9 @@ struct ContactListView: View {
 
                     List {
                         ForEach(viewModel.filteredContacts()) { contact in
-                            ContactView(contact: contact)
+                            ContactView(contact: contact, onAddAction: {
+                                viewModel.navigationPath.append(ContactRoute.detail(contact: contact, isShowNewInteraction: true))
+                            })
                                 .onTapGesture {
                                     viewModel.navigationPath.append(ContactRoute.detail(contact: contact))
                                 }
@@ -63,12 +65,12 @@ struct ContactListView: View {
                     .listRowSpacing(10)
                     .navigationDestination(for: ContactRoute.self) { route in
                         switch route {
-                        case .detail(let contact):
-                            ContactDetailView(contactListViewModel: viewModel, contact: contact)
+                        case .detail(let contact, let isShowingNewInteractionView):
+                            ContactDetailView(contactListViewModel: viewModel, isShowingNewInteractionView: isShowingNewInteractionView, contact: contact)
                         case .settings:
                             SettingsView()
                         case .newContact:
-                            ContactDetailView(contactListViewModel: viewModel, contact: Contact())
+                            ContactDetailView(contactListViewModel: viewModel, isShowingNewInteractionView: false, contact: Contact())
                         case .fromContacts:
                             ContactPickerView(
                                 onSelectContact: { contact in
@@ -146,7 +148,8 @@ struct BackgroundView: View {
 
 struct ContactView: View {
     let contact: Contact
-    
+    let onAddAction: () -> Void // Замыкание для действия при нажатии
+
     var body: some View {
         HStack {
             Text(contact.imageName)
@@ -174,6 +177,21 @@ struct ContactView: View {
                 }
                 Spacer()
             }
+
+            Spacer() // Отталкивает кнопку к правому краю
+
+            // Кнопка "+" по центру справа
+            Button(action: onAddAction) {
+                Image(systemName: "plus")
+                    .font(.title2)
+                    .foregroundColor(.accentColor)
+                    .frame(width: 44, height: 44)
+                    .background(Color(.systemGray6))
+                    .clipShape(Circle())
+            }
+            .buttonStyle(.plain)
+            .padding(.trailing)
         }
     }
 }
+

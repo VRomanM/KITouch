@@ -266,13 +266,15 @@ struct ContactDetailView: View {
         dismiss()
     }
     
-    init(contactListViewModel: ContactListViewModel, contact: Contact) {
-        _viewModel = StateObject(wrappedValue: ContactDetailViewModel(contactListViewModel: contactListViewModel, contact: contact))
+    init(contactListViewModel: ContactListViewModel, isShowingNewInteractionView: Bool, contact: Contact) {
+        var model = ContactDetailViewModel(contactListViewModel: contactListViewModel, contact: contact)
+        model.isShowingNewInteractionView = isShowingNewInteractionView
+        _viewModel = StateObject(wrappedValue: model)
     }
 }
 
 #Preview {
-    ContactDetailView(contactListViewModel: ContactListViewModel(), contact: Contact())
+    ContactDetailView(contactListViewModel: ContactListViewModel(), isShowingNewInteractionView: false, contact: Contact())
 }
 
 //struct ContactDetailView: View {
