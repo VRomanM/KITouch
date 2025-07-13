@@ -14,12 +14,6 @@ extension View {
 }
 
 extension View {
-    func swipeToDelete(onDelete: @escaping () -> Void) -> some View {
-        self.modifier(SimpleSwipeToDeleteModifier(onDelete: onDelete))
-    }
-}
-
-extension View {
     func dismissKeyboard() -> some View {
         self.onTapGesture {
             UIApplication.shared.sendAction(
