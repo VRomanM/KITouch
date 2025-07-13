@@ -12,7 +12,7 @@ final class CoreDataManager {
     //MARK: - Private properties
     
     private struct Constants {
-        static let dbName           = "Model"
+        static let dbName           = "Models"
     }
     private lazy var persistentContainer: NSPersistentContainer = {
         let container = NSPersistentContainer(name: Constants.dbName)
@@ -129,7 +129,7 @@ final class CoreDataManager {
         entity.contactType          = contact.contactType
         entity.customContactType    = contact.customContactType
         entity.imageName            = contact.imageName
-        entity.lastMessage          = contact.lastMessage
+        entity.lastMessage          = contact.lastMessage ?? nil
         entity.countMessages        = Int16(contact.countMessages)
         entity.phone                = contact.phone
         entity.birthday             = contact.birthday
@@ -264,6 +264,31 @@ final class CoreDataManager {
             } else {
                 completion(.success(()))
             }
+        }
+    }
+
+    func fetchLatestInteraction(for contactId: UUID, completion: @escaping (Interaction?) -> Void) {
+        let context = persistentContainer.viewContext
+        let request: NSFetchRequest<InteractionEntity> = InteractionEntity.fetchRequest()
+        request.predicate = NSPredicate(format: "contactId == %@", contactId as CVarArg)
+        request.sortDescriptors = [NSSortDescriptor(keyPath: \InteractionEntity.date, ascending: false)]
+        request.fetchLimit = 1
+
+        do {
+            if let entity = try context.fetch(request).first {
+                let interaction = Interaction(
+                    id: entity.id ?? UUID(),
+                    date: entity.date ?? Date(),
+                    notes: entity.notes ?? "",
+                    contactId: entity.contactId ?? UUID()
+                )
+                completion(interaction)
+            } else {
+                completion(nil)
+            }
+        } catch {
+            print("Ошибка загрузки взаимодействий: \(error)")
+            completion(nil)
         }
     }
 }

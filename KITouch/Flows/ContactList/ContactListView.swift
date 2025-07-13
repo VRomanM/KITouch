@@ -162,9 +162,11 @@ struct ContactView: View {
                     .foregroundStyle(.gray)
                 Spacer()
                 HStack {
-                    Text("Talked \(contact.lastMessage, format: .dateTime.day().month().year())")
-                        .font(.subheadline)
-                        .foregroundStyle(.gray)
+                    if let lastMessage = contact.lastMessage {
+                        Text("Talked \(lastMessage, format: .dateTime.day().month().year())")
+                            .font(.subheadline)
+                            .foregroundStyle(.gray)
+                    }
                     Spacer()
                     Text("\(contact.countMessages)")
                         .font(.subheadline)
