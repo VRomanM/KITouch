@@ -32,7 +32,8 @@ final class ContactDetailViewModel: ObservableObject {
     @Published var contact: Contact
     @Published var interactions: [Interaction] = []
     @Published var selectedInteraction: Interaction?
-    
+    @Published var isEditingInteraction: Bool = false
+
     // Навигация
     @Published var navigationPath = NavigationPath()
     @Published var isShowingInteractionListView = false

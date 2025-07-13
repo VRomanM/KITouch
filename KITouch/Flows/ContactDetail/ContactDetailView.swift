@@ -58,7 +58,13 @@ struct ContactDetailView: View {
                 if !viewModel.contact.isNewContact {
                     Section(header: Text("Interactions")) {
                         ForEach(viewModel.interactions.prefix(3)) { interaction in
-                            InteractionRowView(interaction: interaction)
+                            Button {
+                                viewModel.selectedInteraction = interaction
+                                viewModel.isEditingInteraction = true
+                            } label: {
+                                InteractionRowView(interaction: interaction)
+                            }
+                            .buttonStyle(.plain)
                         }
 
                         if viewModel.interactions.count > 3 {
@@ -123,7 +129,18 @@ struct ContactDetailView: View {
                 ConnectChannelsListView(viewModel: ConnectChannelsListViewModel(contactDetalViewModel: viewModel))
             }
             .sheet(isPresented: $viewModel.isShowingNewInteractionView) {
-                InteractionView(viewModel: InteractionViewModel(contactId: viewModel.contact.id, contactDetailViewModel: viewModel))
+                InteractionView(viewModel:
+                                    InteractionViewModel(contactId: viewModel.contact.id,
+                                                         contactDetailViewModel: viewModel)
+                )
+            }
+            .sheet(item: $viewModel.selectedInteraction) { interaction in
+                InteractionView(
+                    viewModel: InteractionViewModel(
+                        interaction: interaction,
+                        contactDetailViewModel: viewModel
+                    )
+                )
             }
             .sheet(isPresented: $viewModel.isEmojiPickerPresented) {
                 EmojiPickerView(selectedEmoji: $viewModel.contact.imageName)
