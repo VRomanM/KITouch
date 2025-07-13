@@ -16,7 +16,7 @@ struct Contact: Hashable, Identifiable {
     var customContactType: String = ""
     var imageName: String
     var lastMessage: Date?
-    let countMessages: Int
+    var countMessages: Int
     var phone: String
     var birthday: Date
     var connectChannels: [ConnectChannel]
