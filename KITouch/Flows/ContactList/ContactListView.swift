@@ -148,13 +148,27 @@ struct BackgroundView: View {
 
 struct ContactView: View {
     let contact: Contact
-    let onAddAction: () -> Void // Замыкание для действия при нажатии
+    let onAddAction: () -> Void
 
     var body: some View {
         HStack {
-            Text(contact.imageName)
-                .font(.system(size: 40))
-                .padding()
+            ZStack(alignment: .topTrailing) {
+                Text(contact.imageName)
+                    .font(.system(size: 40))
+                    .padding(.horizontal, 2) // Уменьшенный горизонтальный padding
+
+                if contact.countMessages > 0 {
+                    Text("\(contact.countMessages)")
+                        .font(.caption2)
+                        .foregroundColor(.white)
+                        .padding(.horizontal, 6)
+                        .padding(.vertical, 2)
+                        .background(Color.blue)
+                        .clipShape(Capsule())
+                        .offset(x: 5, y: -5)
+                }
+            }
+
             VStack(alignment: .leading) {
                 Spacer()
                 Text(contact.name.localized())
@@ -170,17 +184,12 @@ struct ContactView: View {
                             .font(.subheadline)
                             .foregroundStyle(.gray)
                     }
-                    Spacer()
-                    Text("\(contact.countMessages)")
-                        .font(.subheadline)
-                        .foregroundStyle(.gray)
                 }
                 Spacer()
-            }
+            }.padding(.leading, 4)
 
-            Spacer() // Отталкивает кнопку к правому краю
+            Spacer()
 
-            // Кнопка "+" по центру справа
             Button(action: onAddAction) {
                 Image(systemName: "plus")
                     .font(.title2)
@@ -190,8 +199,7 @@ struct ContactView: View {
                     .clipShape(Circle())
             }
             .buttonStyle(.plain)
-            .padding(.trailing)
+            .padding(.trailing, 2) // Уменьшенный padding справа
         }
     }
 }
-
