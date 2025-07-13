@@ -55,23 +55,26 @@ struct ContactDetailView: View {
                 }
                 
                 // Interactions Section
-                Section(header: Text("Interactions")) {
-                    ForEach(viewModel.interactions.prefix(3)) { interaction in
-                        InteractionRowView(interaction: interaction)
-                    }
-                    
-                    if viewModel.interactions.count > 3 {
-                        Button("See All %@".localized(with: String(viewModel.interactions.count))) {
-                            viewModel.isShowingInteractionListView = true
+                if !viewModel.contact.isNewContact {
+                    Section(header: Text("Interactions")) {
+                        ForEach(viewModel.interactions.prefix(3)) { interaction in
+                            InteractionRowView(interaction: interaction)
                         }
+
+                        if viewModel.interactions.count > 3 {
+                            Button("See All %@".localized(with: String(viewModel.interactions.count))) {
+                                viewModel.isShowingInteractionListView = true
+                            }
+                        }
+
+                        Button(action: addInteraction) {
+                            Label("Add", systemImage: "plus")
+                        }
+                        .foregroundColor(.accentColor)
+
                     }
-                    
-                    Button(action: addInteraction) {
-                        Label("Add", systemImage: "plus")
-                    }
-                    .foregroundColor(.accentColor)
                 }
-                
+
                 // Notification Section
                 Section {
                     if viewModel.isAccessNotifications {

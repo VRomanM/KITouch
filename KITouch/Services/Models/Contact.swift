@@ -30,7 +30,7 @@ struct Contact: Hashable, Identifiable {
         contactType == ContactType.other.rawValue ? customContactType : contactType
     }
     
-    init(name: String, contactType: String, imageName: String, lastMessage: Date?, countMessages: Int, phone: String, birthday: Date?, connectChannels: [ConnectChannel]) {
+    init(name: String, contactType: String, isNewContact: Bool, imageName: String, lastMessage: Date?, countMessages: Int, phone: String, birthday: Date?, connectChannels: [ConnectChannel]) {
         self.name = name
         self.contactType = contactType
         self.customContactType = ""
@@ -41,7 +41,7 @@ struct Contact: Hashable, Identifiable {
         self.birthday = birthday ?? Date.now
         self.reminderDate = Date.now
         self.connectChannels = connectChannels
-        self.isNewContact = false
+        self.isNewContact = isNewContact
     }
     
     init() {

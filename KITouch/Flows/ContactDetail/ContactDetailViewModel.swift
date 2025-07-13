@@ -61,6 +61,7 @@ final class ContactDetailViewModel: ObservableObject {
         }
         contact.lastMessage = interactions.max(by: { $0.date < $1.date })?.date
         contact.countMessages = interactions.count
+
         coreDataManager.saveContact(contact: contact) { _ in }
         
         // Настраиваем уведомления

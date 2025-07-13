@@ -34,8 +34,9 @@ struct ContactPickerView: UIViewControllerRepresentable {
             // Конвертируем CNContact в наш Contact
             let newContact = Contact(name: "\(contact.givenName) \(contact.familyName)",
                                      contactType: "Friend",
+                                     isNewContact: true,
                                      imageName: "😎",
-                                     lastMessage: Date.distantPast,
+                                     lastMessage: nil,
                                      countMessages: 0,
                                      phone: contact.phoneNumbers.first?.value.stringValue ?? "",
                                      birthday: contact.birthday?.date,
