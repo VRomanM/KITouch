@@ -7,6 +7,52 @@
 import Combine
 import ContactsUI
 
+// MARK: - System Contact Helper
+enum SystemContactHelper {
+    static let keysToFetch: [CNKeyDescriptor] = [
+        CNContactGivenNameKey,
+        CNContactFamilyNameKey,
+        CNContactPhoneNumbersKey,
+        CNContactBirthdayKey,
+        CNContactIdentifierKey,
+        CNContactEmailAddressesKey
+    ] as [CNKeyDescriptor]
+    
+    static func createContact(from cnContact: CNContact) -> Contact {
+        // Создаем каналы связи для контакта
+        var connectChannels: [ConnectChannel] = []
+        
+        // Добавляем email если есть
+        if let email = cnContact.emailAddresses.first?.value as String? {
+            connectChannels.append(ConnectChannel(socialMediaType: .email, login: email))
+        }
+        
+        return Contact(
+            name: "\(cnContact.givenName) \(cnContact.familyName)".trimmingCharacters(in: .whitespaces),
+            contactType: ContactType.friend.rawValue,
+            imageName: "😎",
+            lastMessage: Date.distantPast,
+            countMessages: 0,
+            phone: cnContact.phoneNumbers.first?.value.stringValue ?? "",
+            birthday: cnContact.birthday?.date,
+            connectChannels: connectChannels,
+            systemContactId: cnContact.identifier
+        )
+    }
+    
+    static func fetchSystemContact(with identifier: String) async throws -> Contact? {
+        let store = CNContactStore()
+        
+        do {
+            let cnContact = try store.unifiedContact(withIdentifier: identifier, keysToFetch: keysToFetch)
+            return createContact(from: cnContact)
+        } catch {
+            print("Error fetching contact: \(error)")
+            return nil
+        }
+    }
+}
+
 @MainActor
 final class ContactPickerViewModel: ObservableObject {
     @Published private(set) var contacts: [Contact] = []
@@ -18,41 +64,13 @@ final class ContactPickerViewModel: ObservableObject {
     
     func loadContacts() async {
         do {
-            let keysToFetch = [
-                CNContactGivenNameKey,
-                CNContactFamilyNameKey,
-                CNContactPhoneNumbersKey,
-                CNContactBirthdayKey,
-                CNContactIdentifierKey,
-                CNContactEmailAddressesKey
-            ] as [CNKeyDescriptor]
-            
-            let request = CNContactFetchRequest(keysToFetch: keysToFetch)
+            let request = CNContactFetchRequest(keysToFetch: SystemContactHelper.keysToFetch)
             
             // Выполняем тяжелую работу в фоновом потоке
             let fetchedContacts = try await Task.detached(priority: .userInitiated) { [request, contactStore] () -> [Contact] in
                 var contacts: [Contact] = []
                 try contactStore.enumerateContacts(with: request) { cnContact, _ in
-                    // Создаем каналы связи для контакта
-                    var connectChannels: [ConnectChannel] = []
-                    
-                    // Добавляем email если есть
-                    if let email = cnContact.emailAddresses.first?.value as String? {
-                        connectChannels.append(ConnectChannel(socialMediaType: .email, login: email))
-                    }
-                    
-                    let newContact = Contact(
-                        name: "\(cnContact.givenName) \(cnContact.familyName)".trimmingCharacters(in: .whitespaces),
-                        contactType: ContactType.friend.rawValue,
-                        imageName: "😎",
-                        lastMessage: Date.distantPast,
-                        countMessages: 0,
-                        phone: cnContact.phoneNumbers.first?.value.stringValue ?? "",
-                        birthday: cnContact.birthday?.date,
-                        connectChannels: connectChannels,
-                        systemContactId: cnContact.identifier
-                    )
-                    contacts.append(newContact)
+                    contacts.append(SystemContactHelper.createContact(from: cnContact))
                 }
                 return contacts.sorted { $0.name < $1.name }
             }.value

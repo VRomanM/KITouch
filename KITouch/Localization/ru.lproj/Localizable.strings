@@ -23,6 +23,7 @@
 "Contact already exists" = "Контакт уже существует";
 "Contact Info" = "Информация о контакте";
 "Contact name" = "Имя контакта";
+"Contact will be updated from address book" = "Контакт будет обновлен из адресной книги";
 "Contact with %@" = "Свяжись с %@";
 
 "Date" = "Дата";
@@ -84,6 +85,8 @@
 "To grant contacts access:\n1. Open Settings\n2. Go to Privacy\n3. Select Contacts\n4. Find this app\n5. Enable access" = "Доступ к контактам запрещен. Чтобы разрешить:\n1. Откройте Настройки\n2. Конфиденциальность → Контакты\n3. Включите доступ для этого приложения → \n4. Разрешите доступ к контактам для работы этой функции";
 
 "Unknown" = "Неизвестно";
+"Update" = "Обновить";
+"Update Contact" = "Обновить контакт";
 "Username" = "Пользователь";
 
 "Weekly" = "Еженедельно";

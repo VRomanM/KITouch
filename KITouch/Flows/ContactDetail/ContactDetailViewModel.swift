@@ -54,6 +54,25 @@ final class ContactDetailViewModel: ObservableObject {
     }
     
     //MARK: - Functions
+    func refreshContactFromSystem() {
+        guard let systemContactId = contact.systemContactId else { return }
+        
+        Task {
+            do {
+                if let systemContact = try await SystemContactHelper.fetchSystemContact(with: systemContactId) {
+                    await MainActor.run {
+                        self.contact.name = systemContact.name
+                        self.contact.phone = systemContact.phone
+                        self.contact.birthday = systemContact.birthday
+                        // Остальные поля оставляем без изменений, так как они специфичны для нашего приложения
+                    }
+                }
+            } catch {
+                print("Error refreshing contact: \(error)")
+            }
+        }
+    }
+
     func saveContactDetail() {
         // Сохраняем в CoreData
         if contact.contactType != ContactType.other.rawValue {

@@ -12,6 +12,7 @@ struct ContactDetailView: View {
     
     @StateObject var viewModel: ContactDetailViewModel
     @State private var showingNotificationSettings = false
+    @State private var showingRefreshAlert = false
     
     private var dateRange: ClosedRange<Date> {
         let calendar = Calendar.current
@@ -24,7 +25,7 @@ struct ContactDetailView: View {
             Form {
                 // Header Section
                 Section {
-                    HStack(alignment: .top) {
+                    HStack(alignment: .center) {
                         emojiPickerButton
                         VStack(alignment: .leading) {
                             nameTextField
@@ -34,6 +35,14 @@ struct ContactDetailView: View {
                                     otherTypeTextField
                                 }
                             }
+                        }
+                        if let _ = viewModel.contact.systemContactId {
+                            Button(action: { showingRefreshAlert = true }) {
+                                HStack {
+                                    Image(systemName: "arrow.triangle.2.circlepath")
+                                }
+                            }
+                            .foregroundColor(.accentColor)
                         }
                     }
                     .padding(.vertical, 4)
@@ -134,6 +143,14 @@ struct ContactDetailView: View {
             VStack {
                 Spacer()
                 KITButton(text: "Save".localized(), action: saveAndDismiss)
+            }
+            .alert("Update Contact".localized(), isPresented: $showingRefreshAlert) {
+                Button("Cancel".localized(), role: .cancel) { }
+                Button("Update".localized(), role: .destructive) {
+                    viewModel.refreshContactFromSystem()
+                }
+            } message: {
+                Text("Contact will be updated from address book".localized())
             }
         }
     }
