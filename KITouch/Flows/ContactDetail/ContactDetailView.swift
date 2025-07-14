@@ -55,23 +55,39 @@ struct ContactDetailView: View {
                 }
                 
                 // Interactions Section
-                Section(header: Text("Interactions")) {
-                    ForEach(viewModel.interactions.prefix(3)) { interaction in
-                        InteractionRowView(interaction: interaction)
-                    }
-                    
-                    if viewModel.interactions.count > 3 {
-                        Button("See All %@".localized(with: String(viewModel.interactions.count))) {
-                            viewModel.isShowingInteractionListView = true
+                if !viewModel.contact.isNewContact {
+                    Section(header: Text("Interactions")) {
+                        ForEach(viewModel.interactions.prefix(3)) { interaction in
+                            Button {
+                                viewModel.selectedInteraction = interaction
+                                viewModel.isEditingInteraction = true
+                            } label: {
+                                InteractionRowView(interaction: interaction)
+                            }
+                            .buttonStyle(.plain)
+                            .swipeActions(edge: .trailing, allowsFullSwipe: true) {
+                                Button(role: .destructive) {
+                                    viewModel.deleteInteraction(interaction)
+                                } label: {
+                                    Label("", systemImage: "trash")
+                                }
+                            }
                         }
+
+                        if viewModel.interactions.count > 3 {
+                            Button("See All %@".localized(with: String(viewModel.interactions.count))) {
+                                viewModel.isShowingInteractionListView = true
+                            }
+                        }
+
+                        Button(action: addInteraction) {
+                            Label("Add", systemImage: "plus")
+                        }
+                        .foregroundColor(.accentColor)
+
                     }
-                    
-                    Button(action: addInteraction) {
-                        Label("Add", systemImage: "plus")
-                    }
-                    .foregroundColor(.accentColor)
                 }
-                
+
                 // Notification Section
                 Section {
                     if viewModel.isAccessNotifications {
@@ -120,7 +136,18 @@ struct ContactDetailView: View {
                 ConnectChannelsListView(viewModel: ConnectChannelsListViewModel(contactDetalViewModel: viewModel))
             }
             .sheet(isPresented: $viewModel.isShowingNewInteractionView) {
-                InteractionView(viewModel: InteractionViewModel(contactId: viewModel.contact.id, contactDetailViewModel: viewModel))
+                InteractionView(viewModel:
+                                    InteractionViewModel(contactId: viewModel.contact.id,
+                                                         contactDetailViewModel: viewModel)
+                )
+            }
+            .sheet(item: $viewModel.selectedInteraction) { interaction in
+                InteractionView(
+                    viewModel: InteractionViewModel(
+                        interaction: interaction,
+                        contactDetailViewModel: viewModel
+                    )
+                )
             }
             .sheet(isPresented: $viewModel.isEmojiPickerPresented) {
                 EmojiPickerView(selectedEmoji: $viewModel.contact.imageName)
@@ -239,13 +266,15 @@ struct ContactDetailView: View {
         dismiss()
     }
     
-    init(contactListViewModel: ContactListViewModel, contact: Contact) {
-        _viewModel = StateObject(wrappedValue: ContactDetailViewModel(contactListViewModel: contactListViewModel, contact: contact))
+    init(contactListViewModel: ContactListViewModel, isShowingNewInteractionView: Bool, contact: Contact) {
+        var model = ContactDetailViewModel(contactListViewModel: contactListViewModel, contact: contact)
+        model.isShowingNewInteractionView = isShowingNewInteractionView
+        _viewModel = StateObject(wrappedValue: model)
     }
 }
 
 #Preview {
-    ContactDetailView(contactListViewModel: ContactListViewModel(), contact: Contact())
+    ContactDetailView(contactListViewModel: ContactListViewModel(), isShowingNewInteractionView: false, contact: Contact())
 }
 
 //struct ContactDetailView: View {

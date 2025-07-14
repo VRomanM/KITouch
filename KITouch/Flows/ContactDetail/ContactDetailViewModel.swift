@@ -32,7 +32,8 @@ final class ContactDetailViewModel: ObservableObject {
     @Published var contact: Contact
     @Published var interactions: [Interaction] = []
     @Published var selectedInteraction: Interaction?
-    
+    @Published var isEditingInteraction: Bool = false
+
     // Навигация
     @Published var navigationPath = NavigationPath()
     @Published var isShowingInteractionListView = false
@@ -59,6 +60,9 @@ final class ContactDetailViewModel: ObservableObject {
         if contact.contactType != ContactType.other.rawValue {
             contact.customContactType = ""
         }
+        contact.lastMessage = interactions.max(by: { $0.date < $1.date })?.date
+        contact.countMessages = interactions.count
+
         coreDataManager.saveContact(contact: contact) { _ in }
         
         // Настраиваем уведомления
