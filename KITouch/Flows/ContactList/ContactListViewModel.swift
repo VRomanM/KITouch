@@ -76,7 +76,8 @@ final class ContactListViewModel: ObservableObject {
                             reminderDate: contact.reminderDate,
                             reminderRepeat: contact.reminderRepeat,
                             reminderBirthday: contact.reminderBirthday,
-                            connectChannels: connectChannels
+                            connectChannels: connectChannels,
+                            systemContactId: contact.systemContactId
                         )
                     }
                     
@@ -110,7 +111,7 @@ final class ContactListViewModel: ObservableObject {
         return contacts.first { $0.idString == id }
     }
     
-    func deleteContacts(contact: Contact){
+    func deleteContacts(contact: Contact) {
         // Удаляем из локального массива
         contacts.removeAll { $0.id == contact.id }
 

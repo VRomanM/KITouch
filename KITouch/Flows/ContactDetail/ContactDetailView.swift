@@ -155,6 +155,8 @@ struct ContactDetailView: View {
         TextField("Contact name", text: $viewModel.contact.name)
             .font(.title2.bold())
             .textFieldStyle(.plain)
+            .disabled(viewModel.contact.isFromSystemContacts)
+            .foregroundColor(viewModel.contact.isFromSystemContacts ? .gray : .primary)
     }
     
     private var contactTypeMenu: some View {

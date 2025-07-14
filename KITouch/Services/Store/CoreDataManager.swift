@@ -96,6 +96,23 @@ final class CoreDataManager {
         
         return contactEntity
     }
+    
+    private func retrieveContactBySystemId(_ systemId: String) -> ContactEntity? {
+        var contactEntity: ContactEntity?
+        let fetchRequest: NSFetchRequest<ContactEntity> = ContactEntity.fetchRequest()
+        fetchRequest.predicate = NSPredicate(format: "systemContactId == %@", systemId as CVarArg)
+        fetchRequest.fetchLimit = 1
+        
+        retrieveDataEntity(fetchRequest: fetchRequest) { success, contact in
+            if contact?.count == 0 {
+                contactEntity = nil
+            } else {
+                contactEntity = contact?[0]
+            }
+        }
+        
+        return contactEntity
+    }
         
     //MARK: - Function
     
@@ -105,8 +122,11 @@ final class CoreDataManager {
         let managedContext = persistentContainer.viewContext
         let entity: ContactEntity
         
-        if let contactEntity = retrieveContact(by: contact.id) {
-            
+        // Если это контакт из системной адресной книги, сначала ищем по systemContactId
+        if let systemId = contact.systemContactId,
+           let existingContact = retrieveContactBySystemId(systemId) {
+            entity = existingContact
+        } else if let contactEntity = retrieveContact(by: contact.id) {
             entity = contactEntity
         } else {
             entity = ContactEntity(context: managedContext)
@@ -137,6 +157,7 @@ final class CoreDataManager {
         entity.reminderDate         = contact.reminderDate
         entity.reminderRepeat       = contact.reminderRepeat
         entity.reminderBirthday     = contact.reminderBirthday
+        entity.systemContactId      = contact.systemContactId
         entity.connectChannelEntity = NSSet(array: channels)
               
         do {

@@ -20,6 +20,7 @@
 "Connection channel" = "Канал связи";
 "Contacts" = "Контакты";
 "Contacts Access Required" = "Требуется доступ к контактам";
+"Contact already exists" = "Контакт уже существует";
 "Contact Info" = "Информация о контакте";
 "Contact name" = "Имя контакта";
 "Contact with %@" = "Свяжись с %@";
@@ -58,6 +59,7 @@
 "Notifications" = "Уведомления";
 "Notification Settings" = "Настройки уведомлений";
 
+"Open" = "Открыть";
 "Other" = "Другое";
 
 "Phone" = "Телефон";
@@ -76,6 +78,7 @@
 
 "Talked %@" = "Общались %@";
 "The app does not have access to create notifications" = "У приложения нет доступа для создания уведомлений";
+"This contact has already been added to your list" = "Этот контакт уже был добавлен в ваш список";
 "Today is the birthday of %@" = "Сегодня день рождения у %@";
 "Tomorrow is the birthday of %@" = "Завтра день рождения у %@";
 "To grant contacts access:\n1. Open Settings\n2. Go to Privacy\n3. Select Contacts\n4. Find this app\n5. Enable access" = "Доступ к контактам запрещен. Чтобы разрешить:\n1. Откройте Настройки\n2. Конфиденциальность → Контакты\n3. Включите доступ для этого приложения → \n4. Разрешите доступ к контактам для работы этой функции";

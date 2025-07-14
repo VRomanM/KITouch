@@ -17,7 +17,7 @@ struct ContactPickerView: View {
         List {
             ForEach(viewModel.contacts) { contact in
                 Button {
-                    onSelectContact(contact)
+                    handleContactSelection(contact)
                 } label: {
                     HStack {
                         Text(contact.name)
@@ -35,6 +35,27 @@ struct ContactPickerView: View {
         .navigationBarTitleDisplayMode(.inline)
         .task {
             await viewModel.loadContacts()
+        }
+        .alert("Contact already exists", isPresented: $viewModel.showDuplicateAlert) {
+            Button("Cancel", role: .cancel) {}
+            Button("Open") {
+                if let duplicateContact = viewModel.duplicateContact {
+                    onSelectContact(duplicateContact)
+                }
+            }
+        } message: {
+            Text("This contact has already been added to your list")
+        }
+    }
+    
+    private func handleContactSelection(_ contact: Contact) {
+        Task {
+            if let duplicateContact = await viewModel.checkForDuplicate(contact: contact) {
+                viewModel.duplicateContact = duplicateContact
+                viewModel.showDuplicateAlert = true
+            } else {
+                onSelectContact(contact)
+            }
         }
     }
 }
