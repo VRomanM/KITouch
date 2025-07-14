@@ -70,11 +70,12 @@ struct ContactListView: View {
                         case .newContact:
                             ContactDetailView(contactListViewModel: viewModel, contact: Contact())
                         case .fromContacts:
-                            ContactPickerView(
-                                onSelectContact: { contact in
-                                    viewModel.navigationPath.removeLast()
-                                    viewModel.navigationPath.append(ContactRoute.detail(contact: contact))
-                                })
+                            ContactPickerView { contact in
+                                // Удаляем текущий экран из стека
+                                viewModel.navigationPath.removeLast()
+                                // Добавляем новый экран с выбранным контактом
+                                viewModel.navigationPath.append(ContactRoute.detail(contact: contact))
+                            }
                         }
                     }
                     .toolbar {
