@@ -70,47 +70,51 @@ final class ContactPickerViewModel: ObservableObject {
         guard let systemContactId = contact.systemContactId else { return nil }
         
         return await Task.detached(priority: .userInitiated) { [coreDataManager] () -> Contact? in
-            var duplicateContact: Contact?
-            let semaphore = DispatchSemaphore(value: 0)
-            
-            coreDataManager.retrieveContacts { success, contactEntities in
-                if success, let entities = contactEntities {
-                    if let existingEntity = entities.first(where: { $0.systemContactId == systemContactId }) {
-                        // Преобразование ConnectChannelEntity в ConnectChannel
-                        let connectChannels: [ConnectChannel] = (existingEntity.connectChannelEntity as? Set<ConnectChannelEntity> ?? [])
-                            .compactMap { channelEntity in
-                                let socialMediaType = SocialMediaType(rawValue: channelEntity.socialMediaType) ?? .email
-                                return ConnectChannel(
-                                    id: channelEntity.id,
-                                    socialMediaType: socialMediaType,
-                                    login: channelEntity.login
-                                )
-                            }
-                        
-                        duplicateContact = Contact(
-                            id: existingEntity.id,
-                            name: existingEntity.name,
-                            contactType: existingEntity.contactType,
-                            customContactType: existingEntity.customContactType,
-                            imageName: existingEntity.imageName,
-                            lastMessage: existingEntity.lastMessage,
-                            countMessages: Int(existingEntity.countMessages),
-                            phone: existingEntity.phone,
-                            birthday: existingEntity.birthday,
-                            reminder: existingEntity.reminder,
-                            reminderDate: existingEntity.reminderDate,
-                            reminderRepeat: existingEntity.reminderRepeat,
-                            reminderBirthday: existingEntity.reminderBirthday,
-                            connectChannels: connectChannels,
-                            systemContactId: existingEntity.systemContactId
-                        )
-                    }
+            // Используем async/await вместо семафора с защитой от множественного вызова
+            let (success, contactEntities) = await withCheckedContinuation { continuation in
+                var hasResumed = false
+                coreDataManager.retrieveContacts { success, entities in
+                    guard !hasResumed else { return }
+                    hasResumed = true
+                    continuation.resume(returning: (success, entities))
                 }
-                semaphore.signal()
             }
             
-            semaphore.wait()
-            return duplicateContact
+            guard success, let entities = contactEntities else { return nil }
+            
+            // Ищем дубликат
+            guard let existingEntity = entities.first(where: { $0.systemContactId == systemContactId }) else {
+                return nil
+            }
+            
+            // Преобразование ConnectChannelEntity в ConnectChannel
+            let connectChannels: [ConnectChannel] = (existingEntity.connectChannelEntity as? Set<ConnectChannelEntity> ?? [])
+                .compactMap { channelEntity in
+                    let socialMediaType = SocialMediaType(rawValue: channelEntity.socialMediaType) ?? .email
+                    return ConnectChannel(
+                        id: channelEntity.id,
+                        socialMediaType: socialMediaType,
+                        login: channelEntity.login
+                    )
+                }
+            
+            return Contact(
+                id: existingEntity.id,
+                name: existingEntity.name,
+                contactType: existingEntity.contactType,
+                customContactType: existingEntity.customContactType,
+                imageName: existingEntity.imageName,
+                lastMessage: existingEntity.lastMessage,
+                countMessages: Int(existingEntity.countMessages),
+                phone: existingEntity.phone,
+                birthday: existingEntity.birthday,
+                reminder: existingEntity.reminder,
+                reminderDate: existingEntity.reminderDate,
+                reminderRepeat: existingEntity.reminderRepeat,
+                reminderBirthday: existingEntity.reminderBirthday,
+                connectChannels: connectChannels,
+                systemContactId: existingEntity.systemContactId
+            )
         }.value
     }
 }
