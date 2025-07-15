@@ -9,7 +9,7 @@ import SwiftUI
 
 struct InteractionRowView: View {
     let interaction: Interaction
-
+    
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
             HStack {
@@ -18,11 +18,13 @@ struct InteractionRowView: View {
                     .foregroundColor(.gray)
                 Spacer()
             }
-
+            
             if !interaction.notes.isEmpty {
                 Text(interaction.notes)
                     .font(.body)
                     .foregroundColor(.primary)
+                    .lineLimit(3)
+                    .multilineTextAlignment(.leading)
             }
         }
         .padding(.vertical, 8)
@@ -33,5 +35,9 @@ struct InteractionRowView: View {
 }
 
 #Preview {
-    InteractionRowView(interaction: Interaction(date: Date(), notes: "Hello World", contactId: UUID()))
+    VStack {
+        InteractionRowView(interaction: Interaction(date: Date(), notes: "Короткий текст", contactId: UUID()))
+        InteractionRowView(interaction: Interaction(date: Date(), notes: "Очень длинный текст, который не поместится в три строки. Очень длинный текст, который не поместится в три строки. Очень длинный текст, который не поместится в три строки. Очень длинный текст, который не поместится в три строки.", contactId: UUID()))
+    }
+    .padding()
 }
