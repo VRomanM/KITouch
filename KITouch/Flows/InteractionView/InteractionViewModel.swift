@@ -12,7 +12,7 @@ final class InteractionViewModel: ObservableObject {
     @Published var date = Date()
     @Published var notes = ""
 
-    private let contactId: UUID
+    private let contactId: UUID?
     private weak var contactDetailViewModel: ContactDetailViewModel?
     private let coreDataManager = CoreDataManager.sharedManager
     private var existingInteraction: Interaction?
@@ -46,7 +46,7 @@ final class InteractionViewModel: ObservableObject {
                 id: existing.id, // Используем существующий ID
                 date: date,
                 notes: notes,
-                contactId: contactId
+                contactId: contactId ?? existing.contactId
             )
 
             coreDataManager.updateInteraction(interaction: updatedInteraction) { [weak self] result in
@@ -59,7 +59,7 @@ final class InteractionViewModel: ObservableObject {
                     }
                 }
             }
-        } else {
+        } else if let contactId = contactId {
             // Создание нового взаимодействия
             let newInteraction = Interaction(date: date, notes: notes, contactId: contactId)
             coreDataManager.saveInteraction(interaction: newInteraction) { [weak self] _ in

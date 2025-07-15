@@ -22,7 +22,7 @@ extension ContactEntity {
     @NSManaged public var customContactType: String
     @NSManaged public var id: UUID
     @NSManaged public var imageName: String
-    @NSManaged public var lastMessage: Date
+    @NSManaged public var lastMessage: Date?
     @NSManaged public var name: String
     @NSManaged public var phone: String
     @NSManaged public var reminder: Bool

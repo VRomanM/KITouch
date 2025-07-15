@@ -8,7 +8,7 @@
 import SwiftUI
 
 enum ContactRoute: Hashable {
-    case detail(contact: Contact)
+    case detail(contact: Contact, isShowNewInteraction: Bool = false)
     case settings
     case newContact
     case fromContacts
@@ -44,7 +44,9 @@ struct ContactListView: View {
 
                     List {
                         ForEach(viewModel.filteredContacts()) { contact in
-                            ContactView(contact: contact)
+                            ContactView(contact: contact, onAddAction: {
+                                viewModel.navigationPath.append(ContactRoute.detail(contact: contact, isShowNewInteraction: true))
+                            })
                                 .onTapGesture {
                                     viewModel.navigationPath.append(ContactRoute.detail(contact: contact))
                                 }
@@ -63,12 +65,12 @@ struct ContactListView: View {
                     .listRowSpacing(10)
                     .navigationDestination(for: ContactRoute.self) { route in
                         switch route {
-                        case .detail(let contact):
-                            ContactDetailView(contactListViewModel: viewModel, contact: contact)
+                        case .detail(let contact, let isShowingNewInteractionView):
+                            ContactDetailView(contactListViewModel: viewModel, isShowingNewInteractionView: isShowingNewInteractionView, contact: contact)
                         case .settings:
                             SettingsView()
                         case .newContact:
-                            ContactDetailView(contactListViewModel: viewModel, contact: Contact())
+                            ContactDetailView(contactListViewModel: viewModel, isShowingNewInteractionView: false, contact: Contact())
                         case .fromContacts:
                             ContactPickerView { contact in
                                 // Удаляем текущий экран из стека
@@ -147,12 +149,27 @@ struct BackgroundView: View {
 
 struct ContactView: View {
     let contact: Contact
-    
+    let onAddAction: () -> Void
+
     var body: some View {
         HStack {
-            Text(contact.imageName)
-                .font(.system(size: 40))
-                .padding()
+            ZStack(alignment: .topTrailing) {
+                Text(contact.imageName)
+                    .font(.system(size: 40))
+                    .padding(.horizontal, 2) // Уменьшенный горизонтальный padding
+
+                if contact.countMessages > 0 {
+                    Text("\(contact.countMessages)")
+                        .font(.caption2)
+                        .foregroundColor(.white)
+                        .padding(.horizontal, 6)
+                        .padding(.vertical, 2)
+                        .background(Color.blue)
+                        .clipShape(Capsule())
+                        .offset(x: 5, y: -5)
+                }
+            }
+
             VStack(alignment: .leading) {
                 Spacer()
                 Text(contact.name.localized())
@@ -163,16 +180,27 @@ struct ContactView: View {
                     .foregroundStyle(.gray)
                 Spacer()
                 HStack {
-                    Text("Talked \(contact.lastMessage, format: .dateTime.day().month().year())")
-                        .font(.subheadline)
-                        .foregroundStyle(.gray)
-                    Spacer()
-                    Text("\(contact.countMessages)")
-                        .font(.subheadline)
-                        .foregroundStyle(.gray)
+                    if let lastMessage = contact.lastMessage {
+                        Text("Talked \(lastMessage, format: .dateTime.day().month().year())")
+                            .font(.subheadline)
+                            .foregroundStyle(.gray)
+                    }
                 }
                 Spacer()
+            }.padding(.leading, 4)
+
+            Spacer()
+
+            Button(action: onAddAction) {
+                Image(systemName: "plus")
+                    .font(.title2)
+                    .foregroundColor(.accentColor)
+                    .frame(width: 44, height: 44)
+                    .background(Color(.systemGray6))
+                    .clipShape(Circle())
             }
+            .buttonStyle(.plain)
+            .padding(.trailing, 2) // Уменьшенный padding справа
         }
     }
 }

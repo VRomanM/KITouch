@@ -16,8 +16,8 @@ struct MocData {
         return Calendar.current.date(from: components) ?? Date()
     }()
     
-    static let sampleContact = Contact(name: "Элина Петрова", contactType: "коллега", imageName: "globe", lastMessage: testDate, countMessages: 3, phone: "+7 (999) 999-99-99", birthday: testDate, connectChannels: connectChannels)
-    
+    static let sampleContact = Contact(name: "Элина Петрова", contactType: "коллега", isNewContact: true, imageName: "globe", lastMessage: testDate, countMessages: 3, phone: "+7 (999) 999-99-99", birthday: testDate, connectChannels: connectChannels)
+
     static let connectChannels = [
         ConnectChannel(socialMediaType: .email, login: "test@example.com"),
         ConnectChannel(socialMediaType: .facebook, login: "fbSamka"),
@@ -29,10 +29,6 @@ struct MocData {
     ]
     
     static let contacts = [
-        Contact(name: "Элина Петрова", contactType: "коллега", imageName: "globe", lastMessage: testDate, countMessages: 3, phone: "+7 (999) 999-99-99", birthday: testDate, connectChannels: connectChannels),
-        Contact(name: "Иван Кузнецов", contactType: "коллега", imageName: "globe", lastMessage: testDate, countMessages: 2, phone: "+7 (999) 999-99-98", birthday: testDate, connectChannels: connectChannels),
-        Contact(name: "Павел Пирогов", contactType: "друг", imageName: "globe", lastMessage: testDate, countMessages: 0, phone: "+7 (999) 999-99-97", birthday: testDate, connectChannels: connectChannels),
-        Contact(name: "Эльвира Набиулина", contactType: "мама", imageName: "globe", lastMessage: testDate, countMessages: 1, phone: "+7 (999) 999-99-96", birthday: testDate, connectChannels: connectChannels),
-        Contact(name: "Алексей Набиулин", contactType: "брат", imageName: "globe", lastMessage: testDate, countMessages: 5, phone: "+7 (999) 999-99-95", birthday: testDate, connectChannels: connectChannels)
+        Contact(name: "Элина Петрова", contactType: "коллега", isNewContact: true, imageName: "globe", lastMessage: testDate, countMessages: 3, phone: "+7 (999) 999-99-99", birthday: testDate, connectChannels: connectChannels)
     ]
 }
