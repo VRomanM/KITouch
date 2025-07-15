@@ -30,6 +30,7 @@ enum SystemContactHelper {
         return Contact(
             name: "\(cnContact.givenName) \(cnContact.familyName)".trimmingCharacters(in: .whitespaces),
             contactType: ContactType.friend.rawValue,
+            isNewContact: true,
             imageName: "😎",
             lastMessage: Date.distantPast,
             countMessages: 0,
@@ -89,7 +90,7 @@ final class ContactPickerViewModel: ObservableObject {
         
         return await Task.detached(priority: .userInitiated) { [coreDataManager] () -> Contact? in
             // Используем async/await вместо семафора с защитой от множественного вызова
-            let (success, contactEntities) = await withCheckedContinuation { continuation in
+            let (success, contactEntities): (Bool, [ContactEntity]?) = await withCheckedContinuation { continuation in
                 var hasResumed = false
                 coreDataManager.retrieveContacts { success, entities in
                     guard !hasResumed else { return }
@@ -122,7 +123,7 @@ final class ContactPickerViewModel: ObservableObject {
                 contactType: existingEntity.contactType,
                 customContactType: existingEntity.customContactType,
                 imageName: existingEntity.imageName,
-                lastMessage: existingEntity.lastMessage,
+                lastMessage: existingEntity.lastMessage ?? Date.now,
                 countMessages: Int(existingEntity.countMessages),
                 phone: existingEntity.phone,
                 birthday: existingEntity.birthday,

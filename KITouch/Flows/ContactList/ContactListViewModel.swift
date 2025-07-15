@@ -68,7 +68,7 @@ final class ContactListViewModel: ObservableObject {
                             contactType: contact.contactType,
                             customContactType: contact.customContactType,
                             imageName: contact.imageName,
-                            lastMessage: contact.lastMessage,
+                            lastMessage: contact.lastMessage ?? Date.now,
                             countMessages: Int(contact.countMessages),
                             phone: contact.phone,
                             birthday: contact.birthday,
