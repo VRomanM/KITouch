@@ -23,6 +23,7 @@
 "Contact already exists" = "Контакт уже существует";
 "Contact Info" = "Информация о контакте";
 "Contact name" = "Имя контакта";
+"Contact was deleted" = "Контакт был удален";
 "Contact will be updated from address book" = "Контакт будет обновлен из адресной книги";
 "Contact with %@" = "Свяжись с %@";
 
@@ -46,6 +47,7 @@
 
 "Interactions" = "Взаимодействия";
 
+"Keep" = "Оставить";
 "Keep in touch" = "Оставайся на связи";
 
 "Last interaction" = "Последнее взаимодействие";

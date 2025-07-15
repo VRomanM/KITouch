@@ -152,6 +152,19 @@ struct ContactDetailView: View {
             } message: {
                 Text("Contact will be updated from address book".localized())
             }
+            .alert("Contact was deleted".localized(), isPresented: $viewModel.showDeletedContactAlert) {
+                Button("Keep".localized()) {
+                    viewModel.keepDeletedContact()
+                }
+                Button("Delete".localized(), role: .destructive) {
+                    viewModel.deleteContact()
+                }
+            }
+            .onChange(of: viewModel.shouldDismiss) { newValue in
+                if newValue {
+                    dismiss()
+                }
+            }
         }
     }
     
