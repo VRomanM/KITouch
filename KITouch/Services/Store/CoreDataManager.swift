@@ -207,6 +207,18 @@ final class CoreDataManager {
         interactionEntity.date = interaction.date
         interactionEntity.notes = interaction.notes
         interactionEntity.contactId = interaction.contactId
+        
+        // Сохраняем тип взаимодействия
+        switch interaction.type {
+        case .call, .meeting, .message:
+            interactionEntity.type = String(describing: interaction.type)
+            interactionEntity.socialMediaType = nil
+            interactionEntity.socialMediaLogin = nil
+        case .socialMedia(let socialType, let login):
+            interactionEntity.type = "socialMedia"
+            interactionEntity.socialMediaType = socialType.rawValue
+            interactionEntity.socialMediaLogin = login
+        }
 
         do {
             try context.save()
@@ -226,11 +238,30 @@ final class CoreDataManager {
         do {
             let interactionEntities = try context.fetch(request)
             let interactions = interactionEntities.map { entity in
-                Interaction(
-                    id: entity.id ?? UUID(), // Используем ID из базы данных
+                let type: InteractionType = {
+                    if let typeString = entity.type {
+                        if typeString == "socialMedia",
+                           let socialMediaTypeString = entity.socialMediaType,
+                           let socialMediaType = SocialMediaType(rawValue: socialMediaTypeString) {
+                            return .socialMedia(socialMediaType, entity.socialMediaLogin ?? "")
+                        } else {
+                            switch typeString {
+                            case "call": return .call
+                            case "meeting": return .meeting
+                            case "message": return .message
+                            default: return .call // Значение по умолчанию
+                            }
+                        }
+                    }
+                    return .call // Значение по умолчанию
+                }()
+                
+                return Interaction(
+                    id: entity.id ?? UUID(),
                     date: entity.date ?? Date(),
                     notes: entity.notes ?? "",
-                    contactId: entity.contactId ?? UUID()
+                    contactId: entity.contactId ?? UUID(),
+                    type: type
                 )
             }
             completion(interactions)
@@ -247,28 +278,26 @@ final class CoreDataManager {
 
         do {
             let results = try context.fetch(request)
-            print("Поиск взаимодействия с ID: \(interaction.id)")
-            print("Найдено записей: \(results.count)")
-
-            if let entity = results.first {
-                entity.date = interaction.date
-                entity.notes = interaction.notes
-                entity.contactId = interaction.contactId
-
+            if let interactionEntity = results.first {
+                interactionEntity.date = interaction.date
+                interactionEntity.notes = interaction.notes
+                
+                // Обновляем тип взаимодействия
+                switch interaction.type {
+                case .call, .meeting, .message:
+                    interactionEntity.type = String(describing: interaction.type)
+                    interactionEntity.socialMediaType = nil
+                    interactionEntity.socialMediaLogin = nil
+                case .socialMedia(let socialType, let login):
+                    interactionEntity.type = "socialMedia"
+                    interactionEntity.socialMediaType = socialType.rawValue
+                    interactionEntity.socialMediaLogin = login
+                }
+                
                 try context.save()
                 completion(.success(()))
             } else {
-                // Попробуем найти все записи для отладки
-                let debugRequest: NSFetchRequest<InteractionEntity> = InteractionEntity.fetchRequest()
-                let allEntities = try context.fetch(debugRequest)
-                print("Всего записей в базе: \(allEntities.count)")
-                for entity in allEntities {
-                    print("ID в базе: \(entity.id?.uuidString ?? "nil")")
-                }
-
-                let error = NSError(domain: "InteractionNotFound", code: 404,
-                                  userInfo: [NSLocalizedDescriptionKey: "Interaction with ID \(interaction.id) not found"])
-                completion(.failure(error))
+                completion(.failure(NSError(domain: "", code: -1, userInfo: [NSLocalizedDescriptionKey: "Взаимодействие не найдено"])))
             }
         } catch {
             completion(.failure(error))

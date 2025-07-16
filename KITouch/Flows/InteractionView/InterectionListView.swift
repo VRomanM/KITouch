@@ -9,17 +9,35 @@ import SwiftUI
 
 struct InteractionsListView: View {
     let interactions: [Interaction]
+    let contactDetailViewModel: ContactDetailViewModel // Добавляем ViewModel как параметр
     @State private var searchText = ""
+    @State private var sortOrder: SortOrder = .date
+    @State private var selectedInteraction: Interaction?
     @Environment(\.dismiss) var dismiss
     
-    // Фильтрация взаимодействий по поисковому запросу
-    var filteredInteractions: [Interaction] {
-        if searchText.isEmpty {
-            return interactions.sorted { $0.date > $1.date }
-        } else {
-            return interactions.filter {
-                $0.notes.localizedCaseInsensitiveContains(searchText)
-            }.sorted { $0.date > $1.date }
+    enum SortOrder {
+        case date
+        case type
+    }
+    
+    // Фильтрация и сортировка взаимодействий
+    var filteredAndSortedInteractions: [Interaction] {
+        let filtered = searchText.isEmpty ? interactions : interactions.filter {
+            $0.notes.localizedCaseInsensitiveContains(searchText)
+        }
+        
+        switch sortOrder {
+        case .date:
+            return filtered.sorted { $0.date > $1.date }
+        case .type:
+            return filtered.sorted { lhs, rhs in
+                let lhsType = String(describing: lhs.type)
+                let rhsType = String(describing: rhs.type)
+                if lhsType == rhsType {
+                    return lhs.date > rhs.date
+                }
+                return lhsType < rhsType
+            }
         }
     }
     
@@ -34,22 +52,27 @@ struct InteractionsListView: View {
                 }
                 
                 // Список взаимодействий
-                ForEach(filteredInteractions) { interaction in
-                    InteractionCardView(interaction: interaction)
-                        .listRowSeparator(.hidden)
-                        .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
-                        .listRowBackground(Color.clear)
-                        .swipeActions(edge: .trailing) {
-                            Button(role: .destructive) {
-                                // Действие удаления
-                            } label: {
-                                Label("Delete", systemImage: "trash")
-                            }
+                ForEach(filteredAndSortedInteractions) { interaction in
+                    InteractionCardView(
+                        interaction: interaction,
+                        onTap: { interaction in
+                            selectedInteraction = interaction
                         }
+                    )
+                    .listRowSeparator(.hidden)
+                    .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
+                    .listRowBackground(Color.clear)
+                    .swipeActions(edge: .trailing) {
+                        Button(role: .destructive) {
+                            // Действие удаления
+                        } label: {
+                            Label("Delete", systemImage: "trash")
+                        }
+                    }
                 }
                 
                 // Пустое состояние
-                if filteredInteractions.isEmpty {
+                if filteredAndSortedInteractions.isEmpty {
                     EmptyStateView()
                         .listRowBackground(Color.clear)
                 }
@@ -60,10 +83,17 @@ struct InteractionsListView: View {
             .background(Color(.systemGroupedBackground))
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    // Кнопка фильтрации
                     Menu {
-                        Button("Sort by Date") { /* Сортировка по дате */ }
-                        Button("Sort by Type") { /* Сортировка по типу */ }
+                        Button {
+                            sortOrder = .date
+                        } label: {
+                            Label("Sort by Date", systemImage: "calendar")
+                        }
+                        Button {
+                            sortOrder = .type
+                        } label: {
+                            Label("Sort by Type", systemImage: "tag")
+                        }
                     } label: {
                         Image(systemName: "line.3.horizontal.decrease.circle")
                     }
@@ -71,6 +101,14 @@ struct InteractionsListView: View {
                 ToolbarItem(placement: .navigationBarLeading) {
                     Button("Cancel") { dismiss() }
                 }
+            }
+            .sheet(item: $selectedInteraction) { interaction in
+                InteractionView(
+                    viewModel: InteractionViewModel(
+                        interaction: interaction,
+                        contactDetailViewModel: contactDetailViewModel
+                    )
+                )
             }
         }
     }
@@ -81,16 +119,27 @@ struct InteractionsListView: View {
 // Карточка взаимодействия
 struct InteractionCardView: View {
     let interaction: Interaction
+    let onTap: (Interaction) -> Void
+    @State private var isPressed = false
     
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             HStack {
                 // Иконка типа взаимодействия
-                Image(systemName: interactionTypeIcon)
-                    .foregroundColor(interactionTypeColor)
-                    .frame(width: 24, height: 24)
-                    .background(interactionTypeColor.opacity(0.2))
-                    .clipShape(Circle())
+                if case .socialMedia(let type, _) = interaction.type {
+                    Image(type.icon)
+                        .resizable()
+                        .scaledToFill()
+                        .frame(width: 24, height: 24)
+                        .background(interaction.type.color.opacity(0.2))
+                        .clipShape(Circle())
+                } else {
+                    Image(systemName: interaction.type.icon)
+                        .foregroundColor(interaction.type.color)
+                        .frame(width: 24, height: 24)
+                        .background(interaction.type.color.opacity(0.2))
+                        .clipShape(Circle())
+                }
                 
                 VStack(alignment: .leading, spacing: 2) {
                     // Заголовок с датой
@@ -99,11 +148,9 @@ struct InteractionCardView: View {
                         .foregroundColor(.secondary)
                     
                     // Тип взаимодействия
-//                    if let type = interaction.type {
-                        Text(interaction.type .rawValue.capitalized)
-                            .font(.caption)
-                            .foregroundColor(.accentColor)
-//                    }
+                    Text(interaction.type.title)
+                        .font(.caption)
+                        .foregroundColor(interaction.type.color)
                 }
                 
                 Spacer()
@@ -120,25 +167,16 @@ struct InteractionCardView: View {
         .background(Color(.systemBackground))
         .cornerRadius(12)
         .shadow(color: .black.opacity(0.05), radius: 3, x: 0, y: 2)
-    }
-    
-    // Определяем иконку по типу взаимодействия
-    private var interactionTypeIcon: String {
-        switch interaction.type {
-        case .call: return "phone"
-        case .meeting: return "person.2"
-        case .message: return "message"
-        case .email: return "envelope"
-        }
-    }
-    
-    // Определяем цвет по типу взаимодействия
-    private var interactionTypeColor: Color {
-        switch interaction.type {
-        case .call: return .green
-        case .meeting: return .blue
-        case .message: return .orange
-        case .email: return .red
+        .scaleEffect(isPressed ? 0.98 : 1.0)
+        .animation(.spring(response: 0.3, dampingFraction: 0.6), value: isPressed)
+        .onTapGesture {
+            withAnimation {
+                isPressed = true
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                    isPressed = false
+                    onTap(interaction)
+                }
+            }
         }
     }
 }
@@ -201,17 +239,58 @@ struct SearchBar: View {
 }
 
 // MARK: - Preview
-
 #Preview {
-    InteractionsListView(interactions: [
-        Interaction(id: UUID(), date: Date(), notes: "Discussed project timeline", contactId: UUID()),
-        Interaction(id: UUID(), date: Date(), notes: "Team sync meeting", contactId: UUID()),
-        Interaction(id: UUID(), date: Date(), notes: "Sent project proposal", contactId: UUID()),
-        Interaction(id: UUID(), date: Date(), notes: "Quick update about the deadline", contactId: UUID())
-        
-//        Interaction(id: "1", date: Date(), type: .call, notes: "Discussed project timeline"),
-//        Interaction(id: "2", date: Date().addingTimeInterval(-86400), type: .meeting, notes: "Team sync meeting"),
-//        Interaction(id: "3", date: Date().addingTimeInterval(-172800), type: .email, notes: "Sent project proposal"),
-//        Interaction(id: "4", date: Date().addingTimeInterval(-259200), type: .message, notes: "Quick update about the deadline")
-    ])
+    let contactListViewModel = ContactListViewModel()
+    let contactDetailViewModel = ContactDetailViewModel(
+        contactListViewModel: contactListViewModel,
+        contact: MocData.sampleContact
+    )
+    
+    InteractionsListView(
+        interactions: [
+            Interaction(
+                id: UUID(),
+                date: Date(),
+                notes: "Discussed project timeline",
+                contactId: MocData.sampleContact.id,
+                type: .call
+            ),
+            Interaction(
+                id: UUID(),
+                date: Date().addingTimeInterval(-86400),
+                notes: "Team sync meeting",
+                contactId: MocData.sampleContact.id,
+                type: .meeting
+            ),
+            Interaction(
+                id: UUID(),
+                date: Date().addingTimeInterval(-172800),
+                notes: "Sent project proposal",
+                contactId: MocData.sampleContact.id,
+                type: .message
+            ),
+            Interaction(
+                id: UUID(),
+                date: Date().addingTimeInterval(-259200),
+                notes: "Quick update about the deadline",
+                contactId: MocData.sampleContact.id,
+                type: .message
+            ),
+            Interaction(
+                id: UUID(),
+                date: Date().addingTimeInterval(-345600),
+                notes: "Discussed in Teams",
+                contactId: MocData.sampleContact.id,
+                type: .socialMedia(.teams, "Test_Login")
+            ),
+            Interaction(
+                id: UUID(),
+                date: Date().addingTimeInterval(-345600),
+                notes: "Discussed in VK",
+                contactId: MocData.sampleContact.id,
+                type: .socialMedia(.instagram, "Test_Login")
+            )
+        ],
+        contactDetailViewModel: contactDetailViewModel
+    )
 }

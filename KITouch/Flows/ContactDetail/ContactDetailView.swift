@@ -15,9 +15,9 @@ struct ContactDetailView: View {
     @State private var showingRefreshAlert = false
     
     // Добавляем состояния для секций
-    @State private var isInteractionExpanded = false
-    @State private var isNotificationExpanded = true
-    @State private var isSocialMediaExpanded = true
+    @State private var isInteractionExpanded    = true
+    @State private var isNotificationExpanded   = false
+    @State private var isSocialMediaExpanded    = false
     
     private var dateRange: ClosedRange<Date> {
         let calendar = Calendar.current
@@ -83,12 +83,18 @@ struct ContactDetailView: View {
                         DisclosureGroup(
                             isExpanded: $isInteractionExpanded,
                             content: {
-                                ForEach(viewModel.interactions.prefix(3)) { interaction in
+                                ForEach(viewModel.interactions.prefix(2)) { interaction in
                                     Button {
                                         viewModel.selectedInteraction = interaction
                                         viewModel.isEditingInteraction = true
                                     } label: {
-                                        InteractionRowView(interaction: interaction)
+                                        InteractionRowView(
+                                            interaction: interaction,
+                                            onTap: { interaction in
+                                                viewModel.selectedInteraction = interaction
+                                                viewModel.isEditingInteraction = true
+                                            }
+                                        )
                                     }
                                     .buttonStyle(.plain)
                                     .swipeActions(edge: .trailing, allowsFullSwipe: true) {
@@ -98,9 +104,10 @@ struct ContactDetailView: View {
                                             Label("", systemImage: "trash")
                                         }
                                     }
+                                    .padding(.horizontal, -16)
                                 }
 
-                                if viewModel.interactions.count > 3 {
+                                if viewModel.interactions.count > 2 {
                                     Button("See All %@".localized(with: String(viewModel.interactions.count))) {
                                         viewModel.isShowingInteractionListView = true
                                     }
@@ -167,7 +174,10 @@ struct ContactDetailView: View {
             .scrollDismissesKeyboard(.immediately)
             .navigationBarTitleDisplayMode(.inline)
             .fullScreenCover(isPresented: $viewModel.isShowingInteractionListView) {
-                InteractionsListView(interactions: viewModel.interactions)
+                InteractionsListView(
+                    interactions: viewModel.interactions,
+                    contactDetailViewModel: viewModel
+                )
             }
             .fullScreenCover(isPresented: $viewModel.isShowingConnectChannelsListView) {
                 ConnectChannelsListView(viewModel: ConnectChannelsListViewModel(contactDetalViewModel: viewModel))
@@ -269,8 +279,16 @@ struct ContactDetailView: View {
     
     private var phoneField: some View {
         HStack {
-            Image(systemName: "phone")
-                .foregroundColor(.secondary)
+            Button {
+                if let url = URL(string: "tel://\(viewModel.contact.phone.filter { $0.isNumber })"),
+                   UIApplication.shared.canOpenURL(url) {
+                    UIApplication.shared.open(url)
+                }
+            } label: {
+                Image(systemName: "phone.circle.fill")
+                    .foregroundColor(.green)
+                    .font(.title2)
+            }
             TextField("Phone", text: $viewModel.contact.phone)
                 .keyboardType(.phonePad)
 //                .onChange(of: viewModel.contact.phone) { viewModel.formatPhoneNumber($0) }
