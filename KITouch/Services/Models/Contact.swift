@@ -25,12 +25,17 @@ struct Contact: Hashable, Identifiable {
     var reminderDate: Date
     var reminderRepeat: String = "Monthly"
     var reminderBirthday: Bool = false
+    var systemContactId: String?
     
     var displayContactType: String {
         contactType == ContactType.other.rawValue ? customContactType : contactType
     }
     
-    init(name: String, contactType: String, isNewContact: Bool, imageName: String, lastMessage: Date?, countMessages: Int, phone: String, birthday: Date?, connectChannels: [ConnectChannel]) {
+    var isFromSystemContacts: Bool {
+        systemContactId != nil
+    }
+    
+    init(name: String, contactType: String, isNewContact: Bool, imageName: String, lastMessage: Date, countMessages: Int, phone: String, birthday: Date?, connectChannels: [ConnectChannel], systemContactId: String? = nil) {
         self.name = name
         self.contactType = contactType
         self.customContactType = ""
@@ -42,6 +47,7 @@ struct Contact: Hashable, Identifiable {
         self.reminderDate = Date.now
         self.connectChannels = connectChannels
         self.isNewContact = isNewContact
+        self.systemContactId = systemContactId
     }
     
     init() {
@@ -56,10 +62,11 @@ struct Contact: Hashable, Identifiable {
         self.reminderDate = Calendar.current.date(byAdding: .day, value: 1, to: Date())!
         self.connectChannels = [ConnectChannel(socialMediaType: .email, login: "")]
         self.isNewContact = true
+        self.systemContactId = nil
     }
     
-    init(id: UUID, name: String, contactType: String, customContactType: String, imageName: String, lastMessage: Date?, countMessages: Int, phone: String,
-         birthday: Date?, reminder: Bool, reminderDate: Date?, reminderRepeat: String, reminderBirthday: Bool, connectChannels: [ConnectChannel]) {
+    init(id: UUID, name: String, contactType: String, customContactType: String, imageName: String, lastMessage: Date, countMessages: Int, phone: String,
+         birthday: Date?, reminder: Bool, reminderDate: Date?, reminderRepeat: String, reminderBirthday: Bool, connectChannels: [ConnectChannel], systemContactId: String? = nil) {
         self.id = id
         self.name = name
         self.contactType = contactType
@@ -75,5 +82,6 @@ struct Contact: Hashable, Identifiable {
         self.reminderBirthday = reminderBirthday
         self.connectChannels = connectChannels
         self.isNewContact = false
+        self.systemContactId = systemContactId
     }
 }

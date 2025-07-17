@@ -20,6 +20,9 @@ extension InteractionEntity {
     @NSManaged public var date: Date?
     @NSManaged public var notes: String?
     @NSManaged public var contactId: UUID?
+    @NSManaged public var type: String?
+    @NSManaged public var socialMediaType: String?
+    @NSManaged public var socialMediaLogin: String?
     @NSManaged public var relationship: ContactEntity?
 
 }

@@ -22,6 +22,9 @@ final class ContactDetailViewModel: ObservableObject {
 
     //MARK: - Properties
     let phonePattern = "+X (XXX) XXX-XX-XX"
+    
+    @Published var shouldDismiss = false
+    @Published var showDeletedContactAlert = false
 
     var isPhoneNumberValid: Bool {
         let digits = contact.phone.filter { $0.isNumber }
@@ -55,6 +58,57 @@ final class ContactDetailViewModel: ObservableObject {
     }
     
     //MARK: - Functions
+    func refreshContactFromSystem() {
+        guard let systemContactId = contact.systemContactId else { return }
+        
+        Task {
+            do {
+                if let systemContact = try await SystemContactHelper.fetchSystemContact(with: systemContactId) {
+                    await MainActor.run {
+                        self.contact.name = systemContact.name
+                        self.contact.phone = systemContact.phone
+                        self.contact.birthday = systemContact.birthday
+                        // Остальные поля оставляем без изменений, так как они специфичны для нашего приложения
+                    }
+                } else {
+                    // Контакт был удален из системной адресной книги
+                    await MainActor.run {
+                        self.showDeletedContactAlert = true
+                    }
+                }
+            } catch {
+                print("Error refreshing contact: \(error)")
+                // В случае ошибки тоже показываем алерт, так как это может быть связано с удалением контакта
+                await MainActor.run {
+                    self.showDeletedContactAlert = true
+                }
+            }
+        }
+    }
+    
+    func keepDeletedContact() {
+        contact.systemContactId = nil
+        saveContactDetail()
+    }
+    
+    func deleteContact() {
+        coreDataManager.deleteContact(contact) { [weak self] result in
+            guard let self = self else { return }
+            
+            DispatchQueue.main.async {
+                switch result {
+                case .success:
+                    // Сначала обновляем список контактов
+                    self.contactListViewModel?.loadData()
+                    // Затем закрываем экран
+                    self.shouldDismiss = true
+                case .failure(let error):
+                    print("Failed to delete contact: \(error)")
+                }
+            }
+        }
+    }
+
     func saveContactDetail() {
         // Сохраняем в CoreData
         if contact.contactType != ContactType.other.rawValue {

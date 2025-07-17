@@ -68,7 +68,7 @@ final class ContactListViewModel: ObservableObject {
                             contactType: contact.contactType,
                             customContactType: contact.customContactType,
                             imageName: contact.imageName,
-                            lastMessage: contact.lastMessage,
+                            lastMessage: contact.lastMessage ?? Date.now,
                             countMessages: Int(contact.countMessages),
                             phone: contact.phone,
                             birthday: contact.birthday,
@@ -76,7 +76,8 @@ final class ContactListViewModel: ObservableObject {
                             reminderDate: contact.reminderDate,
                             reminderRepeat: contact.reminderRepeat,
                             reminderBirthday: contact.reminderBirthday,
-                            connectChannels: connectChannels
+                            connectChannels: connectChannels,
+                            systemContactId: contact.systemContactId
                         )
                     }
                     
@@ -103,27 +104,23 @@ final class ContactListViewModel: ObservableObject {
     
     func loadData() {
         retrieveContactsFromCoreData()
-        //MocData.contacts
     }
     
     func findContact(by id: String?) -> Contact? {
         return contacts.first { $0.idString == id }
     }
     
-    func deleteContacts(contact: Contact){
-        // Удаляем из локального массива
-        contacts.removeAll { $0.id == contact.id }
-
+    func deleteContacts(contact: Contact) {
         // Удаляем из CoreData
         coreDataManager.deleteContact(contact) { [weak self] result in
-            switch result {
-            case .success:
-                print("Contact deleted successfully from CoreData")
-            case .failure(let error):
-                print("Failed to delete contact from CoreData: \(error)")
-                // В случае ошибки перезагружаем данные
-                DispatchQueue.main.async {
+            DispatchQueue.main.async {
+                switch result {
+                case .success:
+                    print("Contact deleted successfully from CoreData")
+                    // Только после успешного удаления из CoreData обновляем UI
                     self?.loadData()
+                case .failure(let error):
+                    print("Failed to delete contact from CoreData: \(error)")
                 }
             }
         }

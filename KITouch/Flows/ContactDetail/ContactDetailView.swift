@@ -12,6 +12,12 @@ struct ContactDetailView: View {
     
     @StateObject var viewModel: ContactDetailViewModel
     @State private var showingNotificationSettings = false
+    @State private var showingRefreshAlert = false
+    
+    // Добавляем состояния для секций
+    @State private var isInteractionExpanded    = true
+    @State private var isNotificationExpanded   = false
+    @State private var isSocialMediaExpanded    = false
     
     private var dateRange: ClosedRange<Date> {
         let calendar = Calendar.current
@@ -24,7 +30,7 @@ struct ContactDetailView: View {
             Form {
                 // Header Section
                 Section {
-                    HStack(alignment: .top) {
+                    HStack(alignment: .center) {
                         emojiPickerButton
                         VStack(alignment: .leading) {
                             nameTextField
@@ -34,6 +40,14 @@ struct ContactDetailView: View {
                                     otherTypeTextField
                                 }
                             }
+                        }
+                        if let _ = viewModel.contact.systemContactId {
+                            Button(action: { showingRefreshAlert = true }) {
+                                HStack {
+                                    Image(systemName: "arrow.triangle.2.circlepath")
+                                }
+                            }
+                            .foregroundColor(.accentColor)
                         }
                     }
                     .padding(.vertical, 4)
@@ -46,83 +60,113 @@ struct ContactDetailView: View {
                 }
                 
                 // Social Media Section
-                Section(header: Text("Social Media")) {
-                    socialMediaGrid
-                    Button("Edit") {
-                        viewModel.isShowingConnectChannelsListView = true
-                    }
-                    .foregroundColor(.accentColor)
+                Section {
+                    DisclosureGroup(
+                        isExpanded: $isSocialMediaExpanded,
+                        content: {
+                            socialMediaGrid
+                            Button("Edit") {
+                                viewModel.isShowingConnectChannelsListView = true
+                            }
+                            .foregroundColor(.accentColor)
+                        },
+                        label: {
+                            Text("Social Media")
+                                .foregroundColor(.primary)
+                        }
+                    )
                 }
                 
                 // Interactions Section
                 if !viewModel.contact.isNewContact {
-                    Section(header: Text("Interactions")) {
-                        ForEach(viewModel.interactions.prefix(3)) { interaction in
-                            Button {
-                                viewModel.selectedInteraction = interaction
-                                viewModel.isEditingInteraction = true
-                            } label: {
-                                InteractionRowView(interaction: interaction)
-                            }
-                            .buttonStyle(.plain)
-                            .swipeActions(edge: .trailing, allowsFullSwipe: true) {
-                                Button(role: .destructive) {
-                                    viewModel.deleteInteraction(interaction)
-                                } label: {
-                                    Label("", systemImage: "trash")
+                    Section {
+                        DisclosureGroup(
+                            isExpanded: $isInteractionExpanded,
+                            content: {
+                                ForEach(viewModel.interactions.prefix(2)) { interaction in
+                                    Button {
+                                        viewModel.selectedInteraction = interaction
+                                        viewModel.isEditingInteraction = true
+                                    } label: {
+                                        InteractionRowView(
+                                            interaction: interaction,
+                                            onTap: { interaction in
+                                                viewModel.selectedInteraction = interaction
+                                                viewModel.isEditingInteraction = true
+                                            }
+                                        )
+                                    }
+                                    .buttonStyle(.plain)
+                                    .swipeActions(edge: .trailing, allowsFullSwipe: true) {
+                                        Button(role: .destructive) {
+                                            viewModel.deleteInteraction(interaction)
+                                        } label: {
+                                            Label("", systemImage: "trash")
+                                        }
+                                    }
+                                    .padding(.horizontal, -16)
                                 }
+
+                                if viewModel.interactions.count > 2 {
+                                    Button("See All %@".localized(with: String(viewModel.interactions.count))) {
+                                        viewModel.isShowingInteractionListView = true
+                                    }
+                                }
+
+                                Button(action: addInteraction) {
+                                    Label("Add", systemImage: "plus")
+                                }
+                                .foregroundColor(.accentColor)
+                            },
+                            label: {
+                                Text("Interactions")
+                                    .foregroundColor(.primary)
                             }
-                        }
-
-                        if viewModel.interactions.count > 3 {
-                            Button("See All %@".localized(with: String(viewModel.interactions.count))) {
-                                viewModel.isShowingInteractionListView = true
-                            }
-                        }
-
-                        Button(action: addInteraction) {
-                            Label("Add", systemImage: "plus")
-                        }
-                        .foregroundColor(.accentColor)
-
+                        )
                     }
                 }
 
                 // Notification Section
                 Section {
-                    if viewModel.isAccessNotifications {
-                        Label {
-                            Text("The app does not have access to create notifications")
-                                .font(.footnote)
-                                .foregroundColor(.secondary)
-                        } icon: {
-                            Image(systemName: "exclamationmark.triangle.fill")
-                                .foregroundColor(.red)
-                        }
-                    }
-                    Toggle("Birthday", isOn: $viewModel.contact.reminderBirthday)
-                    if viewModel.contact.reminderBirthday {
-                        Text("You'll be notified one day before the birthday")
-                            .font(.footnote)
-                            .foregroundColor(.secondary)
-                    }
-                    
-                    Toggle("Keep in touch", isOn: $viewModel.contact.reminder)
-                    
-                    if viewModel.contact.reminder {
-                        DatePicker("When",
-                                   selection: $viewModel.contact.reminderDate,
-                                   in: Date()...)
-                        
-                        Picker("Repeat", selection: $viewModel.contact.reminderRepeat) {
-                            ForEach(NotificationPeriod.allCases) { period in
-                                Text(period.localizedValue).tag(period)
+                    DisclosureGroup(
+                        isExpanded: $isNotificationExpanded,
+                        content: {
+                            if viewModel.isAccessNotifications {
+                                Label {
+                                    Text("The app does not have access to create notifications")
+                                        .font(.footnote)
+                                        .foregroundColor(.secondary)
+                                } icon: {
+                                    Image(systemName: "exclamationmark.triangle.fill")
+                                        .foregroundColor(.red)
+                                }
                             }
+                            Toggle("Birthday", isOn: $viewModel.contact.reminderBirthday)
+                            if viewModel.contact.reminderBirthday {
+                                Text("You'll be notified one day before the birthday")
+                                    .font(.footnote)
+                                    .foregroundColor(.secondary)
+                            }
+                            
+                            Toggle("Keep in touch", isOn: $viewModel.contact.reminder)
+                            
+                            if viewModel.contact.reminder {
+                                DatePicker("When",
+                                           selection: $viewModel.contact.reminderDate,
+                                           in: Date()...)
+                                
+                                Picker("Repeat", selection: $viewModel.contact.reminderRepeat) {
+                                    ForEach(NotificationPeriod.allCases) { period in
+                                        Text(period.localizedValue).tag(period)
+                                    }
+                                }
+                            }
+                        },
+                        label: {
+                            Text("Reminders")
+                                .foregroundColor(.primary)
                         }
-                    }
-                    
-                } header: {
-                    Text("Reminders")
+                    )
                 } footer: {
                     Text("Get reminders to keep in touch")
                 }
@@ -130,7 +174,10 @@ struct ContactDetailView: View {
             .scrollDismissesKeyboard(.immediately)
             .navigationBarTitleDisplayMode(.inline)
             .fullScreenCover(isPresented: $viewModel.isShowingInteractionListView) {
-                InteractionsListView(interactions: viewModel.interactions)
+                InteractionsListView(
+                    interactions: viewModel.interactions,
+                    contactDetailViewModel: viewModel
+                )
             }
             .fullScreenCover(isPresented: $viewModel.isShowingConnectChannelsListView) {
                 ConnectChannelsListView(viewModel: ConnectChannelsListViewModel(contactDetalViewModel: viewModel))
@@ -162,6 +209,27 @@ struct ContactDetailView: View {
                 Spacer()
                 KITButton(text: "Save".localized(), action: saveAndDismiss)
             }
+            .alert("Update Contact".localized(), isPresented: $showingRefreshAlert) {
+                Button("Cancel".localized(), role: .cancel) { }
+                Button("Update".localized(), role: .destructive) {
+                    viewModel.refreshContactFromSystem()
+                }
+            } message: {
+                Text("Contact will be updated from address book".localized())
+            }
+            .alert("Contact was deleted".localized(), isPresented: $viewModel.showDeletedContactAlert) {
+                Button("Keep".localized()) {
+                    viewModel.keepDeletedContact()
+                }
+                Button("Delete".localized(), role: .destructive) {
+                    viewModel.deleteContact()
+                }
+            }
+            .onChange(of: viewModel.shouldDismiss) { newValue in
+                if newValue {
+                    dismiss()
+                }
+            }
         }
     }
     
@@ -182,6 +250,8 @@ struct ContactDetailView: View {
         TextField("Contact name", text: $viewModel.contact.name)
             .font(.title2.bold())
             .textFieldStyle(.plain)
+            .disabled(viewModel.contact.isFromSystemContacts)
+            .foregroundColor(viewModel.contact.isFromSystemContacts ? .gray : .primary)
     }
     
     private var contactTypeMenu: some View {
@@ -209,8 +279,16 @@ struct ContactDetailView: View {
     
     private var phoneField: some View {
         HStack {
-            Image(systemName: "phone")
-                .foregroundColor(.secondary)
+            Button {
+                if let url = URL(string: "tel://\(viewModel.contact.phone.filter { $0.isNumber })"),
+                   UIApplication.shared.canOpenURL(url) {
+                    UIApplication.shared.open(url)
+                }
+            } label: {
+                Image(systemName: "phone.circle.fill")
+                    .foregroundColor(.green)
+                    .font(.title2)
+            }
             TextField("Phone", text: $viewModel.contact.phone)
                 .keyboardType(.phonePad)
 //                .onChange(of: viewModel.contact.phone) { viewModel.formatPhoneNumber($0) }
