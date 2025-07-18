@@ -69,13 +69,14 @@ private struct InteractionIconView: View {
     
     var body: some View {
         Group {
-            if case .socialMedia(let socialType, _) = type {
-                Image(socialType.icon)
-                    .resizable()
-                    .scaledToFill()
-            } else {
+            switch type {
+            case .call, .meeting, .message:
                 Image(systemName: type.icon)
                     .fontWeight(.medium)
+            case .socialMedia(let socialType, _):
+                Image(socialType.icon) // только ассет!
+                    .resizable()
+                    .scaledToFill()
             }
         }
         .frame(width: 20, height: 20)
