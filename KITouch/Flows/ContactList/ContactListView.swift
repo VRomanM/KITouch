@@ -16,7 +16,7 @@ enum ContactRoute: Hashable {
 
 struct ContactListView: View {
     @StateObject var viewModel = ContactListViewModel()
-    
+
     var body: some View {
         NavigationStack(path: $viewModel.navigationPath) {
             ZStack {
@@ -42,27 +42,59 @@ struct ContactListView: View {
                     .padding(10)
                     .background(.blue)
 
-                    List {
-                        ForEach(viewModel.filteredContacts()) { contact in
-                            ContactView(contact: contact, onAddAction: {
-                                viewModel.navigationPath.append(ContactRoute.detail(contact: contact, isShowNewInteraction: true))
-                            })
-                                .onTapGesture {
-                                    viewModel.navigationPath.append(ContactRoute.detail(contact: contact))
-                                }
-                                .swipeActions(edge: .trailing, allowsFullSwipe: true) {
-                                    Button(role: .destructive) {
-                                        viewModel.deleteContacts(contact: contact)
-                                    } label: {
-                                        Label("Delete", systemImage: "trash")
+                    ZStack {
+                        List {
+                            ForEach(viewModel.filteredContacts()) { contact in
+                                ContactView(contact: contact, onAddAction: {
+                                    viewModel.navigationPath.append(ContactRoute.detail(contact: contact, isShowNewInteraction: true))
+                                })
+                                    .onTapGesture {
+                                        viewModel.navigationPath.append(ContactRoute.detail(contact: contact))
                                     }
+                                    .swipeActions(edge: .trailing, allowsFullSwipe: true) {
+                                        Button(role: .destructive) {
+                                            viewModel.deleteContacts(contact: contact)
+                                        } label: {
+                                            Label("Delete", systemImage: "trash")
+                                        }
+                                    }
+                            }
+                        }
+                        .scrollContentBackground(.hidden)
+                        .listStyle(.insetGrouped)
+                        .listRowSpacing(10)
+
+                        // Пустое состояние
+                        if viewModel.filteredContacts().isEmpty {
+                            VStack(spacing: 20) {
+                                Text("Add your first contact")
+                                    .font(.title2)
+                                    .foregroundColor(.secondary)
+
+                                Menu {
+                                    Button(action: {
+                                        viewModel.navigationPath.append(ContactRoute.newContact)
+                                    }) {
+                                        Label("New", systemImage: "person.fill.badge.plus")
+                                    }
+
+                                    Button(action: {
+                                        viewModel.checkContactsPermission()
+                                    }) {
+                                        Label("From contacts", systemImage: "person.crop.circle.fill.badge.plus")
+                                    }
+                                } label: {
+                                    Image(systemName: "plus")
+                                        .font(.title)
+                                        .foregroundColor(.white)
+                                        .frame(width: 60, height: 60)
+                                        .background(Color.blue)
+                                        .clipShape(Circle())
                                 }
+                            }
                         }
                     }
-                    .scrollContentBackground(.hidden)
                     .navigationBarTitleDisplayMode(.inline)
-                    .listStyle(.insetGrouped)
-                    .listRowSpacing(10)
                     .navigationDestination(for: ContactRoute.self) { route in
                         switch route {
                         case .detail(let contact, let isShowingNewInteractionView):
@@ -73,9 +105,7 @@ struct ContactListView: View {
                             ContactDetailView(contactListViewModel: viewModel, isShowingNewInteractionView: false, contact: Contact())
                         case .fromContacts:
                             ContactPickerView { contact in
-                                // Удаляем текущий экран из стека
                                 viewModel.navigationPath.removeLast()
-                                // Добавляем новый экран с выбранным контактом
                                 viewModel.navigationPath.append(ContactRoute.detail(contact: contact))
                             }
                         }
@@ -96,7 +126,7 @@ struct ContactListView: View {
                                 }) {
                                     Label("New", systemImage: "person.fill.badge.plus")
                                 }
-                                
+
                                 Button(action: {
                                     viewModel.checkContactsPermission()
                                 }) {
