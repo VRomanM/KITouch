@@ -150,6 +150,8 @@ struct ContactListView: View {
             }
             .onNotification { notification in
                 DispatchQueue.main.async {
+                    // Переход осуществялем через главную очередь, т.к. если в момент перехода с Пуша приложение было закрыто происходит инициализация
+                    // экземпляра класса viewModel и первичная загрузка контактов из CoreData, так же в главном потоке
                     if let contactId = notification.notification.request.content.userInfo["contactId"] as? String,
                        let contact = viewModel.findContact(by: contactId) {
                         viewModel.navigationPath.append(ContactRoute.detail(contact: contact))
