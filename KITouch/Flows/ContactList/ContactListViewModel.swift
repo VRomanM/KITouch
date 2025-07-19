@@ -36,8 +36,9 @@ final class ContactListViewModel: ObservableObject {
     
     init() {
         loadData()
+        listScheduledNotifications()
     }
-    
+
     //MARK: - Private function
     
     private func retrieveContactsFromCoreData() {
@@ -155,6 +156,22 @@ final class ContactListViewModel: ObservableObject {
     func openAppSettings() {
         guard let url = URL(string: UIApplication.openSettingsURLString) else { return }
         UIApplication.shared.open(url)
+    }
+
+    // принтует уведомления которые есть
+    private func listScheduledNotifications() {
+        UNUserNotificationCenter.current().getPendingNotificationRequests { notifications in
+            for notification in notifications {
+                print("ID: \(notification.identifier)")
+                print("Title: \(notification.content.title)")
+                print("Body: \(notification.content.body)")
+                if let trigger = notification.trigger as? UNCalendarNotificationTrigger {
+                    print("Next trigger date: \(String(describing: trigger.nextTriggerDate()))")
+                }
+                print("---")
+            }
+            print("Total pending notifications: \(notifications.count)")
+        }
     }
 }
 
