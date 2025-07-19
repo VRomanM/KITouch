@@ -193,7 +193,7 @@ struct EmptyStateView: View {
                 .font(.headline)
                 .foregroundColor(.secondary)
             
-            Text("Add your first interaction to keep track of your communications")
+            Text("Add your interactions to keep track of your communications")
                 .font(.subheadline)
                 .foregroundColor(.gray)
                 .multilineTextAlignment(.center)
@@ -209,7 +209,7 @@ struct SearchBar: View {
     
     var body: some View {
         HStack {
-            TextField("Search interactions...", text: $text)
+            TextField("Search", text: $text)
                 .padding(8)
                 .padding(.horizontal, 24)
                 .background(Color(.systemBackground))

@@ -49,11 +49,11 @@ struct InteractionView: View {
     @ToolbarContentBuilder
     private var toolbarContent: some ToolbarContent {
         ToolbarItem(placement: .navigationBarLeading) {
-            Button("Отмена") { dismiss() }
+            Button("Cancel") { dismiss() }
         }
         
         ToolbarItem(placement: .navigationBarTrailing) {
-            Button("Готово") {
+            Button("Done") {
                 viewModel.saveInteraction()
                 dismiss()
             }
@@ -131,7 +131,7 @@ struct InteractionTypeSection: View {
             } else {
                 Image(systemName: selectedType.interactionType.icon)
                     .frame(width: 24, height: 24)
-                Text(selectedType.rawValue)
+                Text(selectedType.rawValue.localized())
             }
         }
         .foregroundColor(.secondary)
@@ -170,14 +170,12 @@ struct InteractionNotesSection: View {
             
             // Content
             if isExpanded {
-                ScrollView {
-                    TextEditor(text: $notes)
-                        .scrollContentBackground(.hidden)
-                        .padding(8)
-                }
-                .frame(height: 150)
-                .background(Color(.systemGray6))
-                .cornerRadius(8)
+                TextEditor(text: $notes)
+                    .scrollContentBackground(.hidden)
+                    .background(Color(.systemGray6))
+                    .frame(height: 150)
+                    .cornerRadius(8)
+                    .padding(.horizontal, 8)
             } else {
                 Text(notes.isEmpty ? "No notes".localized() : notes)
                     .foregroundColor(.secondary)
@@ -188,6 +186,7 @@ struct InteractionNotesSection: View {
         .background(Color(.systemBackground))
         .cornerRadius(16)
         .shadow(color: .black.opacity(0.05), radius: 5, x: 0, y: 2)
+        .dismissKeyboard()
     }
 }
 
@@ -287,7 +286,7 @@ struct InteractionTypeRow: View {
     private var typeLabel: some View {
         Group {
             if type != .socialMedia || interactionType == type.interactionType {
-                Text(type.rawValue)
+                Text(type.rawValue.localized())
                     .foregroundColor(.primary)
             }
         }

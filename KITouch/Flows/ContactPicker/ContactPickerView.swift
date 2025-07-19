@@ -17,7 +17,7 @@ struct ContactPickerView: View {
         VStack(spacing: 0) {
             // Поисковая строка
             HStack {
-                TextField("Search contacts", text: $viewModel.searchQuery)
+                TextField("Search", text: $viewModel.searchQuery)
                     .padding(8)
                     .background(Color(.systemGray6))
                     .cornerRadius(8)

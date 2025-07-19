@@ -143,7 +143,7 @@ struct ContactDetailView: View {
                             }
                             Toggle("Birthday", isOn: $viewModel.contact.reminderBirthday)
                             if viewModel.contact.reminderBirthday {
-                                Text("You'll be notified one day before the birthday")
+                                Text("You'll be notified one day before the birthday and on birthday")
                                     .font(.footnote)
                                     .foregroundColor(.secondary)
                             }

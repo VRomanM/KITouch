@@ -7,6 +7,9 @@
 */
 "About App" = "О приложении";
 "Add" = "Добавить";
+"Add your first contact" = "Добавь свой первый контакт";
+"Add your interactions to keep track of your communications" = "Добавьте взаимодействия, чтобы отслеживать коммуникации";
+"All Interactions" = "Все взаимодействия";
 "App Information" = "Информация о приложении";
 
 "Birthdate" = "Дата рождения";
@@ -49,16 +52,20 @@
 
 "Keep" = "Оставить";
 "Keep in touch" = "Оставайся на связи";
+"KITouch is designed to help you stay connected with friends and colleagues, reminding you to nurture relationships and never miss an important conversation.We believe that strong connections are built on consistent communication, and our mission is to make every interaction meaningful and memorable. With KITouch, every conversation matters." = "KITouch — это приложение, созданное для того, чтобы вы всегда оставались на связи с близкими и коллегами. Наша миссия — помогать вам строить крепкие взаимоотношения и не забывать о важных беседах, напоминая вовремя уделить внимание каждому.\nВместе мы создаём пространство, где каждый разговор находит своё место, а дружба становится частью ежедневной заботы. KITouch — это ваш личный мотиватор для общения и развития настоящих, насыщенных связей.";
 
 "Last interaction" = "Последнее взаимодействие";
 "Leave Feedback" = "Оставить отзыв";
 
+"Meeting" = "Встреча";
+"Message" = "Сообщение";
 "Monthly" = "Ежемесячно";
 
 "Never" = "Никогда";
 "New" = "Новый";
 "New interaction" = "Новое взаимодействие";
 
+"No Interactions Yet" = "Взаимодействий нет";
 "No notes" = "Нет заметок";
 "No social media channels available" = "Нет доступных каналов связи";
 "Notes" = "Заметки";
@@ -69,6 +76,7 @@
 "Other" = "Другое";
 
 "Phone" = "Телефон";
+"Phone Call" = "Телефонный звонок";
 
 "Relative" = "Родственник";
 "Repeat" = "Повтор";
@@ -77,10 +85,13 @@
 "Save" = "Сохранить";
 "Search" = "Поиск";
 "See All %@" = "Показать все %@";
+"Select soc. media" = "Выбрать соц. сеть";
 "Select Type" = "Выбери тип";
 "Settings" = "Настройки";
 "Soc. media" = "Соц. сети";
 "Social Media" = "Социальные сети";
+"Sort by Date" = "Сортировать по дате";
+"Sort by Type" = "Сортировать по типу";
 
 "Talked %@" = "Общались %@";
 "The app does not have access to create notifications" = "У приложения нет доступа для создания уведомлений";
@@ -94,9 +105,9 @@
 "Update" = "Обновить";
 "Update Contact" = "Обновить контакт";
 "Username" = "Пользователь";
-"KITouch is designed to help you stay connected with friends and colleagues, reminding you to nurture relationships and never miss an important conversation.We believe that strong connections are built on consistent communication, and our mission is to make every interaction meaningful and memorable. With KITouch, every conversation matters." = "KITouch — это приложение, созданное для того, чтобы вы всегда оставались на связи с близкими и коллегами. Наша миссия — помогать вам строить крепкие взаимоотношения и не забывать о важных беседах, напоминая вовремя уделить внимание каждому.\nВместе мы создаём пространство, где каждый разговор находит своё место, а дружба становится частью ежедневной заботы. KITouch — это ваш личный мотиватор для общения и развития настоящих, насыщенных связей.";
+
 "Weekly" = "Еженедельно";
 "When" = "Когда";
 
 "Yearly" = "Ежегодно";
-"You'll be notified one day before the birthday" = "Вы получите уведомление за день до дня рождения";
+"You'll be notified one day before the birthday and on birthday" = "Вы получите уведомление за день до дня рождения и в сам день рождения";
