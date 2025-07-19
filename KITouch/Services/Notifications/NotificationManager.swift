@@ -90,17 +90,17 @@ final class NotificationManager: ObservableObject {
         switch type {
             
         case .birthday:
-            content.title           = "Birthday!".localized()
-            content.body            = "Today is the birthday of %@".localized(with: contact.name)
+            content.title           = "Today is the birthday".localized()
+            content.body            = "of %@".localized(with: contact.name)
         case .beforeBirthday:
-            content.title           = "Birthday!".localized()
-            content.body            = "Tomorrow is the birthday of %@".localized(with: contact.name)
+            content.title           = "Tomorrow is the birthday".localized()
+            content.body            = "of %@".localized(with: contact.name)
         case .regular:
             content.title           = "Keep in touch".localized()
-            content.body            = "Contact with %@".localized(with: contact.name)
+            content.body            = "with %@".localized(with: contact.name)
         case .regularHalfYear:
             content.title           = "Keep in touch".localized()
-            content.body            = "Contact with %@".localized(with: contact.name)
+            content.body            = "with %@".localized(with: contact.name)
         }
     
         return content

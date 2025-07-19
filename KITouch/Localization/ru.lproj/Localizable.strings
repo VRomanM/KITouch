@@ -28,7 +28,6 @@
 "Contact name" = "Имя контакта";
 "Contact was deleted" = "Контакт был удален";
 "Contact will be updated from address book" = "Контакт будет обновлен из адресной книги";
-"Contact with %@" = "Свяжись с %@";
 
 "Date" = "Дата";
 "Daily" = "Ежедневно";
@@ -72,6 +71,7 @@
 "Notifications" = "Уведомления";
 "Notification Settings" = "Настройки уведомлений";
 
+"of %@" = "у %@";
 "Open" = "Открыть";
 "Other" = "Другое";
 
@@ -96,8 +96,8 @@
 "Talked %@" = "Общались %@";
 "The app does not have access to create notifications" = "У приложения нет доступа для создания уведомлений";
 "This contact has already been added to your list" = "Этот контакт уже был добавлен в ваш список";
-"Today is the birthday of %@" = "Сегодня день рождения у %@";
-"Tomorrow is the birthday of %@" = "Завтра день рождения у %@";
+"Today is the birthday" = "Сегодня день рождения";
+"Tomorrow is the birthday" = "Завтра день рождения";
 "To grant contacts access:\n1. Open Settings\n2. Go to Privacy\n3. Select Contacts\n4. Find this app\n5. Enable access" = "Доступ к контактам запрещен. Чтобы разрешить:\n1. Откройте Настройки\n2. Конфиденциальность → Контакты\n3. Включите доступ для этого приложения → \n4. Разрешите доступ к контактам для работы этой функции";
 "Type" = "Тип";
 
@@ -108,6 +108,7 @@
 
 "Weekly" = "Еженедельно";
 "When" = "Когда";
+"with %@" = "c %@";
 
 "Yearly" = "Ежегодно";
 "You'll be notified one day before the birthday and on birthday" = "Вы получите уведомление за день до дня рождения и в сам день рождения";
