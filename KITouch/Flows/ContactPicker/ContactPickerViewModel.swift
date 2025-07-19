@@ -57,17 +57,49 @@ enum SystemContactHelper {
 @MainActor
 final class ContactPickerViewModel: ObservableObject {
     @Published private(set) var contacts: [Contact] = []
+    @Published var searchQuery = ""
     @Published var showDuplicateAlert = false
     @Published var duplicateContact: Contact?
-    
+
     private let contactStore = CNContactStore()
     private let coreDataManager = CoreDataManager.sharedManager
-    
+
+    // MARK: - Computed Properties
+    var filteredContacts: [Contact] {
+        if searchQuery.isEmpty {
+            return contacts
+        }
+        return contacts.filter { contact in
+            contact.name.localizedCaseInsensitiveContains(searchQuery) ||
+            contact.phone.localizedCaseInsensitiveContains(searchQuery)
+        }
+    }
+
+    // MARK: - Public Methods
+    func clearSearch() {
+        searchQuery = ""
+        UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+    }
+
+    func handleContactSelection(_ contact: Contact, completion: @escaping (Contact?) -> Void) {
+        Task {
+            if let duplicateContact = await checkForDuplicate(contact: contact) {
+                await MainActor.run {
+                    self.duplicateContact = duplicateContact
+                    self.showDuplicateAlert = true
+                }
+            } else {
+                await MainActor.run {
+                    completion(nil)
+                }
+            }
+        }
+    }
+
     func loadContacts() async {
         do {
             let request = CNContactFetchRequest(keysToFetch: SystemContactHelper.keysToFetch)
-            
-            // Выполняем тяжелую работу в фоновом потоке
+
             let fetchedContacts = try await Task.detached(priority: .userInitiated) { [request, contactStore] () -> [Contact] in
                 var contacts: [Contact] = []
                 try contactStore.enumerateContacts(with: request) { cnContact, _ in
@@ -75,8 +107,7 @@ final class ContactPickerViewModel: ObservableObject {
                 }
                 return contacts.sorted { $0.name < $1.name }
             }.value
-            
-            // Обновляем UI в главном потоке
+
             await MainActor.run {
                 self.contacts = fetchedContacts
             }
@@ -84,12 +115,12 @@ final class ContactPickerViewModel: ObservableObject {
             print("Error fetching contacts: \(error)")
         }
     }
-    
-    func checkForDuplicate(contact: Contact) async -> Contact? {
+
+    // MARK: - Private Methods
+    private func checkForDuplicate(contact: Contact) async -> Contact? {
         guard let systemContactId = contact.systemContactId else { return nil }
-        
+
         return await Task.detached(priority: .userInitiated) { [coreDataManager] () -> Contact? in
-            // Используем async/await вместо семафора с защитой от множественного вызова
             let (success, contactEntities): (Bool, [ContactEntity]?) = await withCheckedContinuation { continuation in
                 var hasResumed = false
                 coreDataManager.retrieveContacts { success, entities in
@@ -98,15 +129,13 @@ final class ContactPickerViewModel: ObservableObject {
                     continuation.resume(returning: (success, entities))
                 }
             }
-            
+
             guard success, let entities = contactEntities else { return nil }
-            
-            // Ищем дубликат
+
             guard let existingEntity = entities.first(where: { $0.systemContactId == systemContactId }) else {
                 return nil
             }
-            
-            // Преобразование ConnectChannelEntity в ConnectChannel
+
             let connectChannels: [ConnectChannel] = (existingEntity.connectChannelEntity as? Set<ConnectChannelEntity> ?? [])
                 .compactMap { channelEntity in
                     let socialMediaType = SocialMediaType(rawValue: channelEntity.socialMediaType) ?? .email
@@ -116,7 +145,7 @@ final class ContactPickerViewModel: ObservableObject {
                         login: channelEntity.login
                     )
                 }
-            
+
             return Contact(
                 id: existingEntity.id,
                 name: existingEntity.name,
