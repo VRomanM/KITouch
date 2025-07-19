@@ -29,6 +29,8 @@ extension ContactEntity {
     @NSManaged public var reminderDate: Date
     @NSManaged public var reminderRepeat: String
     @NSManaged public var reminderBirthday: Bool
+    @NSManaged public var reminderBeforeBirthday: Bool
+    @NSManaged public var reminderCountDayBeforeBirthday: Int16
     @NSManaged public var systemContactId: String?
     @NSManaged public var connectChannelEntity: NSSet?
 

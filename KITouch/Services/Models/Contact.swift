@@ -25,6 +25,8 @@ struct Contact: Hashable, Identifiable {
     var reminderDate: Date
     var reminderRepeat: String = "Monthly"
     var reminderBirthday: Bool = false
+    var reminderBeforeBirthday: Bool = false
+    var reminderCountDayBeforeBirthday: Int = 1
     var systemContactId: String?
     
     var displayContactType: String {
@@ -65,8 +67,9 @@ struct Contact: Hashable, Identifiable {
         self.systemContactId = nil
     }
     
-    init(id: UUID, name: String, contactType: String, customContactType: String, imageName: String, lastMessage: Date, countMessages: Int, phone: String,
-         birthday: Date?, reminder: Bool, reminderDate: Date?, reminderRepeat: String, reminderBirthday: Bool, connectChannels: [ConnectChannel], systemContactId: String? = nil) {
+    init(id: UUID, name: String, contactType: String, customContactType: String, imageName: String, lastMessage: Date, countMessages: Int, phone: String, birthday: Date?,
+         reminder: Bool, reminderDate: Date?, reminderRepeat: String, reminderBirthday: Bool, reminderBeforeBirthday: Bool, reminderCountDayBeforeBirthday: Int,
+         connectChannels: [ConnectChannel], systemContactId: String? = nil) {
         self.id = id
         self.name = name
         self.contactType = contactType
@@ -80,6 +83,8 @@ struct Contact: Hashable, Identifiable {
         self.reminderDate = reminderDate ?? Calendar.current.date(byAdding: .day, value: 1, to: Date())!
         self.reminderRepeat = reminderRepeat == "" ? "Monthly": reminderRepeat
         self.reminderBirthday = reminderBirthday
+        self.reminderBeforeBirthday = reminderBeforeBirthday
+        self.reminderCountDayBeforeBirthday = reminderCountDayBeforeBirthday
         self.connectChannels = connectChannels
         self.isNewContact = false
         self.systemContactId = systemContactId

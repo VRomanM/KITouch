@@ -160,6 +160,8 @@ final class ContactPickerViewModel: ObservableObject {
                 reminderDate: existingEntity.reminderDate,
                 reminderRepeat: existingEntity.reminderRepeat,
                 reminderBirthday: existingEntity.reminderBirthday,
+                reminderBeforeBirthday: existingEntity.reminderBeforeBirthday,
+                reminderCountDayBeforeBirthday: Int(existingEntity.reminderCountDayBeforeBirthday),
                 connectChannels: connectChannels,
                 systemContactId: existingEntity.systemContactId
             )

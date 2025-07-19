@@ -93,7 +93,11 @@ final class NotificationManager: ObservableObject {
             content.title           = "Today is the birthday".localized()
             content.body            = "of %@".localized(with: contact.name)
         case .beforeBirthday:
-            content.title           = "Tomorrow is the birthday".localized()
+            if contact.reminderCountDayBeforeBirthday == 1 {
+                content.title           = "Tomorrow is the birthday".localized()
+            } else {
+                content.title           = "Birthday is in %@ days".localized(with: String(contact.reminderCountDayBeforeBirthday))
+            }
             content.body            = "of %@".localized(with: contact.name)
         case .regular:
             content.title           = "Keep in touch".localized()
@@ -184,8 +188,10 @@ final class NotificationManager: ObservableObject {
                 scheduleNotification(for: contact, startDate: contact.birthday, type: .birthday, repeatPeriod: .yearly, debug: debug)
                 
                 // За день до дня рождения
-                if let previousDayBeforeBirthday = calendar.date(byAdding: .day, value: -1, to: contact.birthday) {
-                    scheduleNotification(for: contact, startDate: previousDayBeforeBirthday, type: .beforeBirthday, repeatPeriod: .yearly, debug: debug)
+                if contact.reminderBeforeBirthday {
+                    if let previousDayBeforeBirthday = calendar.date(byAdding: .day, value: -contact.reminderCountDayBeforeBirthday, to: contact.birthday) {
+                        scheduleNotification(for: contact, startDate: previousDayBeforeBirthday, type: .beforeBirthday, repeatPeriod: .yearly, debug: debug)
+                    }
                 }
             }
             

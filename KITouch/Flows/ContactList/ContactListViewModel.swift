@@ -77,6 +77,8 @@ final class ContactListViewModel: ObservableObject {
                             reminderDate: contact.reminderDate,
                             reminderRepeat: contact.reminderRepeat,
                             reminderBirthday: contact.reminderBirthday,
+                            reminderBeforeBirthday: contact.reminderBeforeBirthday,
+                            reminderCountDayBeforeBirthday: Int(contact.reminderCountDayBeforeBirthday),
                             connectChannels: connectChannels,
                             systemContactId: contact.systemContactId
                         )

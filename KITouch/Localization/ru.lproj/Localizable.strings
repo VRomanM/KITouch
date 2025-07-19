@@ -16,6 +16,7 @@
 "Birthday" = "День рождения";
 "Birthday!" = "День рождения!";
 "Birthday%@" = "День рождения%@";
+"Birthday is in %@ days" = "День рождения через %@ дн.";
 
 "Cancel" = "Отмена";
 "Choose Emoji" = "Выбери Эмоджи";
@@ -42,11 +43,13 @@
 "Every 6 months" = "Каждые 6 месяцев";
 
 "Feedback Form" = "Форма для отзыва";
+"for (days)" = "за (дней)";
 "Friend" = "Друг";
 "From contacts" = "Из контактов";
 
 "Get reminders to keep in touch" = "Получай уведомления, чтобы оставаться на связи";
 
+"In advance" = "Заранее";
 "Interactions" = "Взаимодействия";
 
 "Keep" = "Оставить";
@@ -63,7 +66,7 @@
 "Never" = "Никогда";
 "New" = "Новый";
 "New interaction" = "Новое взаимодействие";
-
+"Notify for" = "Уведомить за";
 "No Interactions Yet" = "Взаимодействий нет";
 "No notes" = "Нет заметок";
 "No social media channels available" = "Нет доступных каналов связи";
@@ -111,4 +114,6 @@
 "with %@" = "c %@";
 
 "Yearly" = "Ежегодно";
-"You'll be notified one day before the birthday and on birthday" = "Вы получите уведомление за день до дня рождения и в сам день рождения";
+"You'll be notified at 10:00 on birthday" = "Вы получите уведомление в 10:00 в день рождения";
+"You'll be notified at 10:00 one day before the birthday and on birthday" = "Вы получите уведомление в 10:00 за день до дня рождения и в сам день рождения";
+"You'll be notified at 10:00 %@ day(s) before the birthday and on birthday" = "Вы получите уведомление в 10:00 за %@ (дней) до дня рождения и в сам день рождения";

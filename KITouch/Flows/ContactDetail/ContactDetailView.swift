@@ -143,9 +143,34 @@ struct ContactDetailView: View {
                             }
                             Toggle("Birthday", isOn: $viewModel.contact.reminderBirthday)
                             if viewModel.contact.reminderBirthday {
-                                Text("You'll be notified one day before the birthday and on birthday")
-                                    .font(.footnote)
-                                    .foregroundColor(.secondary)
+                                HStack(spacing: 8) {
+                                    if viewModel.contact.reminderBeforeBirthday {
+                                        Picker("Notify for", selection: $viewModel.contact.reminderCountDayBeforeBirthday) {
+                                            ForEach(1...15, id: \.self) { day in
+                                                Text("\(day)").tag(day)
+                                            }
+                                        }
+                                        .pickerStyle(.menu)
+                                        .fixedSize()
+                                        Text("дн.")
+                                            .foregroundColor(.secondary)
+                                            .font(.subheadline)
+                                    } else {
+                                        Text("In advance")
+                                            .foregroundColor(.secondary)
+                                    }
+                                    Spacer()
+                                    Toggle("", isOn: $viewModel.contact.reminderBeforeBirthday)
+                                }
+                                if viewModel.contact.reminderBeforeBirthday {
+                                    Text("You'll be notified at 10:00 %@ day(s) before the birthday and on birthday".localized(with: String(viewModel.contact.reminderCountDayBeforeBirthday)))
+                                        .font(.footnote)
+                                        .foregroundColor(.secondary)
+                                } else {
+                                    Text("You'll be notified at 10:00 on birthday")
+                                        .font(.footnote)
+                                        .foregroundColor(.secondary)
+                                }
                             }
                             
                             Toggle("Keep in touch", isOn: $viewModel.contact.reminder)

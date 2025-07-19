@@ -145,20 +145,22 @@ final class CoreDataManager {
             return channels
         }()
                 
-        entity.name                 = contact.name
-        entity.contactType          = contact.contactType
-        entity.customContactType    = contact.customContactType
-        entity.imageName            = contact.imageName
-        entity.lastMessage          = contact.lastMessage ?? nil
-        entity.countMessages        = Int16(contact.countMessages)
-        entity.phone                = contact.phone
-        entity.birthday             = contact.birthday
-        entity.reminder             = contact.reminder
-        entity.reminderDate         = contact.reminderDate
-        entity.reminderRepeat       = contact.reminderRepeat
-        entity.reminderBirthday     = contact.reminderBirthday
-        entity.systemContactId      = contact.systemContactId
-        entity.connectChannelEntity = NSSet(array: channels)
+        entity.name                             = contact.name
+        entity.contactType                      = contact.contactType
+        entity.customContactType                = contact.customContactType
+        entity.imageName                        = contact.imageName
+        entity.lastMessage                      = contact.lastMessage ?? nil
+        entity.countMessages                    = Int16(contact.countMessages)
+        entity.phone                            = contact.phone
+        entity.birthday                         = contact.birthday
+        entity.reminder                         = contact.reminder
+        entity.reminderDate                     = contact.reminderDate
+        entity.reminderRepeat                   = contact.reminderRepeat
+        entity.reminderBirthday                 = contact.reminderBirthday
+        entity.reminderBeforeBirthday           = contact.reminderBeforeBirthday
+        entity.reminderCountDayBeforeBirthday   = Int16(contact.reminderCountDayBeforeBirthday)
+        entity.systemContactId                  = contact.systemContactId
+        entity.connectChannelEntity             = NSSet(array: channels)
               
         do {
             try managedContext.save()
