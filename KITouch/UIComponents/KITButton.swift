@@ -9,8 +9,10 @@ import SwiftUI
 
 struct KITButton: View {
     let text: String
+    var background: Color = Color.accentColor
     var action: () -> Void
-    
+
+
     var body: some View {
         Button(action: action) {
             Text(text)
@@ -18,7 +20,7 @@ struct KITButton: View {
                 .foregroundColor(.white)
                 .frame(maxWidth: .infinity)
                 .frame(height: 50)
-                .background(Color.accentColor)
+                .background(background)
                 .clipShape(Capsule())
         }
         .buttonStyle(.plain)
