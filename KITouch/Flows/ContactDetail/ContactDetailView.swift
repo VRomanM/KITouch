@@ -157,7 +157,7 @@ struct ContactDetailView: View {
                                         }
                                         .pickerStyle(.menu)
                                         .fixedSize()
-                                        Text("дн.")
+                                        Text("d.".localized())
                                             .foregroundColor(.secondary)
                                             .font(.subheadline)
                                     } else {
