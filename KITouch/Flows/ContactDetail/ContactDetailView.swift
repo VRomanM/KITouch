@@ -245,7 +245,11 @@ struct ContactDetailView: View {
             if hasPhoneNumber {
                 VStack {
                     Spacer()
-                    KITButton(text: "Call".localized(), background: Color.green, action: makeCall)
+                    if viewModel.contact.isNewContact {
+                        KITButton(text: "Save".localized(), action: saveAndDismiss)
+                    } else {
+                        KITButton(text: "Call".localized(), background: Color.green, action: makeCall)
+                    }
                 }
             }
         }
