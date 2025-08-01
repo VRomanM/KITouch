@@ -185,13 +185,13 @@ final class NotificationManager: ObservableObject {
             }
             
             // Назначение уведомлений согласно настройкам контакта
-            if contact.reminderBirthday {
-                var components = calendar.dateComponents([.year, .month, .day], from: contact.birthday)
+            if let birthday = contact.birthday, contact.reminderBirthday {
+                var components = calendar.dateComponents([.year, .month, .day], from: birthday)
                 // Устанавливаем время в дату дня рождения 10:00
                 components.hour = 10
                 components.minute = 0
                 components.second = 0
-                let birthday10AM = calendar.date(from: components) ?? contact.birthday
+                let birthday10AM = calendar.date(from: components) ?? birthday
                 
                 // В день рождения
                 scheduleNotification(for: contact, startDate: birthday10AM, type: .birthday, repeatPeriod: .yearly, debug: debug)

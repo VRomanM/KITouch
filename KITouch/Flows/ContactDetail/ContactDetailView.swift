@@ -19,8 +19,14 @@ struct ContactDetailView: View {
     @State private var isNotificationExpanded   = false
     @State private var isSocialMediaExpanded    = false
 
+    // Состояния для дня рождения
+    @State private var showingBirthdayPicker = false
+    @State private var tempBirthday = Date()
+    @State private var includeYear = true
+    
+    private let calendar = Calendar.current
+    
     private var dateRange: ClosedRange<Date> {
-        let calendar = Calendar.current
         let minDate = calendar.date(byAdding: .year, value: -120, to: Date())!
         return minDate...Date()
     }
@@ -61,7 +67,7 @@ struct ContactDetailView: View {
                 // Contact Info Section
                 Section(header: Text("Contact Info")) {
                     phoneField
-                    birthdayPicker
+                    birthdaySection
                 }
 
                 // Social Media Section
@@ -238,6 +244,16 @@ struct ContactDetailView: View {
             }
             .onAppear {
                 viewModel.checkNotificationAccess()
+                setupBirthdayState()
+            }
+            .sheet(isPresented: $showingBirthdayPicker) {
+                DatePickerView(
+                    title: "Birthday".localized(),
+                    date: $tempBirthday,
+                    includeYear: $includeYear,
+                    isPresented: $showingBirthdayPicker,
+                    onSave: saveBirthday
+                )
             }
             .padding(.bottom, hasPhoneNumber ? 80 : 0)
 
@@ -336,19 +352,59 @@ struct ContactDetailView: View {
                 .keyboardType(.phonePad)
         }
     }
-
-    private var birthdayPicker: some View {
+    
+    // MARK: - Birthday Section
+    
+    private var birthdaySection: some View {
         HStack {
             Image(systemName: "birthday.cake.fill")
                 .foregroundColor(.secondary)
-            DatePicker("Birthday",
-                       selection: $viewModel.contact.birthday,
-                      in: dateRange,
-                      displayedComponents: .date)
-            .labelsHidden()
+            
+            if let birthday = viewModel.contact.birthday {
+                // Показываем существующий день рождения
+                HStack {
+                    Button {
+                        setupBirthdayState()
+                        showingBirthdayPicker = true
+                    } label: {
+                        Text(formatBirthdayDisplay(birthday))
+                            .foregroundColor(.primary)
+                    }
+                    .buttonStyle(.plain)
+                    Spacer()
+                    Button("Delete") {
+                        viewModel.contact.birthday = nil
+                    }
+                    .buttonStyle(.plain)
+                    .foregroundColor(.red)
+                }
+            } else {
+                // Показываем кнопку добавления
+                Button("Add Birthday") {
+                    setupBirthdayState()
+                    showingBirthdayPicker = true
+                }
+                .foregroundColor(.accentColor)
+            }
         }
     }
-
+    
+    private func formatBirthdayDisplay(_ date: Date) -> String {
+        let formatter = DateFormatter()
+        formatter.locale = .current
+        
+        let year = calendar.component(.year, from: date)
+        if year == 0001 {
+            // Без года
+            formatter.dateFormat = "d MMMM"
+        } else {
+            // С годом
+            formatter.dateFormat = "d MMMM yyyy"
+        }
+        
+        return formatter.string(from: date)
+    }
+    
     private var socialMediaGrid: some View {
         LazyVGrid(columns: [GridItem(.adaptive(minimum: 120), alignment: .leading),
                             GridItem(.adaptive(minimum: 120), alignment: .leading)], spacing: 12) {
@@ -388,9 +444,32 @@ struct ContactDetailView: View {
             UIApplication.shared.open(url)
         }
     }
-
+    
+    // MARK: - Birthday Management
+    
+    private func setupBirthdayState() {
+        if let birthday = viewModel.contact.birthday {
+            tempBirthday = birthday
+            includeYear = calendar.component(.year, from: birthday) != 0001
+        } else {
+            tempBirthday = Date()
+            includeYear = true
+        }
+    }
+    
+    private func saveBirthday() {
+        if includeYear {
+            viewModel.contact.birthday = tempBirthday
+        } else {
+            // Убираем год, устанавливая 0001 как маркер
+            var components = calendar.dateComponents([.month, .day], from: tempBirthday)
+            components.year = 0001
+            viewModel.contact.birthday = calendar.date(from: components)
+        }
+    }
+    
     init(contactListViewModel: ContactListViewModel, isShowingNewInteractionView: Bool, contact: Contact) {
-        var model = ContactDetailViewModel(contactListViewModel: contactListViewModel, contact: contact)
+        let model = ContactDetailViewModel(contactListViewModel: contactListViewModel, contact: contact)
         model.isShowingNewInteractionView = isShowingNewInteractionView
         _viewModel = StateObject(wrappedValue: model)
     }
