@@ -168,7 +168,15 @@ final class ContactListViewModel: ObservableObject {
                 print("Title: \(notification.content.title)")
                 print("Body: \(notification.content.body)")
                 if let trigger = notification.trigger as? UNCalendarNotificationTrigger {
-                    print("Next trigger date: \(String(describing: trigger.nextTriggerDate()))")
+                    if let nextTriggerDate = trigger.nextTriggerDate() {
+                        let formatter = DateFormatter()
+                        formatter.dateStyle = .medium
+                        formatter.timeStyle = .medium
+                        formatter.timeZone = TimeZone.current
+                        
+                        print("Next trigger date (UTC): \(nextTriggerDate)")
+                        print("Next trigger date (Local): \(formatter.string(from: nextTriggerDate))")
+                    }
                 }
                 print("---")
             }
