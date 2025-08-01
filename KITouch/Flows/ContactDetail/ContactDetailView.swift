@@ -168,7 +168,7 @@ struct ContactDetailView: View {
                                             .foregroundColor(.secondary)
                                             .font(.subheadline)
                                     } else {
-                                        Text("In advance")
+                                        Text("Notify in advance")
                                             .foregroundColor(.secondary)
                                     }
                                     Spacer()

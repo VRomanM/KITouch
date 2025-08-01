@@ -52,7 +52,6 @@
 
 "Get reminders to keep in touch" = "Получай уведомления, чтобы оставаться на связи";
 
-"In advance" = "Заранее";
 "Interactions" = "Взаимодействия";
 
 "Keep" = "Оставить";
@@ -69,6 +68,7 @@
 "Never" = "Никогда";
 "New" = "Новый";
 "New interaction" = "Новое взаимодействие";
+"Notify in advance" = "Уведомить заранее";
 "Notify for" = "Уведомить за";
 "No Interactions Yet" = "Взаимодействий нет";
 "No notes" = "Нет заметок";
