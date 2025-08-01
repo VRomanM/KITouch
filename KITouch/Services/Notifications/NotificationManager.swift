@@ -178,9 +178,7 @@ final class NotificationManager: ObservableObject {
             let calendar = Calendar.current
             
             // Удаление всех уведомлений
-            for reminderType in ReminderType.allCases {
-                removeScheduledNotifications(for: contact, type: reminderType)
-            }
+            removeAllScheduledNotifications(for: contact)
             
             // Назначение уведомлений согласно настройкам контакта
             if contact.reminderBirthday {
@@ -210,6 +208,28 @@ final class NotificationManager: ObservableObject {
                     }
                 }
             }
+        }
+    }
+    
+    func removeAllScheduledNotifications(for contact: Contact) {
+        for reminderType in ReminderType.allCases {
+            removeScheduledNotifications(for: contact, type: reminderType)
+        }
+    }
+    
+    // принтует уведомления которые есть
+    func listScheduledNotifications() {
+        UNUserNotificationCenter.current().getPendingNotificationRequests { notifications in
+            for notification in notifications {
+                print("ID: \(notification.identifier)")
+                print("Title: \(notification.content.title)")
+                print("Body: \(notification.content.body)")
+                if let trigger = notification.trigger as? UNCalendarNotificationTrigger {
+                    print("Next trigger date: \(String(describing: trigger.nextTriggerDate()))")
+                }
+                print("---")
+            }
+            print("Total pending notifications: \(notifications.count)")
         }
     }
 }
