@@ -153,6 +153,7 @@ struct ContactDetailView: View {
                                 }
                             }
                             Toggle("Birthday", isOn: $viewModel.contact.reminderBirthday)
+                                .disabled(viewModel.contact.birthday == nil)
                             if viewModel.contact.reminderBirthday {
                                 HStack(spacing: 8) {
                                     if viewModel.contact.reminderBeforeBirthday {
@@ -374,6 +375,8 @@ struct ContactDetailView: View {
                     Spacer()
                     Button("Delete") {
                         viewModel.contact.birthday = nil
+                        viewModel.contact.reminderBirthday = false
+                        viewModel.contact.reminderBeforeBirthday = false
                     }
                     .buttonStyle(.plain)
                     .foregroundColor(.red)
