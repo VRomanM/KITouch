@@ -89,7 +89,7 @@ struct ContactDetailView: View {
                 }
 
                 // Interactions Section
-                if !viewModel.contact.isNewContact {
+                if !viewModel.contact.isNotSaved {
                     Section {
                         DisclosureGroup(
                             isExpanded: $isInteractionExpanded,
@@ -253,20 +253,18 @@ struct ContactDetailView: View {
                     date: $tempBirthday,
                     includeYear: $includeYear,
                     isPresented: $showingBirthdayPicker,
-                    onSave: saveBirthday
+                    onSave: setBirthday
                 )
             }
             .padding(.bottom, hasPhoneNumber ? 80 : 0)
 
             // Плавающая кнопка звонка (показывается только если есть номер)
-            if hasPhoneNumber {
-                VStack {
-                    Spacer()
-                    if viewModel.contact.isNewContact {
-                        KITButton(text: "Save".localized(), action: saveAndDismiss)
-                    } else {
-                        KITButton(text: "Call".localized(), background: Color.green, action: makeCall)
-                    }
+            VStack {
+                Spacer()
+                if !viewModel.contact.isNotSaved  && hasPhoneNumber {
+                    KITButton(text: "Call".localized(), background: Color.green, action: makeCall)
+                } else {
+                    KITButton(text: "Save".localized(), action: saveAndDismiss)
                 }
             }
         }
@@ -290,6 +288,45 @@ struct ContactDetailView: View {
             if newValue {
                 dismiss()
             }
+        }
+        .onChange(of: viewModel.contact.imageName) { _ in
+            viewModel.contact.isNotSaved = true
+        }
+        .onChange(of: viewModel.contact.name) { _ in
+            viewModel.contact.isNotSaved = true
+        }
+        .onChange(of: viewModel.contact.contactType) { _ in
+            viewModel.contact.isNotSaved = true
+        }
+        .onChange(of: viewModel.contact.customContactType) { _ in
+            viewModel.contact.isNotSaved = true
+        }
+        .onChange(of: viewModel.contact.phone) { _ in
+            viewModel.contact.isNotSaved = true
+        }
+        .onChange(of: viewModel.contact.birthday) { _ in
+            viewModel.contact.isNotSaved = true
+        }
+        .onChange(of: viewModel.contact.connectChannels) { _ in
+            viewModel.contact.isNotSaved = true
+        }
+        .onChange(of: viewModel.contact.reminderBirthday) { _ in
+            viewModel.contact.isNotSaved = true
+        }
+        .onChange(of: viewModel.contact.reminderBeforeBirthday) { _ in
+            viewModel.contact.isNotSaved = true
+        }
+        .onChange(of: viewModel.contact.reminderCountDayBeforeBirthday) { _ in
+            viewModel.contact.isNotSaved = true
+        }
+        .onChange(of: viewModel.contact.reminder) { _ in
+            viewModel.contact.isNotSaved = true
+        }
+        .onChange(of: viewModel.contact.reminderDate) { _ in
+            viewModel.contact.isNotSaved = true
+        }
+        .onChange(of: viewModel.contact.reminderRepeat) { _ in
+            viewModel.contact.isNotSaved = true
         }
     }
 
@@ -460,7 +497,7 @@ struct ContactDetailView: View {
         }
     }
     
-    private func saveBirthday() {
+    private func setBirthday() {
         if includeYear {
             viewModel.contact.birthday = tempBirthday
         } else {
@@ -469,6 +506,7 @@ struct ContactDetailView: View {
             components.year = 0001
             viewModel.contact.birthday = calendar.date(from: components)
         }
+        viewModel.contact.isNotSaved = true
     }
     
     init(contactListViewModel: ContactListViewModel, isShowingNewInteractionView: Bool, contact: Contact) {

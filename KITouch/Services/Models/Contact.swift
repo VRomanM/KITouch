@@ -20,7 +20,7 @@ struct Contact: Hashable, Identifiable {
     var phone: String
     var birthday: Date?
     var connectChannels: [ConnectChannel]
-    var isNewContact: Bool
+    var isNotSaved: Bool
     var reminder: Bool = false
     var reminderDate: Date
     var reminderRepeat: String = "Monthly"
@@ -48,7 +48,7 @@ struct Contact: Hashable, Identifiable {
         self.birthday = birthday
         self.reminderDate = Date.now
         self.connectChannels = connectChannels
-        self.isNewContact = isNewContact
+        self.isNotSaved = isNewContact
         self.systemContactId = systemContactId
     }
     
@@ -62,7 +62,7 @@ struct Contact: Hashable, Identifiable {
         self.phone = ""
         self.reminderDate = Calendar.current.date(byAdding: .day, value: 1, to: Date())!
         self.connectChannels = [ConnectChannel(socialMediaType: .email, login: "")]
-        self.isNewContact = true
+        self.isNotSaved = true
         self.systemContactId = nil
     }
     
@@ -85,7 +85,7 @@ struct Contact: Hashable, Identifiable {
         self.reminderBeforeBirthday = reminderBeforeBirthday
         self.reminderCountDayBeforeBirthday = reminderCountDayBeforeBirthday
         self.connectChannels = connectChannels
-        self.isNewContact = false
+        self.isNotSaved = false
         self.systemContactId = systemContactId
     }
 }
