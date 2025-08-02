@@ -7,6 +7,7 @@
 */
 "About App" = "О приложении";
 "Add" = "Добавить";
+"Add Birthday" = "Добавить день рождения";
 "Add your first contact" = "Добавь свой первый контакт";
 "Add your interactions to keep track of your communications" = "Добавьте взаимодействия, чтобы отслеживать коммуникации";
 "All Interactions" = "Все взаимодействия";
@@ -51,7 +52,6 @@
 
 "Get reminders to keep in touch" = "Получай уведомления, чтобы оставаться на связи";
 
-"In advance" = "Заранее";
 "Interactions" = "Взаимодействия";
 
 "Keep" = "Оставить";
@@ -68,6 +68,7 @@
 "Never" = "Никогда";
 "New" = "Новый";
 "New interaction" = "Новое взаимодействие";
+"Notify in advance" = "Уведомить заранее";
 "Notify for" = "Уведомить за";
 "No Interactions Yet" = "Взаимодействий нет";
 "No notes" = "Нет заметок";

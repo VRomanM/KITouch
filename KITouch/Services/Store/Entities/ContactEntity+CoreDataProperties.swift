@@ -16,7 +16,7 @@ extension ContactEntity {
         return NSFetchRequest<ContactEntity>(entityName: "ContactEntity")
     }
 
-    @NSManaged public var birthday: Date
+    @NSManaged public var birthday: Date?
     @NSManaged public var contactType: String
     @NSManaged public var countMessages: Int16
     @NSManaged public var customContactType: String
