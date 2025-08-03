@@ -13,6 +13,7 @@ final class ContactListViewModel: ObservableObject {
     //MARK: - Private properties
     
     private let coreDataManager = CoreDataManager.sharedManager
+    private let notificationManager = NotificationManager.sharedManager
     
     //MARK: - Properties
     
@@ -36,7 +37,7 @@ final class ContactListViewModel: ObservableObject {
     
     init() {
         loadData()
-        listScheduledNotifications()
+        notificationManager.listScheduledNotifications()
     }
 
     //MARK: - Private function
@@ -114,6 +115,9 @@ final class ContactListViewModel: ObservableObject {
     }
     
     func deleteContacts(contact: Contact) {
+        // Удаляем все уведомления по контакту
+        notificationManager.removeAllScheduledNotifications(for: contact)
+        
         // Удаляем из CoreData
         coreDataManager.deleteContact(contact) { [weak self] result in
             DispatchQueue.main.async {
@@ -158,30 +162,6 @@ final class ContactListViewModel: ObservableObject {
     func openAppSettings() {
         guard let url = URL(string: UIApplication.openSettingsURLString) else { return }
         UIApplication.shared.open(url)
-    }
-
-    // принтует уведомления которые есть
-    private func listScheduledNotifications() {
-        UNUserNotificationCenter.current().getPendingNotificationRequests { notifications in
-            for notification in notifications {
-                print("ID: \(notification.identifier)")
-                print("Title: \(notification.content.title)")
-                print("Body: \(notification.content.body)")
-                if let trigger = notification.trigger as? UNCalendarNotificationTrigger {
-                    if let nextTriggerDate = trigger.nextTriggerDate() {
-                        let formatter = DateFormatter()
-                        formatter.dateStyle = .medium
-                        formatter.timeStyle = .medium
-                        formatter.timeZone = TimeZone.current
-                        
-                        print("Next trigger date (UTC): \(nextTriggerDate)")
-                        print("Next trigger date (Local): \(formatter.string(from: nextTriggerDate))")
-                    }
-                }
-                print("---")
-            }
-            print("Total pending notifications: \(notifications.count)")
-        }
     }
 }
 
