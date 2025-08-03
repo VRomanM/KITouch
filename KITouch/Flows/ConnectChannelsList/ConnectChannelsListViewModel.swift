@@ -6,6 +6,7 @@
 //
 
 import Combine
+import Foundation
 
 final class ConnectChannelsListViewModel: ObservableObject {
     
@@ -33,8 +34,12 @@ final class ConnectChannelsListViewModel: ObservableObject {
     
     func closeView() {
         guard let viewModel = contactDetalViewModel else { return }
-        connectChannels = viewModel.contact.connectChannels
+        // Сначала закрываем view, потом обновляем данные
         viewModel.isShowingConnectChannelsListView = false
+        // Обновляем данные с задержкой чтобы избежать конфликта с UI
+        DispatchQueue.main.async {
+            self.connectChannels = viewModel.contact.connectChannels
+        }
     }
     
     func deleteChannel(_ channel: ConnectChannel) {

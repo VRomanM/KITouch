@@ -26,7 +26,11 @@ struct ConnectChannelsListView: View {
                             ForEach($viewModel.connectChannels) { $channel in
                                 ConnectChannelCard(
                                     channel: $channel,
-                                    onDelete: { viewModel.deleteChannel(channel) }
+                                    onDelete: {
+                                        withAnimation(.smooth) {
+                                            viewModel.deleteChannel(channel)
+                                        }
+                                    }
                                 )
                                 .id(channel.id)
                                 .focused($focusedField, equals: channel)

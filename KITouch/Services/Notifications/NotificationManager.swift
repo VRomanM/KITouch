@@ -42,6 +42,8 @@ final class NotificationManager: ObservableObject {
     private func getNotificationTrigger(startDate: Date, repeatPeriod: NotificationPeriod, debug: Bool) -> UNCalendarNotificationTrigger {
         let calendar = Calendar.current
         var dateComponents = DateComponents()
+        // Устанавливаем часовой пояс устройства
+        dateComponents.timeZone = TimeZone.current
         
         switch repeatPeriod {
             
@@ -181,13 +183,20 @@ final class NotificationManager: ObservableObject {
             removeAllScheduledNotifications(for: contact)
             
             // Назначение уведомлений согласно настройкам контакта
-            if contact.reminderBirthday {
+            if let birthday = contact.birthday, contact.reminderBirthday {
+                var components = calendar.dateComponents([.year, .month, .day], from: birthday)
+                // Устанавливаем время в дату дня рождения 10:00
+                components.hour = 10
+                components.minute = 0
+                components.second = 0
+                let birthday10AM = calendar.date(from: components) ?? birthday
+                
                 // В день рождения
-                scheduleNotification(for: contact, startDate: contact.birthday, type: .birthday, repeatPeriod: .yearly, debug: debug)
+                scheduleNotification(for: contact, startDate: birthday10AM, type: .birthday, repeatPeriod: .yearly, debug: debug)
                 
                 // За день до дня рождения
                 if contact.reminderBeforeBirthday {
-                    if let previousDayBeforeBirthday = calendar.date(byAdding: .day, value: -contact.reminderCountDayBeforeBirthday, to: contact.birthday) {
+                    if let previousDayBeforeBirthday = calendar.date(byAdding: .day, value: -contact.reminderCountDayBeforeBirthday, to: birthday10AM) {
                         scheduleNotification(for: contact, startDate: previousDayBeforeBirthday, type: .beforeBirthday, repeatPeriod: .yearly, debug: debug)
                     }
                 }
