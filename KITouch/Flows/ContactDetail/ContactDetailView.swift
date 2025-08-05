@@ -16,7 +16,7 @@ struct ContactDetailView: View {
 
     // Добавляем состояния для секций
     @State private var isInteractionExpanded    = true
-    @State private var isNotificationExpanded   = false
+    @State private var isNotificationExpanded   = true
     @State private var isSocialMediaExpanded    = false
 
     // Состояния для дня рождения
