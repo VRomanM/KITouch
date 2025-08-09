@@ -189,9 +189,7 @@ struct ContactDetailView: View {
 
                             if viewModel.contact.reminder {
                                 DatePicker("When",
-                                           selection: $viewModel.contact.reminderDate,
-                                           in: Date()...)
-
+                                           selection: $viewModel.contact.reminderDate)
                                 Picker("Repeat", selection: $viewModel.contact.reminderRepeat) {
                                     ForEach(NotificationPeriod.allCases) { period in
                                         Text(period.localizedValue).tag(period)
